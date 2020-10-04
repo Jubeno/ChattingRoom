@@ -7,13 +7,14 @@ import {
   Redirect,
   useLocation
 } from "react-router-dom";
-import Login from './components/Login';
+import Login from './components/Login/Login';
 import RoomList from './components/RoomList';
 import AddRoom from './components/AddRoom';
 import ChatRoom from './components/ChatRoom';
 import SecureRoute from './route/SecureRoute';
 import { StateProvider } from './StateProvider';
 import { initialState, reducer } from './MainContext/reducer';
+import SignUp from './components/SignUp/SignUp';
 
 const App = () => {
   let location = useLocation();
@@ -26,6 +27,9 @@ const App = () => {
           <Switch>
             <Route path="/login">
               <Login />
+            </Route>
+            <Route path="/signup">
+              <SignUp />
             </Route>
             <SecureRoute path="/roomlist">
               <RoomList />
