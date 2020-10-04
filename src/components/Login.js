@@ -10,8 +10,10 @@ import {
     Input
 } from 'reactstrap';
 import firebase from '../Firebase';
+import { useStateValue } from '../StateProvider';
 
 function Login() {
+    const state = useStateValue();
     const history = useHistory();
     const [creds, setCreds] = useState({ nickname: '' });
     const [showLoading, setShowLoading] = useState(false);
