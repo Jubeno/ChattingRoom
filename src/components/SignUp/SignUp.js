@@ -18,70 +18,76 @@ function SignUp() {
     const usersOnDB = firebase.database().ref('users/');
 
     const validateNickname = nickname => {
-        setShowLoading(false);
         const nameRegex = /^[a-zA-Z0-9]+$/;
         if ( nickname.length === 0 ) { 
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.EMPTY});
-            return
-        };
-        if ( nickname.length < 6 || nickname.length > 10 ) { 
+        } else if ( nickname.length < 6 || nickname.length > 10 ) { 
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.TOO_SHORT});
-            return
-        };
-        if ( !nickname.match(nameRegex) ) { 
+        } else if ( !nickname.match(nameRegex) ) { 
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.INVALID});
-            return
-        };
+        } else { 
+            setErrorName({ isErrorName: false, errorName: ''});
+        }
     }
 
     const validatePassword = password => {
-        setShowLoading(false);
         const nameRegex = /^[a-zA-Z0-9]+$/;
         if ( password.length === 0 ) { 
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.EMPTY});
-            return
-        };
-        if ( password.length < 6 || password.length > 10 ) { 
+        } else if ( password.length < 6 || password.length > 10 ) { 
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.TOO_SHORT});
-            return
-        };
-        if ( !password.match(nameRegex) ) { 
+        } else if ( !password.match(nameRegex) ) { 
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.INVALID});
-            return
-        };
+        } else {
+            setErrorPassword({ isErrorPassword: false, errorPassword: ''});
+        }
     }
 
     const validateConfirmPassword = (password, confirmPassword) => {
-        if ( password.length === 0 ) { 
-            setErrorPassword({ isErrorConfirmPassword: true, errorConfirmPassword: ERROR_MESSAGE_PASSWORD.EMPTY});
+        
+        if ( confirmPassword.length === 0 ) { 
+            setErrorConfirmPassword({ isErrorConfirmPassword: true, errorConfirmPassword: ERROR_MESSAGE_PASSWORD.EMPTY});
             return
-        };
-        if ( password !== confirmPassword) {
+        } else if ( password !== confirmPassword) {
             setErrorConfirmPassword({ isErrorConfirmPassword: true, errorConfirmPassword: ERROR_MESSAGE_CONFIRM_PASSWORD.NOT_MATCH });
+            return
+        } else {
+            setErrorConfirmPassword({ isErrorConfirmPassword: false, errorConfirmPassword: '' });
             return
         }
     }
 
-    const isExistThisNickNameOnDB = nickname => {
-        let result;
+    const createNewUser = ( nickname, password ) => {
+        const newUser = usersOnDB.push();
+        newUser.set({
+            'nickname': nickname,
+            'password': password
+        });
+        // localStorage.setItem('userName', nickname);
+        // show popup
+        // history.push('/login', { nickname: nickname, password: password });
+        setShowLoading(false);
+    }
+
+    const isExistThisNickNameOnDB = (nickname, password) => {
         usersOnDB.orderByChild('nickname').equalTo(nickname).once('value', response => {
             if ( response.exists() ) {
                 setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.USED })
-                result = true;
             } else {
-                result = false;
+                setErrorName({ isErrorName: false, errorName: '' })
+                createNewUser(nickname, password);
             }
-            
         })
-        return result;
     }
 
     const signup = data => {
-        validateNickname(data.nickname);
-        validatePassword(data.password);
-        validateConfirmPassword(data.password, data.confirmPassword);
-        isExistThisNickNameOnDB(data.nickname);
-
+        const nickname = data.nickname;
+        const password = data.password;
+        const confirmPassword = data.confirmPassword;
+        validateNickname(nickname);
+        validatePassword(password);
+        validateConfirmPassword(password, confirmPassword);
+        isExistThisNickNameOnDB(nickname, password);
     };
 
     return (
@@ -107,7 +113,7 @@ function SignUp() {
                         <Label className="text-info">Confirm Password</Label>
                         <Input type="password" name="confirmPassword" id="confirmPassword" placeholder="Enter Your Confirm Password" innerRef={register}/>
                     </FormGroup>
-                    { errorConfirmPassword.isErrorPassword && <ErrorMessage content={errorPassword.errorPassword} /> }
+                    { errorConfirmPassword.isErrorConfirmPassword && <ErrorMessage content={errorConfirmPassword.errorConfirmPassword} /> }
                     <Button variant="primary" color="danger" type="submit" size="lg" block>SignUp</Button>
                 </Form>
                 

@@ -12,10 +12,13 @@ import './Login.scss';
 function Login() {
     const { register, handleSubmit } = useForm();
     const history = useHistory();
+    const { nickname, password } = history.location.state;
     const [showLoading, setShowLoading] = useState(false);
     const [errorName, setErrorName] = useState({isErrorName: false, errorName: ''})
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
     const usersOnDB = firebase.database().ref('users/');
+    const defaultNickName = nickname !== undefined ? nickname : '';
+    const defaultPassword = password !== undefined ? password : '';
 
     const checkPassword = password => {
         getDataOnDB('password', password, 'users/').once('value', response => {
@@ -31,16 +34,13 @@ function Login() {
         const nameRegex = /^[a-zA-Z0-9]+$/;
         if ( nickname.length === 0 ) { 
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.EMPTY});
-            return
-        };
-        if ( nickname.length < 6 || nickname.length > 10 ) { 
+        } else if ( nickname.length < 6 || nickname.length > 10 ) { 
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.TOO_SHORT});
-            return
-    };
-        if ( !nickname.match(nameRegex) ) { 
+        } else if ( !nickname.match(nameRegex) ) { 
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.INVALID});
-            return
-    };
+        } else {
+            setErrorName({ isErrorName: false, errorName: '' })
+        }
     }
 
     const validatePassword = password => {
@@ -48,16 +48,13 @@ function Login() {
         const nameRegex = /^[a-zA-Z0-9]+$/;
         if ( password.length === 0 ) { 
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.EMPTY});
-            return
-        };
-        if ( password.length < 6 || password.length > 10 ) { 
+        } else if ( password.length < 6 || password.length > 10 ) { 
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.TOO_SHORT});
-            return
-        };
-        if ( !password.match(nameRegex) ) { 
+        } else if ( !password.match(nameRegex) ) { 
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.INVALID});
-            return
-        };
+        } else {
+            setErrorPassword({ isErrorPassword: false, errorPassword: '' })
+        }
     }
 
     const login = data => {
@@ -89,12 +86,12 @@ function Login() {
                 <Form onSubmit={handleSubmit(login)} className="mb-3">
                     <FormGroup>
                         <Label className="text-info">Nickname</Label>
-                        <Input type="text" name="nickname" id="nickname" placeholder="Enter Your Nickname" innerRef={register}/>
+                        <Input type="text" name="nickname" id="nickname" placeholder="Enter Your Nickname" innerRef={register} defaultValue={defaultNickName} />
                     </FormGroup>
                     { errorName.isErrorName && <ErrorMessage content={errorName.errorName} /> }
                     <FormGroup>
                         <Label className="text-info">Password</Label>
-                        <Input type="password" name="password" id="password" placeholder="Enter Your Password" innerRef={register}/>
+                        <Input type="password" name="password" id="password" placeholder="Enter Your Password" innerRef={register} defaultValue={defaultPassword}/>
                     </FormGroup>
                     { errorPassword.isErrorPassword && <ErrorMessage content={errorPassword.errorPassword} /> }
                     <Button variant="primary" color="danger" type="submit" size="lg" block>Login</Button>
