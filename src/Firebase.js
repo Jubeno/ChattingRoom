@@ -1,15 +1,16 @@
 import firebase from 'firebase';
 
-var firebaseConfig = {
-  apiKey: "AIzaSyBKjEZlODnxEc4x_m9X_vRGUeESyjF3BcQ",
-  authDomain: "fir-d9bb6.firebaseapp.com",
-  databaseURL: "https://fir-d9bb6.firebaseio.com",
-  projectId: "fir-d9bb6",
-  storageBucket: "fir-d9bb6.appspot.com",
-  messagingSenderId: "418879909007",
-  appId: "1:418879909007:web:f632245bcd12b70e2d54fa",
-  measurementId: "G-8NYYJLTFRP"
+const firebaseConfig = {
+  apiKey: "AIzaSyC_vI0dn39agd91ZR8jjSs7Rb67snKV9vU",
+  authDomain: "benoo149.firebaseapp.com",
+  databaseURL: "https://benoo149.firebaseio.com",
+  projectId: "benoo149",
+  storageBucket: "benoo149.appspot.com",
+  messagingSenderId: "33100672323",
+  appId: "1:33100672323:web:563000313bbde7207ed3f6",
+  measurementId: "G-8732M5XHDX"
 };
+
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 export const auth = firebase.auth();

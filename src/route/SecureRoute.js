@@ -11,7 +11,7 @@ const SecureRoute = ({ children, ...rest }) => {
             render={({ location }) =>
                 localStorage.getItem('nickname') 
                 ?  children  
-                : <Redirect to={{ pathname: "/login", state: { from: location } }} />
+                : <Redirect to={{ pathname: "/go_to_workspace", state: { from: location } }} />
             }
         />
     );

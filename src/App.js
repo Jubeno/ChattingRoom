@@ -15,6 +15,7 @@ import SecureRoute from './route/SecureRoute';
 import { StateProvider } from './StateProvider';
 import { initialState, reducer } from './MainContext/reducer';
 import SignUp from './components/SignUp/SignUp';
+import SignIn from './components/WorkSpace/SignIn';
 
 const App = () => {
   let location = useLocation();
@@ -25,6 +26,9 @@ const App = () => {
         <div>
           <Redirect to={{ pathname: "/roomlist", state: { from: location } }} />
           <Switch>
+            <Route path="/go_to_workspace">
+              <SignIn />
+            </Route>
             <Route path="/login">
               <Login />
             </Route>

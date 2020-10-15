@@ -95,7 +95,7 @@ function Login() {
                     </FormGroup>
                     { errorPassword.isErrorPassword && <ErrorMessage content={errorPassword.errorPassword} /> }
                     <Button variant="primary" color="danger" type="submit" size="lg" block>Login</Button>
-                    <Button variant="primary" color="primary" type="submit" size="lg" block>Sign in with Google</Button>
+                    {/* <Button variant="primary" color="primary" type="submit" size="lg" block>Sign in with Google</Button> */}
                 </Form>
                 <h6 className="text-right dont_have_account">Don't have account ? <Link to="/signup">Sign up</Link></h6>
             </Jumbotron>
