@@ -12,10 +12,12 @@ import RoomList from './components/RoomList';
 import AddRoom from './components/AddRoom';
 import ChatRoom from './components/ChatRoom';
 import SecureRoute from './route/SecureRoute';
+import WorkSpaceRoute from './route/WorkSpaceRoute';
 import { StateProvider } from './StateProvider';
 import { initialState, reducer } from './MainContext/reducer';
 import SignUp from './components/SignUp/SignUp';
 import SignIn from './components/WorkSpace/SignIn';
+import CreateSpace from './components/WorkSpace/CreateSpace';
 
 const App = () => {
   let location = useLocation();
@@ -24,17 +26,15 @@ const App = () => {
     <StateProvider initialState={initialState} reducer={reducer}>
       <Router>
         <div>
-          <Redirect to={{ pathname: "/roomlist", state: { from: location } }} />
+          {/* <Redirect to={{ pathname: "/login", state: { from: location } }} /> */}
           <Switch>
-            <Route path="/go_to_workspace">
-              <SignIn />
-            </Route>
-            <Route path="/login">
+            <Route path="/workspace" component={WorkSpaceRoute} />
+            <SecureRoute path="/login">
               <Login />
-            </Route>
-            <Route path="/signup">
+            </SecureRoute>
+            <SecureRoute path="/signup">
               <SignUp />
-            </Route>
+            </SecureRoute>
             <SecureRoute path="/roomlist">
               <RoomList />
             </SecureRoute>

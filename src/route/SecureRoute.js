@@ -6,12 +6,13 @@ import {
   } from "react-router-dom";
 
 const SecureRoute = ({ children, ...rest }) => {
+    const isInWorkSpace = localStorage.getItem('isInWorkSpace') === 'true' ;
     return (
         <Route  {...rest}
             render={({ location }) =>
-                localStorage.getItem('nickname') 
+                isInWorkSpace 
                 ?  children  
-                : <Redirect to={{ pathname: "/go_to_workspace", state: { from: location } }} />
+                : <Redirect to={{ pathname: "/workspace", state: { from: location } }} />
             }
         />
     );
