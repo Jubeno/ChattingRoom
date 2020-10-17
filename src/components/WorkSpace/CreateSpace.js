@@ -3,7 +3,7 @@ import { Jumbotron, Spinner, Form,  Button, FormGroup,  Label, Input, FormFeedba
 import { useForm } from "react-hook-form";
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import './Workspace.scss'
-import { ERROR_MESSAGE_NAME_WORKSPACE } from '../../utils/constant';
+import { ERROR_MESSAGE_NAME_WORKSPACE, ERROR_MESSAGE_PASSWORD, ERROR_MESSAGE_CONFIRM_PASSWORD } from '../../utils/constant';
 import { validateWorkspace } from '../../utils/function';
 import firebase from '../../Firebase';
 import { useHistory } from 'react-router-dom';
@@ -14,47 +14,79 @@ const CreateSpace = () => {
     const [errorWorkSpace, setErrorWorkSpace] = useState({ isError: null, errorMessage: '' });
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
     const [errorConfirmPassword, setErrorConfirmPassword] = useState({isErrorConfirmPassword: false, errorConfirmPassword: ''})
-    const messaging = firebase.messaging();
     const workspaceDB = firebase.database().ref('/workspace');
 
-    const isValidFormData = async data => {
+    const isValidateWorkSpaceName = async data => {
         const workspace = data.workspace;
-        const prefix = workspace.split("@")[0];
-        const domain = workspace.split("@")[1];
         const isValidWorkspace = validateWorkspace(workspace);
+        
         let isValid = true;
-
         if (workspace === '') {
-            setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.EMPTY })
+            setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.EMPTY });
             isValid = false;
         } else if (!isValidWorkspace) {
             setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.INVALID })
             isValid = false;
         } else {
-            await workspaceDB.once("value",
+            await workspaceDB.orderByChild('workspace').equalTo(workspace).once("value",
                 response => {
-                    const data = response.val();
-                    if (!data[prefix]) {
-                        setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.NOT_EXIST })
+                    if (response.exists()) {
                         isValid = false;
-                    } else {
-                        if(`${data[prefix].name}.${data[prefix].domain}` !== domain) {
-                            setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.NOT_EXIST })
-                            isValid = false;
-                        }
+                        setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.USED })
                     }
                 }
             )
         }
+        return isValid
+    }
+
+    const isValidatePassword = password => {
+        let isValid = true;
+        const nameRegex = /^[a-zA-Z0-9]+$/;
+        if ( password.length === 0 ) { 
+            isValid = false;
+            setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.EMPTY});
+        } else if ( password.length < 6 || password.length > 10 ) { 
+            isValid = false;
+            setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.TOO_SHORT});
+        } else if ( !password.match(nameRegex) ) { 
+            isValid = false;
+            setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.INVALID});
+        } else {
+            setErrorPassword({ isErrorPassword: false, errorPassword: ''});
+        }
         return isValid;
     }
 
+    const isValidConfirmPassword = (password, confirmPassword) => {
+        let isValid = true;
+        if ( confirmPassword.length === 0 ) { 
+            isValid = false;
+            setErrorConfirmPassword({ isErrorConfirmPassword: true, errorConfirmPassword: ERROR_MESSAGE_PASSWORD.EMPTY});
+        } else if ( password !== confirmPassword) {
+            isValid = false;
+            setErrorConfirmPassword({ isErrorConfirmPassword: true, errorConfirmPassword: ERROR_MESSAGE_CONFIRM_PASSWORD.NOT_MATCH });
+        } else {
+            setErrorConfirmPassword({ isErrorConfirmPassword: false, errorConfirmPassword: '' });
+        }
+        return isValid;
+    }
+
+
     const createWorkspace = async data => {
-        // const isValid = await isValidFormData(data);
-        // if(isValid) {
-        //     localStorage.setItem('isInWorkSpace', 'true');
-        //     // history.push('/login')
-        // }
+        const isValidName = await isValidateWorkSpaceName(data);
+        const isValidPassword = isValidatePassword(data.password);
+        const isValidConfirm = isValidConfirmPassword(data.password, data.confirmPassword);
+        const newWorkspace = workspaceDB.push();
+
+        if (isValidName && isValidPassword && isValidConfirm) {
+            (await newWorkspace).set({    
+                "workspace": data.workspace,
+                "password": data.password,
+            }, () => {
+                history.push('/workspace/profile');
+            })
+        }
     }
 
     const handleFocusName = () => {
@@ -86,12 +118,12 @@ const CreateSpace = () => {
                 </FormGroup>
                 { errorWorkSpace.isError && <ErrorMessage content={errorWorkSpace.errorMessage} />}
                 <FormGroup>
-                    <Label className="text-muted font-weight-bold">Password</Label>
+                    <Label className="text-muted font-weight-bold">Password:</Label>
                     <Input type="password" name="password" onFocus={handleFocusPassword} id="password" placeholder="Enter Your Password" innerRef={register}/>
                 </FormGroup>
                 { errorPassword.isErrorPassword && <ErrorMessage content={errorPassword.errorPassword} /> }
                 <FormGroup>
-                    <Label className="text-muted font-weight-bold">Confirm Password</Label>
+                    <Label className="text-muted font-weight-bold">Confirm Password:</Label>
                     <Input type="password" name="confirmPassword" onFocus={handleFocusConfirmPassword} id="confirmPassword" placeholder="Enter Your Confirm Password" innerRef={register}/>
                 </FormGroup>
                 { errorConfirmPassword.isErrorConfirmPassword && <ErrorMessage content={errorConfirmPassword.errorConfirmPassword} /> }

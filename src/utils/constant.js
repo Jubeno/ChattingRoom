@@ -18,5 +18,6 @@ export const ERROR_MESSAGE_CONFIRM_PASSWORD = {
 export const ERROR_MESSAGE_NAME_WORKSPACE = {
     EMPTY: 'Please enter your workspace!!',
     INVALID: 'Please enter valid workspace\'s name',
-    NOT_EXIST: 'Workspace is not exist. Contact to your manager may helpful!'
+    USED: 'This name is already in use, please choose another.',
+    NOT_EXIST: 'This name is NOT exist, contact your manager.'
 }

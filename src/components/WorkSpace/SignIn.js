@@ -32,6 +32,7 @@ const SignIn = () => {
 
     const isValidFormData = async data => {
         const workspace = data.workspace;
+        console.log('workspace: ', workspace);
         const prefix = workspace.split("@")[0];
         const domain = workspace.split("@")[1];
         const isValidWorkspace = validateWorkspace(workspace);
@@ -44,17 +45,12 @@ const SignIn = () => {
             setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.INVALID })
             isValid = false;
         } else {
-            await workspaceDB.once("value",
+            await workspaceDB.orderByChild('workspace').equalTo(workspace).once("value",
                 response => {
-                    const data = response.val();
-                    if (!data[prefix]) {
-                        setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.NOT_EXIST })
+                    console.log('response: ', response.exists());
+                    if (!response.exists()) {
                         isValid = false;
-                    } else {
-                        if(`${data[prefix].name}.${data[prefix].domain}` !== domain) {
-                            setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.NOT_EXIST })
-                            isValid = false;
-                        }
+                        setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.NOT_EXIST });
                     }
                 }
             )
