@@ -1,15 +1,17 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Jumbotron, Spinner, Form,  Button, FormGroup,  Label, Input, FormFeedback, Alert } from 'reactstrap';
 import { useForm } from "react-hook-form";
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import './Workspace.scss'
 import { ERROR_MESSAGE_NAME_WORKSPACE, ERROR_MESSAGE_PASSWORD, ERROR_MESSAGE_CONFIRM_PASSWORD } from '../../utils/constant';
-import { validateWorkspace } from '../../utils/function';
+import { generateKey, validateWorkspace } from '../../utils/function';
 import firebase from '../../Firebase';
 import { useHistory } from 'react-router-dom';
+import { useStateValue } from '../../StateProvider';
 
 const CreateSpace = () => {
     const { register, handleSubmit } = useForm();
+    const [ { workspaceState }, dispatch ] = useStateValue();
     const history = useHistory();
     const [errorWorkSpace, setErrorWorkSpace] = useState({ isError: null, errorMessage: '' });
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
@@ -72,12 +74,12 @@ const CreateSpace = () => {
         return isValid;
     }
 
-
     const createWorkspace = async data => {
         const isValidName = await isValidateWorkSpaceName(data);
         const isValidPassword = isValidatePassword(data.password);
         const isValidConfirm = isValidConfirmPassword(data.password, data.confirmPassword);
-        const newWorkspace = workspaceDB.push();
+        const keyWorkspace = generateKey();
+        const newWorkspace = workspaceDB.child(keyWorkspace);
 
         if (isValidName && isValidPassword && isValidConfirm) {
             (await newWorkspace).set({    

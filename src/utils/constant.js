@@ -21,3 +21,5 @@ export const ERROR_MESSAGE_NAME_WORKSPACE = {
     USED: 'This name is already in use, please choose another.',
     NOT_EXIST: 'This name is NOT exist, contact your manager.'
 }
+
+export const EXPIRED_TIME = 120 //  MINUTES

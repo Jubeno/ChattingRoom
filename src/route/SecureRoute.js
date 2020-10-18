@@ -4,13 +4,33 @@ import {
     Route,
     Redirect
   } from "react-router-dom";
+import moment from 'moment';
+
 
 const SecureRoute = ({ children, ...rest }) => {
-    const isInWorkSpace = localStorage.getItem('isInWorkSpace') === 'true' ;
+    const expiredTime = localStorage.getItem('expiredTime');
+
+    const checkExpire = () => {
+        let result = true;
+        if( expiredTime === null ) {
+            result = false;
+        } else {
+            const currentTime = moment().format('YYYY-MM-DD HH:mm');
+            const expiredTimeFormated = moment(expiredTime, 'DDMMYYYYHHmm').format('YYYY-MM-DD HH:mm');
+            const isBefore = moment(currentTime).isBefore(expiredTimeFormated);
+            if( !isBefore ) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
+    const isNotExpired = checkExpire();
+    
     return (
         <Route  {...rest}
             render={({ location }) =>
-                isInWorkSpace 
+            isNotExpired 
                 ?  children  
                 : <Redirect to={{ pathname: "/workspace", state: { from: location } }} />
             }

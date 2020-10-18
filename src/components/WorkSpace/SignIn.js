@@ -3,38 +3,25 @@ import { Jumbotron, Spinner, Form,  Button, FormGroup,  Label, Input, FormFeedba
 import { useForm } from "react-hook-form";
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import './Workspace.scss'
-import { ERROR_MESSAGE_NAME_WORKSPACE } from '../../utils/constant';
+import { ERROR_MESSAGE_NAME_WORKSPACE, EXPIRED_TIME } from '../../utils/constant';
 import { validateWorkspace } from '../../utils/function';
 import firebase from '../../Firebase';
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
+import { useStateValue } from '../../StateProvider';
+
+
+
 
 const SignIn = () => {
     const { register, handleSubmit } = useForm();
+    const [{ workspaceState }, dispatch] = useStateValue();
     const history = useHistory();
     const [errorWorkSpace, setErrorWorkSpace] = useState({ isError: null, errorMessage: '' });
-    const messaging = firebase.messaging();
     const workspaceDB = firebase.database().ref('/workspace');
-
-    // console.log('%c workspaceDB', 'color: red' , workspaceDB);
-    // useEffect(() => {
-    //     messaging
-    //     .requestPermission()
-    //         .then(async function() {
-    //             const token = await messaging.getToken();
-    //             localStorage.setItem("deviceToken", token);
-    //         })
-    //         .catch(function(err) {
-    //             console.log("Unable to get permission to notify.", err);
-    //         });
-
-    //         navigator.serviceWorker.addEventListener("message", message => console.log(message));
-    // }, []);
 
     const isValidFormData = async data => {
         const workspace = data.workspace;
-        console.log('workspace: ', workspace);
-        const prefix = workspace.split("@")[0];
-        const domain = workspace.split("@")[1];
         const isValidWorkspace = validateWorkspace(workspace);
         let isValid = true;
 
@@ -47,7 +34,6 @@ const SignIn = () => {
         } else {
             await workspaceDB.orderByChild('workspace').equalTo(workspace).once("value",
                 response => {
-                    console.log('response: ', response.exists());
                     if (!response.exists()) {
                         isValid = false;
                         setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.NOT_EXIST });
@@ -58,11 +44,26 @@ const SignIn = () => {
         return isValid;
     }
 
+    const setExpiredTime = async workspace => {
+        await workspaceDB.once('value', response => {
+            const value = response.val();
+            const key = Object.keys(value).find(key => value[key].workspace === workspace); // get key of workspace
+            const setExpiredDateOnDB = workspaceDB.child(key);
+            const expiredTime = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
+            setExpiredDateOnDB.update({ "expiredTime": expiredTime }) // update expired time 
+            localStorage.setItem("expiredTime", expiredTime);
+        })
+    }
+
     const loginWorkspace = async data => {
+        dispatch({ type: 'setKeyWorkSpace', payload: '123123123123123' })
         const isValid = await isValidFormData(data);
+        
         if(isValid) {
-            localStorage.setItem('isInWorkSpace', 'true');
-            // history.push('/login')
+            localStorage.setItem('workspace', data.workspace);
+            await setExpiredTime(data.workspace);
+            
+            history.push('/login', { workspace: data.workspace });
         }
     }
 

@@ -12,13 +12,16 @@ import './Login.scss';
 function Login() {
     const { register, handleSubmit } = useForm();
     const history = useHistory();
-    const { nickname, password } = history.location.state;
+    const { 
+        // nickname, password 
+        workspace
+    } = history.location.state;
     const [showLoading, setShowLoading] = useState(false);
     const [errorName, setErrorName] = useState({isErrorName: false, errorName: ''})
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
     const usersOnDB = firebase.database().ref('users/');
-    const defaultNickName = nickname !== undefined ? nickname : '';
-    const defaultPassword = password !== undefined ? password : '';
+    // const defaultNickName = nickname !== undefined ? nickname : '';
+    // const defaultPassword = password !== undefined ? password : '';
 
     const checkPassword = password => {
         getDataOnDB('password', password, 'users/').once('value', response => {
@@ -75,29 +78,35 @@ function Login() {
         })
     };
 
+    const handleFocusNickName = () => {
+        setErrorName({ ...errorName, isErrorName: false });
+    }
+    const handleFocusPassword = () => {
+        setErrorName({ ...errorPassword, isErrorPassword: false });
+    }
+
     return (
         <div className="login" id="login">
             {showLoading &&
                 <Spinner color="primary" />
             }
-            <Jumbotron className="container">
-                <h1 className="display-3">Hello, welcome to chatting room!!!</h1>
-                <h1 className="display-5 text-center text-info">Login</h1>
+            <Jumbotron className="container mt-5 pb-3 w-50">
+                <h1 className="display-5 mb-5">Welcome to <span className="text-uppercase">{workspace}</span> workspace!!</h1>
+                <h1 className="display-5 text-left text-muted mb-3">Login</h1>
                 <Form onSubmit={handleSubmit(login)} className="mb-3">
                     <FormGroup>
-                        <Label className="text-info">Nickname</Label>
-                        <Input type="text" name="nickname" id="nickname" placeholder="Enter Your Nickname" innerRef={register} defaultValue={defaultNickName} />
+                        <Label className="text-muted font-weight-bold">Nickname</Label>
+                        <Input type="text" name="nickname" id="nickname" placeholder="Enter Your Nickname" onFocus={handleFocusNickName} innerRef={register} />
                     </FormGroup>
                     { errorName.isErrorName && <ErrorMessage content={errorName.errorName} /> }
                     <FormGroup>
-                        <Label className="text-info">Password</Label>
-                        <Input type="password" name="password" id="password" placeholder="Enter Your Password" innerRef={register} defaultValue={defaultPassword}/>
+                        <Label className="text-muted font-weight-bold">Password</Label>
+                        <Input type="password" name="password" id="password" placeholder="Enter Your Password" onFocus={handleFocusPassword} innerRef={register} />
                     </FormGroup>
                     { errorPassword.isErrorPassword && <ErrorMessage content={errorPassword.errorPassword} /> }
-                    <Button variant="primary" color="danger" type="submit" size="lg" block>Login</Button>
-                    {/* <Button variant="primary" color="primary" type="submit" size="lg" block>Sign in with Google</Button> */}
+                    <Button variant="primary" color="danger" type="submit" size="lg" className="mb-5" block>Login</Button>
                 </Form>
-                <h6 className="text-right dont_have_account">Don't have account ? <Link to="/signup">Sign up</Link></h6>
+                <h5 className="text-right font-weight-light font-italic display-5 text-muted">(*) Please use the account and password provided by your manager to log in. </h5>
             </Jumbotron>
         </div>
     );

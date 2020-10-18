@@ -1,9 +1,8 @@
+export const authState = {
+    isAuthenticated: false
+}
 
-export const initialState = {
-    theme: { primary: 'green' }
-};
-
-export const reducer = (state, action) => {
+const authReducer = (state, action) => {
     switch (action.type) {
       case 'changeTheme':
         return {
@@ -14,4 +13,6 @@ export const reducer = (state, action) => {
       default:
         return state;
     }
-  };
+};
+
+export default authReducer;

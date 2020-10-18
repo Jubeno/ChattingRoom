@@ -14,19 +14,37 @@ import ChatRoom from './components/ChatRoom';
 import SecureRoute from './route/SecureRoute';
 import WorkSpaceRoute from './route/WorkSpaceRoute';
 import { StateProvider } from './StateProvider';
-import { initialState, reducer } from './MainContext/reducer';
 import SignUp from './components/SignUp/SignUp';
-import SignIn from './components/WorkSpace/SignIn';
-import CreateSpace from './components/WorkSpace/CreateSpace';
+import { initialState, mainReducer } from './MainContext/mainReducer';
+import moment from 'moment';
 
 const App = () => {
   let location = useLocation();
+  const expiredTime = localStorage.getItem('expiredTime');
 
+  const checkExpire = () => {
+      let result = true;
+      if( expiredTime === null ) {
+          result = false;
+      } else {
+          const currentTime = moment().format('YYYY-MM-DD HH:mm');
+          const expiredTimeFormated = moment(expiredTime, 'DDMMYYYYHHmm').format('YYYY-MM-DD HH:mm');
+          const isBefore = moment(currentTime).isBefore(expiredTimeFormated);
+          if( !isBefore ) {
+              result = false;
+          }
+      }
+      return result;
+  }
+
+  const isNotExpired = checkExpire();
+  const workspace = localStorage.getItem('workspace');
   return (
-    <StateProvider initialState={initialState} reducer={reducer}>
+    <StateProvider initialState={initialState} reducer={mainReducer}>
       <Router>
         <div>
-          {/* <Redirect to={{ pathname: "/login", state: { from: location } }} /> */}
+          <Redirect to={{ pathname: "/workspace", state: { from: location } }} />
+          { isNotExpired && <Redirect to={{ pathname: "/login", state: { workspace } }} /> }
           <Switch>
             <Route path="/workspace" component={WorkSpaceRoute} />
             <SecureRoute path="/login">
