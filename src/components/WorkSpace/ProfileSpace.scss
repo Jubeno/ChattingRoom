@@ -1,0 +1,89 @@
+.container_profile_workspace {
+    position: relative;
+    .title {
+        letter-spacing: 3px;
+    }
+
+    .profile_workspace {
+        display: flex;
+
+        #name_workspace {
+            width: 25%;
+            transition: all 0.3s linear;
+            opacity: 1;
+            .container_ {
+                background-color: #ffcccc;
+                height: 100%;
+                margin-bottom: 0px;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+            }
+        }
+        #purpose_workspace {
+            width: 35%;
+            transition: all 0.3s linear;
+            opacity: 1;
+            .container_ {
+                background-color: #e6f2ff;
+                height: 100%;
+                margin-bottom: 0px;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+
+                .wrapper {
+                    margin-top: 150px;
+                }
+            }
+        }
+        #create_first_user {
+            width: 40%;
+            transition: all 0.3s linear;
+            opacity: 1;
+            .container_ {
+                background-color: #f9ffe6;
+                height: 100%;
+                margin-bottom: 0px;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: flex-end;
+
+                .wrapper {
+                    width: 100%;
+                    margin-bottom: 90px;
+                }
+            }
+
+            .input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+
+        #name_workspace:hover, #purpose_workspace:hover, #create_first_user:hover {
+            width: 45%;
+        }
+
+
+    }
+
+    .bottom_bar {
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+        background-color: #ffffff;
+        height: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .button_submit_create_profile {
+            
+        }
+    }
+
+}

@@ -4,7 +4,7 @@ import { Jumbotron, Spinner, Form,  Button, FormGroup,  Label, Input, FormFeedba
 import firebase from '../../Firebase';
 import { useStateValue } from '../../StateProvider';
 import { useForm } from "react-hook-form";
-import { getDataOnDB } from '../../utils/function';
+import { setExpiredTimeUserSession } from '../../utils/function';
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import { ERROR_MESSAGE_NAME, ERROR_MESSAGE_PASSWORD } from '../../utils/constant';
 import './Login.scss';
@@ -12,70 +12,82 @@ import './Login.scss';
 function Login() {
     const { register, handleSubmit } = useForm();
     const history = useHistory();
-    const { 
-        // nickname, password 
-        workspace
-    } = history.location.state;
+    const { workspace } = history.location.state;
     const [showLoading, setShowLoading] = useState(false);
     const [errorName, setErrorName] = useState({isErrorName: false, errorName: ''})
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
-    const usersOnDB = firebase.database().ref('users/');
-    // const defaultNickName = nickname !== undefined ? nickname : '';
-    // const defaultPassword = password !== undefined ? password : '';
+    const usersOnDB = firebase.database().ref('/users/list');
 
-    const checkPassword = password => {
-        getDataOnDB('password', password, 'users/').once('value', response => {
+    const checkPassword = async password => {
+        let isValid = false;
+        await usersOnDB.orderByChild('password').equalTo(password).once('value', response => {
             if( response.exists() ) {
-                history.push('/roomlist');
+                isValid = true;
                 setShowLoading(false);
             }
         })
+        return isValid;
     }
 
     const validateNickname = nickname => {
+        let isValid = true;
         setShowLoading(false);
         const nameRegex = /^[a-zA-Z0-9]+$/;
         if ( nickname.length === 0 ) { 
+            isValid = false;
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.EMPTY});
         } else if ( nickname.length < 6 || nickname.length > 10 ) { 
+            isValid = false;
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.TOO_SHORT});
         } else if ( !nickname.match(nameRegex) ) { 
+            isValid = false;
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.INVALID});
         } else {
             setErrorName({ isErrorName: false, errorName: '' })
         }
+        return isValid;
     }
 
     const validatePassword = password => {
+        let isValid = true;
         setShowLoading(false);
         const nameRegex = /^[a-zA-Z0-9]+$/;
         if ( password.length === 0 ) { 
+            isValid = false;
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.EMPTY});
         } else if ( password.length < 6 || password.length > 10 ) { 
+            isValid = false;
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.TOO_SHORT});
         } else if ( !password.match(nameRegex) ) { 
+            isValid = false;
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.INVALID});
         } else {
             setErrorPassword({ isErrorPassword: false, errorPassword: '' })
         }
+        return isValid;
     }
 
-    const login = data => {
-        validateNickname(data.nickname);
-        validatePassword(data.password);
+    const login = async data => {
+        const isValidName = validateNickname(data.nickname);
+        const isValidPassword = validatePassword(data.password);
 
-        usersOnDB.orderByChild('nickname').equalTo(data.nickname).once('value', response => {
-            if ( response.exists() ) {
-                localStorage.setItem('nickname', data.nickname);
-                checkPassword(data.password);
-            } else {
-                // const newUser = usersOnDB.push();
-                // newUser.set(data);
-                // localStorage.setItem('nickname', data.nickname);
-                // // history.push('/roomlist');
-                // setShowLoading(false);
-            }
-        })
+        if(isValidName && isValidPassword) {
+            usersOnDB.orderByChild('nickname').equalTo(data.nickname).once('value', async response => {
+                if ( response.exists() ) {
+                    localStorage.setItem('nickname', data.nickname);
+                    const isMatchPassword = await checkPassword(data.password);
+                    if ( isMatchPassword ) {
+                        await setExpiredTimeUserSession(usersOnDB, data.nickname, 'nickname');
+                        history.push('/workspace/profile');
+                    } else {
+                        setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.NOT_MATCH })
+                    }
+                } else {
+                    setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.NOT_EXIST })
+                }
+            })
+        }
+        
     };
 
     const handleFocusNickName = () => {

@@ -8,7 +8,7 @@ import moment from 'moment';
 
 
 const SecureRoute = ({ children, ...rest }) => {
-    const expiredTime = localStorage.getItem('expiredTime');
+    const expiredTime = localStorage.getItem('expiredTimeWorkSpace');
 
     const checkExpire = () => {
         let result = true;

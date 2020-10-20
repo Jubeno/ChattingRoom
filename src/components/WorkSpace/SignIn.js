@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import './Workspace.scss'
 import { ERROR_MESSAGE_NAME_WORKSPACE, EXPIRED_TIME } from '../../utils/constant';
-import { validateWorkspace } from '../../utils/function';
+import { setExpiredTimeWorkSpace, validateWorkspace } from '../../utils/function';
 import firebase from '../../Firebase';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -18,7 +18,7 @@ const SignIn = () => {
     const [{ workspaceState }, dispatch] = useStateValue();
     const history = useHistory();
     const [errorWorkSpace, setErrorWorkSpace] = useState({ isError: null, errorMessage: '' });
-    const workspaceDB = firebase.database().ref('/workspace');
+    const listWorkSpaceDb = firebase.database().ref('/workspace/list');
 
     const isValidFormData = async data => {
         const workspace = data.workspace;
@@ -32,7 +32,7 @@ const SignIn = () => {
             setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.INVALID })
             isValid = false;
         } else {
-            await workspaceDB.orderByChild('workspace').equalTo(workspace).once("value",
+            await listWorkSpaceDb.orderByChild('workspace').equalTo(workspace).once("value",
                 response => {
                     if (!response.exists()) {
                         isValid = false;
@@ -44,25 +44,13 @@ const SignIn = () => {
         return isValid;
     }
 
-    const setExpiredTime = async workspace => {
-        await workspaceDB.once('value', response => {
-            const value = response.val();
-            const key = Object.keys(value).find(key => value[key].workspace === workspace); // get key of workspace
-            const setExpiredDateOnDB = workspaceDB.child(key);
-            const expiredTime = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
-            setExpiredDateOnDB.update({ "expiredTime": expiredTime }) // update expired time 
-            localStorage.setItem("expiredTime", expiredTime);
-        })
-    }
-
     const loginWorkspace = async data => {
         dispatch({ type: 'setKeyWorkSpace', payload: '123123123123123' })
         const isValid = await isValidFormData(data);
         
         if(isValid) {
             localStorage.setItem('workspace', data.workspace);
-            await setExpiredTime(data.workspace);
-            
+            await setExpiredTimeWorkSpace(listWorkSpaceDb, data.workspace, 'workspace');
             history.push('/login', { workspace: data.workspace });
         }
     }

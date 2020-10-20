@@ -3,11 +3,12 @@ import { Jumbotron, Spinner, Form,  Button, FormGroup,  Label, Input, FormFeedba
 import { useForm } from "react-hook-form";
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import './Workspace.scss'
-import { ERROR_MESSAGE_NAME_WORKSPACE, ERROR_MESSAGE_PASSWORD, ERROR_MESSAGE_CONFIRM_PASSWORD } from '../../utils/constant';
-import { generateKey, validateWorkspace } from '../../utils/function';
+import { ERROR_MESSAGE_NAME_WORKSPACE, ERROR_MESSAGE_PASSWORD, ERROR_MESSAGE_CONFIRM_PASSWORD, EXPIRED_TIME } from '../../utils/constant';
+import { generateKey, setExpiredTimeWorkSpace, validateWorkspace } from '../../utils/function';
 import firebase from '../../Firebase';
 import { useHistory } from 'react-router-dom';
 import { useStateValue } from '../../StateProvider';
+import moment from 'moment';
 
 const CreateSpace = () => {
     const { register, handleSubmit } = useForm();
@@ -16,8 +17,8 @@ const CreateSpace = () => {
     const [errorWorkSpace, setErrorWorkSpace] = useState({ isError: null, errorMessage: '' });
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
     const [errorConfirmPassword, setErrorConfirmPassword] = useState({isErrorConfirmPassword: false, errorConfirmPassword: ''})
-    const workspaceDB = firebase.database().ref('/workspace');
-
+    const listWorkSpaceDB = firebase.database().ref('/workspace/list');
+    
     const isValidateWorkSpaceName = async data => {
         const workspace = data.workspace;
         const isValidWorkspace = validateWorkspace(workspace);
@@ -30,7 +31,7 @@ const CreateSpace = () => {
             setErrorWorkSpace({ isError: true, errorMessage: ERROR_MESSAGE_NAME_WORKSPACE.INVALID })
             isValid = false;
         } else {
-            await workspaceDB.orderByChild('workspace').equalTo(workspace).once("value",
+            await listWorkSpaceDB.orderByChild('workspace').equalTo(workspace).once("value",
                 response => {
                     if (response.exists()) {
                         isValid = false;
@@ -79,12 +80,15 @@ const CreateSpace = () => {
         const isValidPassword = isValidatePassword(data.password);
         const isValidConfirm = isValidConfirmPassword(data.password, data.confirmPassword);
         const keyWorkspace = generateKey();
-        const newWorkspace = workspaceDB.child(keyWorkspace);
+        console.log('%c keyWorkspace: ', 'color: red' , keyWorkspace);
+        const newWorkspace = listWorkSpaceDB.child(keyWorkspace);
 
         if (isValidName && isValidPassword && isValidConfirm) {
+            const expiredTimeWorkSpace = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
             (await newWorkspace).set({    
                 "workspace": data.workspace,
                 "password": data.password,
+                "expiredTimeWorkSpace": expiredTimeWorkSpace
             }, () => {
                 history.push('/workspace/profile');
             })

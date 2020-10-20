@@ -15,7 +15,7 @@ function SignUp() {
     const [errorName, setErrorName] = useState({isErrorName: false, errorName: ''})
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
     const [errorConfirmPassword, setErrorConfirmPassword] = useState({isErrorConfirmPassword: false, errorConfirmPassword: ''})
-    const usersOnDB = firebase.database().ref('users/');
+    const usersOnDB = firebase.database().ref('user/list/');
 
     const validateNickname = nickname => {
         const nameRegex = /^[a-zA-Z0-9]+$/;

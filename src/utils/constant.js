@@ -2,12 +2,14 @@ export const ERROR_MESSAGE_NAME = {
     EMPTY: 'Please enter your nickname!!',
     TOO_SHORT: 'Opps, your nickname must have 6 - 10 characters!!',
     INVALID: 'Please enter valid nickname. Use only numbers and alphabets',
-    USED: 'Nickname is already used. Please try other nickname'
+    USED: 'Nickname is already used. Please try other nickname',
+    NOT_EXIST: 'This name is NOT exist.'
 }
 export const ERROR_MESSAGE_PASSWORD = {
     EMPTY: 'Please enter your password!!',
     TOO_SHORT: 'Opps, your password must have 6 - 10 characters!!',
-    INVALID: 'Please enter valid password. Use only numbers and alphabets'
+    INVALID: 'Please enter valid password. Use only numbers and alphabets',
+    NOT_MATCH: 'Your password is not match with your account'
 }
 
 export const ERROR_MESSAGE_CONFIRM_PASSWORD = {
