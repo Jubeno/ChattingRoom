@@ -28,6 +28,7 @@
                 
 
                 .wrapper {
+                    width: 90%;
                     .preview {
                         .avatar {
                             width: 50px;
@@ -110,7 +111,7 @@
                 align-items: center;
 
                 .wrapper {
-                    // margin-top: 130px;
+                    width: 90%;
                     .form {
                         display: flex;
 
@@ -158,15 +159,15 @@
     }
 
     .submit_profile {
-        position: absolute;
-        right: 15px;
-        top: 195px;
-        background-color: #ffffff;
-        // height: 60px;
+        // position: absolute;
+        // right: 15px;
+        // top: calc(100% + 10px);
+        width: 100%;
+        background-color: transparent;
         display: flex;
-        justify-content: center;
-        align-items: center;
-
+        justify-content: flex-end;
+        align-items: flex-end;
+        
         .button_submit_create_profile {
             
         }

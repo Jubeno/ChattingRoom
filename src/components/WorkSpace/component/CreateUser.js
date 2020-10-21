@@ -32,8 +32,19 @@ const CreateUser = props => {
                     <Input type="password" name="password" id="password" className="input" placeholder="Enter Your Password" innerRef={register}/>
                 { errorPassword.isError && <ErrorMessage content={errorPassword.errorPassword} /> }
                     <Label className="text-white font-weight-bold">Confirm Password</Label>
-                    <Input type="password" name="confirmPassword" id="confirmPassword" className="input" placeholder="Enter Your Confirm Password" onChange={handleChange} innerRef={register}/>
+                    <Input type="password" name="confirmPassword" id="confirmPassword" className="input mb-3" placeholder="Enter Your Confirm Password" onChange={handleChange} innerRef={register}/>
                 { errorConfirmPassword.isError && <ErrorMessage content={errorConfirmPassword.errorConfirmPassword} /> }
+                <div className="submit_profile">
+                    <Button 
+                        variant="primary" 
+                        color="dark" 
+                        type="submit" 
+                        size="lg"
+                        className="button_submit_create_profile"
+                    >
+                        Submit
+                    </Button>
+                </div>
             </div>
         </div>
     );

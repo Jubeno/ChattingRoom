@@ -34,17 +34,6 @@ const ProfileSpace = () => {
                         />
                     </div>
                 </Container>
-                <div className="submit_profile">
-                    <Button 
-                        variant="primary" 
-                        color="danger" 
-                        type="submit" 
-                        size="lg"
-                        className="button_submit_create_profile"
-                    >
-                        Submit
-                    </Button>
-                </div>
             </Form>
         </div>
     );
