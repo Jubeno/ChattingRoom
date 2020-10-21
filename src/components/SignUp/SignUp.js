@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from "react-router-dom";
 import { Jumbotron, Spinner, Form,  Button, FormGroup,  Label, Input } from 'reactstrap';
 import firebase from '../../Firebase';
-import { useStateValue } from '../../StateProvider';
 import { useForm } from "react-hook-form";
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import { ERROR_MESSAGE_NAME, ERROR_MESSAGE_PASSWORD, ERROR_MESSAGE_CONFIRM_PASSWORD } from '../../utils/constant';

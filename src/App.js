@@ -13,10 +13,9 @@ import AddRoom from './components/AddRoom';
 import ChatRoom from './components/ChatRoom';
 import SecureRoute from './route/SecureRoute';
 import WorkSpaceRoute from './route/WorkSpaceRoute';
-import { StateProvider } from './StateProvider';
 import SignUp from './components/SignUp/SignUp';
-import { initialState, mainReducer } from './MainContext/mainReducer';
 import { checkExpire } from './utils/function';
+import { MainProvider } from './MainProvider';
 
 const App = () => {
   let location = useLocation();
@@ -24,7 +23,7 @@ const App = () => {
   const isNotExpiredUserSession = checkExpire('expiredTimeUserSession');
   const workspace = localStorage.getItem('workspace');
   return (
-    <StateProvider initialState={initialState} reducer={mainReducer}>
+    <MainProvider>
       <Router>
         <div>
           <Redirect to={{ pathname: "/workspace", state: { from: location } }} />
@@ -50,7 +49,7 @@ const App = () => {
           </Switch>
         </div>
       </Router>
-    </StateProvider>
+    </MainProvider>
   );
 }
 

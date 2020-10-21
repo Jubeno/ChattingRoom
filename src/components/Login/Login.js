@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from "react-router-dom";
 import { Jumbotron, Spinner, Form,  Button, FormGroup,  Label, Input, FormFeedback, Alert } from 'reactstrap';
 import firebase from '../../Firebase';
-import { useStateValue } from '../../StateProvider';
 import { useForm } from "react-hook-form";
 import { setExpiredTimeUserSession } from '../../utils/function';
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';

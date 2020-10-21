@@ -8,14 +8,12 @@ import { setExpiredTimeWorkSpace, validateWorkspace } from '../../utils/function
 import firebase from '../../Firebase';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
-import { useStateValue } from '../../StateProvider';
 
 
 
 
 const SignIn = () => {
     const { register, handleSubmit } = useForm();
-    const [{ workspaceState }, dispatch] = useStateValue();
     const history = useHistory();
     const [errorWorkSpace, setErrorWorkSpace] = useState({ isError: null, errorMessage: '' });
     const listWorkSpaceDb = firebase.database().ref('/workspace/list');
@@ -45,7 +43,7 @@ const SignIn = () => {
     }
 
     const loginWorkspace = async data => {
-        dispatch({ type: 'setKeyWorkSpace', payload: '123123123123123' })
+        // dispatch({ type: 'setKeyWorkSpace', payload: '123123123123123' })
         const isValid = await isValidFormData(data);
         
         if(isValid) {

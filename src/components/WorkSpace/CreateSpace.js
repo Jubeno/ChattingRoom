@@ -7,12 +7,10 @@ import { ERROR_MESSAGE_NAME_WORKSPACE, ERROR_MESSAGE_PASSWORD, ERROR_MESSAGE_CON
 import { generateKey, setExpiredTimeWorkSpace, validateWorkspace } from '../../utils/function';
 import firebase from '../../Firebase';
 import { useHistory } from 'react-router-dom';
-import { useStateValue } from '../../StateProvider';
 import moment from 'moment';
 
 const CreateSpace = () => {
     const { register, handleSubmit } = useForm();
-    const [ { workspaceState }, dispatch ] = useStateValue();
     const history = useHistory();
     const [errorWorkSpace, setErrorWorkSpace] = useState({ isError: null, errorMessage: '' });
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
