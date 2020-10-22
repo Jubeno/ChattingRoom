@@ -78,11 +78,11 @@ const CreateSpace = () => {
         const isValidPassword = isValidatePassword(data.password);
         const isValidConfirm = isValidConfirmPassword(data.password, data.confirmPassword);
         const keyWorkspace = generateKey();
-        console.log('%c keyWorkspace: ', 'color: red' , keyWorkspace);
         const newWorkspace = listWorkSpaceDB.child(keyWorkspace);
 
         if (isValidName && isValidPassword && isValidConfirm) {
             const expiredTimeWorkSpace = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
+            await localStorage.setItem('expiredTimeWorkSpace', expiredTimeWorkSpace);
             (await newWorkspace).set({    
                 "workspace": data.workspace,
                 "password": data.password,

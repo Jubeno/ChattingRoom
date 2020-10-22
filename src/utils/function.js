@@ -18,7 +18,6 @@ export const setExpiredTimeWorkSpace = async (dataOnDB, propertyValue, propertyK
     await dataOnDB.once('value', response => {
         const value = response.val();
         const key = Object.keys(value).find(key => value[key][propertyKey] === propertyValue); // get key of workspace
-        console.log('%c key: ', 'color: red' , key);
         const setExpiredDateOnDB = dataOnDB.child(key);
         const expiredTime = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
         setExpiredDateOnDB.update({ "expiredTimeWorkSpace": expiredTime }) // update expired time 

@@ -29,7 +29,7 @@ const App = () => {
         <div>
           <Redirect to={{ pathname: "/workspace", state: { from: location } }} />
           { isNotExpiredWorkSpace && <Redirect to={{ pathname: "/login", state: { workspace } }} /> }
-          { isNotExpiredUserSession && <Redirect to={{ pathname: "/workspace/profile", state: { workspace } }} /> }
+          { isNotExpiredUserSession && <Redirect to={{ pathname: "/user", state: { workspace } }} /> }
           <Switch>
             <Route path="/workspace" component={WorkSpaceRoute} />
             <SecureRoute path="/user"><UserRoute /></SecureRoute>

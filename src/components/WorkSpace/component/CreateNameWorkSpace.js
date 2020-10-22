@@ -59,21 +59,6 @@ const CreateNameWorkSpace = props => {
             {isShowButtonNextStep && <div className="btn_next" onClick={goToNextStep}><ChevronRight size="30"/></div>}
             <div className="wrapper">
                 <h1 className="display-3 text-center font-weight-bold text-white mb-5">STEP 1</h1>
-                <div className="name">
-                    <p className="text-white lead font-weight-bold">What is your workspace's name?</p>
-
-                    <form className="form" onSubmit={handleSubmit(submitWorkSpaceName)}>
-                        <Input 
-                            type="text" 
-                            name="workspaceName" 
-                            id="workspace" 
-                            placeholder="Name of your workspace" 
-                            innerRef={register} 
-                        />
-                        <Button type="submit">Submit</Button>
-                    </form>
-                </div>
-                <hr className="my-5"/>
                 <div className="avatar mb-3">
                     <p className="text-white lead font-weight-bold">Select a profile picture of your workspace:</p>
                     
@@ -113,6 +98,25 @@ const CreateNameWorkSpace = props => {
                     </div>
                 </div>
                 {stateUpload.isUploading && <Progress value={stateUpload.progress} />}
+                <hr className="my-5"/>
+
+                <div className="name">
+                    <p className="text-white lead font-weight-bold">What is your workspace's name?</p>
+
+                    <form className="form" onSubmit={handleSubmit(submitWorkSpaceName)}>
+                        <Input 
+                            type="text" 
+                            name="workspaceName" 
+                            id="workspace" 
+                            placeholder="Name of your workspace" 
+                            innerRef={register} 
+                        />
+                        <Button type="submit">Submit</Button>
+                    </form>
+                </div>
+                
+
+                
             </div>
         </div>
     );

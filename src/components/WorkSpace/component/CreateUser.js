@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Jumbotron, Spinner, Form,  Button, FormGroup,  Label, Input } from 'reactstrap';
 import { useForm } from "react-hook-form";
 import ErrorMessage from '../../Common/ErrorMessage/ErrorMessage';
-import { ERROR_MESSAGE_NAME, ERROR_MESSAGE_PASSWORD, ERROR_MESSAGE_CONFIRM_PASSWORD } from '../../../utils/constant';
+import { ERROR_MESSAGE_NAME, ERROR_MESSAGE_PASSWORD, ERROR_MESSAGE_CONFIRM_PASSWORD, EXPIRED_TIME } from '../../../utils/constant';
 import firebase from '../../../Firebase';
 import { ChevronLeft } from 'react-feather';
 import { Context as WorkSpaceContext, actions as WorkSpaceActions } from '../../../contexts/WorkSpace/WorkSpaceContext';
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
 
 const CreateUser = props => {
     const history = useHistory();
@@ -76,9 +77,12 @@ const CreateUser = props => {
 
     const createNewUser = ( nickname, password ) => {
         const newUser = usersOnDB.push();
+        const expiredTime = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
+        localStorage.setItem("expiredTimeUserSession", expiredTime);
         newUser.set({
             'nickname': nickname,
-            'password': password
+            'password': password,
+            'expiredTimeUserSession': expiredTime
         });
     }
 

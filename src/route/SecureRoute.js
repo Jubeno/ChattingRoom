@@ -5,33 +5,20 @@ import {
     Redirect
   } from "react-router-dom";
 import moment from 'moment';
+import { checkExpire } from '../utils/function';
 
 
 const SecureRoute = ({ children, ...rest }) => {
-    const expiredTime = localStorage.getItem('expiredTimeWorkSpace');
-
-    const checkExpire = () => {
-        let result = true;
-        if( expiredTime === null ) {
-            result = false;
-        } else {
-            const currentTime = moment().format('YYYY-MM-DD HH:mm');
-            const expiredTimeFormated = moment(expiredTime, 'DDMMYYYYHHmm').format('YYYY-MM-DD HH:mm');
-            const isBefore = moment(currentTime).isBefore(expiredTimeFormated);
-            if( !isBefore ) {
-                result = false;
-            }
-        }
-        return result;
-    }
-
-    const isNotExpired = checkExpire();
+    const isNotExpiredWorkSpace = checkExpire('expiredTimeWorkSpace');
+    const isNotExpiredUserSession = checkExpire('expiredTimeUserSession');
     
     return (
         <Route  {...rest}
             render={({ location }) =>
-            isNotExpired 
-                ?  children  
+            isNotExpiredWorkSpace 
+                ?   isNotExpiredUserSession 
+                        ? children 
+                        : <Redirect to={{ pathname: "/login", state: { from: location } }} />
                 : <Redirect to={{ pathname: "/workspace", state: { from: location } }} />
             }
         />
