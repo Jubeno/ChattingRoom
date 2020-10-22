@@ -15,7 +15,7 @@ function Login() {
     const [showLoading, setShowLoading] = useState(false);
     const [errorName, setErrorName] = useState({isErrorName: false, errorName: ''})
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
-    const usersOnDB = firebase.database().ref('/users/list');
+    const usersOnDB = firebase.database().ref('/user/list');
 
     const checkPassword = async password => {
         let isValid = false;
@@ -77,7 +77,7 @@ function Login() {
                     const isMatchPassword = await checkPassword(data.password);
                     if ( isMatchPassword ) {
                         await setExpiredTimeUserSession(usersOnDB, data.nickname, 'nickname');
-                        history.push('/workspace/profile');
+                        history.push('/user');
                     } else {
                         setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.NOT_MATCH })
                     }

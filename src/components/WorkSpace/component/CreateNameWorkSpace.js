@@ -1,100 +1,118 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Jumbotron, Input, Button, Progress, FormGroup } from 'reactstrap';
 import firebase from "firebase";
 import CustomUploadButton from 'react-firebase-file-uploader/lib/CustomUploadButton';
-import { Image } from 'react-feather'
+import { ArrowRight, ChevronRight, Image, RotateCcw } from 'react-feather'
 import DelayImage from '../../Common/DelayImage/DelayImage';
 import { Context as WorkSpaceContext, actions as WorkSpaceActions } from '../../../contexts/WorkSpace/WorkSpaceContext';
+import { useForm } from "react-hook-form";
 
 const CreateNameWorkSpace = props => {
-    const { register } = props;
+    const { activeName } = props;
+    const { register, handleSubmit } = useForm();
     const imageStorage = firebase.storage().ref('images');
-    const [name, setName] = useState('')
+    const { avatar, name } = useContext(WorkSpaceContext).state;
     const [stateUpload, setStateUpload] = useState({ 
         isUploading: false,
         progress: 0,
-        avatarURL: "" 
+        avatarURL: "",
+        isUploaded: false
     })
+
+    // active next step
+    useEffect(() =>{ (avatar && name) && WorkSpaceActions.goToNextStep() }, [avatar, name]);
+
     const handleUploadStart = () => {
         setStateUpload({ ...stateUpload, isUploading: true, progress: 0 });
     }
 
     const handleProgress = progress => {
-        setStateUpload({ ...stateUpload, progress: progress});
+        setStateUpload({ ...stateUpload, isUploading: true, progress: progress});
     }
 
     const handleUploadSuccess = async filename => {
         const downloadURL = await imageStorage.child(filename).getDownloadURL();
-        WorkSpaceActions.createAvatar(downloadURL);
-        setStateUpload({ isUploading: false, progress: 100, avatarURL: downloadURL });
+        await WorkSpaceActions.createAvatar(downloadURL);
+        setStateUpload({ isUploading: false, progress: 100, avatarURL: downloadURL, isUploaded: true });
     }
 
     const handleUploadError = error => {
         setStateUpload({ ...stateUpload, isUploading: false });
     }
 
-    const handleChange = event => {
-        setName(event.target.value);
+    const submitWorkSpaceName = async data => {
+        if (data.workspaceName !== '') {
+            await WorkSpaceActions.createName(data.workspaceName);
+        }
     }
 
-    const submitWorkSpaceName = () => {
-        WorkSpaceActions.createName(name);
+    const goToNextStep = () => WorkSpaceActions.goToNextStep();
+
+    const reuploadAvatar = () => {
+        WorkSpaceActions.resetAvatar();
     }
+
+    const isShowButtonNextStep = avatar && name && activeName;
 
     return (
-        <div className="container_">
+        <div className="container_" >
+            {isShowButtonNextStep && <div className="btn_next" onClick={goToNextStep}><ChevronRight size="30"/></div>}
             <div className="wrapper">
                 <h1 className="display-3 text-center font-weight-bold text-white mb-5">STEP 1</h1>
                 <div className="name">
                     <p className="text-white lead font-weight-bold">What is your workspace's name?</p>
 
-                    <form className="form">
+                    <form className="form" onSubmit={handleSubmit(submitWorkSpaceName)}>
                         <Input 
                             type="text" 
                             name="workspaceName" 
                             id="workspace" 
                             placeholder="Name of your workspace" 
                             innerRef={register} 
-                            onChange={handleChange}
                         />
-                        <Button onClick={submitWorkSpaceName}>Submit</Button>
+                        <Button type="submit">Submit</Button>
                     </form>
                 </div>
                 <hr className="my-5"/>
-                <div className="avatar">
+                <div className="avatar mb-3">
                     <p className="text-white lead font-weight-bold">Select a profile picture of your workspace:</p>
                     
                     <div className="sample_avatar">
-                        <div className="choose_sample">
-                            <div className="text">
-                                <p className="text-dark text-center font-weight-bold mb-0">Choose a sample avatar</p>
+                        {
+                            !avatar ? 
+                            <div className="choose_sample">
+                                <div className="text">
+                                    <p className="text-dark text-center font-weight-bold mb-0">Choose a sample avatar</p>
+                                </div>
+                                <p className="text-white font-weight-bold h3">or</p>
+                                <div className="box">
+                                    <CustomUploadButton
+                                        accept="image/*"
+                                        storageRef={imageStorage}
+                                        onUploadStart={handleUploadStart}
+                                        onUploadError={handleUploadError}
+                                        onUploadSuccess={handleUploadSuccess}
+                                        onProgress={handleProgress}
+                                        style={{ cursor: 'pointer', backgroundColor: 'transparent', color: '#343a40', borderRadius: 4}}
+                                    >
+                                        <Image size={50}/>
+                                    </CustomUploadButton>
+                                </div>
                             </div>
-                            <p className="text-white font-weight-bold h3">or</p>
-                            <div className="box">
-                                <CustomUploadButton
-                                    accept="image/*"
-                                    storageRef={imageStorage}
-                                    onUploadStart={handleUploadStart}
-                                    onUploadError={handleUploadError}
-                                    onUploadSuccess={handleUploadSuccess}
-                                    onProgress={handleProgress}
-                                    style={{ cursor: 'pointer', backgroundColor: 'transparent', color: '#343a40', borderRadius: 4}}
-                                >
-                                    <Image size={50}/>
-                                </CustomUploadButton>
+                            : 
+                            <div className="preview_avatar">
+                                <div className="avatar">
+                                    <DelayImage className="image" src={avatar}/>
+                                </div>
+                                <div className="reupload">
+                                    <RotateCcw size="30" onClick={reuploadAvatar}/>
+                                </div>
                             </div>
-                        </div>
+
+                        }
                     </div>
                 </div>
-                {/* <hr className="my-5"/> */}
-                {/* <div className="preview">
-                    {stateUpload.avatarURL && 
-                        <div className="avatar">
-                            <DelayImage className="image" src={stateUpload.avatarURL} />
-                        </div>
-                    }
-                    <p className="lead">{nameWorkSpace}</p>
-                </div> */}
+                {stateUpload.isUploading && <Progress value={stateUpload.progress} />}
             </div>
         </div>
     );

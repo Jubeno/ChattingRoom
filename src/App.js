@@ -16,6 +16,7 @@ import WorkSpaceRoute from './route/WorkSpaceRoute';
 import SignUp from './components/SignUp/SignUp';
 import { checkExpire } from './utils/function';
 import { MainProvider } from './MainProvider';
+import UserRoute from './route/UserRoute';
 
 const App = () => {
   let location = useLocation();
@@ -31,6 +32,7 @@ const App = () => {
           { isNotExpiredUserSession && <Redirect to={{ pathname: "/workspace/profile", state: { workspace } }} /> }
           <Switch>
             <Route path="/workspace" component={WorkSpaceRoute} />
+            <SecureRoute path="/user"><UserRoute /></SecureRoute>
             <SecureRoute path="/login">
               <Login />
             </SecureRoute>
