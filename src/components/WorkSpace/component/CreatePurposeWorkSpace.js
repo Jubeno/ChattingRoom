@@ -1,16 +1,27 @@
 import React, { useContext, useState } from 'react';
+import firebase from "firebase";
 import { Jumbotron, Input, Button } from 'reactstrap';
 import { Context as WorkSpaceContext, actions as WorkSpaceActions } from '../../../contexts/WorkSpace/WorkSpaceContext';
 import { useForm } from "react-hook-form";
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'react-feather';
+import { ChevronLeft, ChevronRight } from 'react-feather';
+import { getKeyByProperty } from '../../../utils/function';
 
 const CreatePurposeWorkSpace = props => {
-    const { activePurpose } = props;
+    const { activePurpose, history } = props;
     const { register, handleSubmit } = useForm();
-    const { currentStep, purpose } = useContext(WorkSpaceContext).state;
+    const { purpose } = useContext(WorkSpaceContext).state;
+    const workspaceOnDB = firebase.database().ref('/workspace/list');
+
     const submitPurpose = async data => {
         await WorkSpaceActions.createPurpose(data.workspacePurpose);
         WorkSpaceActions.goToNextStep();
+
+        // update on db
+        workspaceOnDB.once('value', response => {
+            const key = getKeyByProperty(response.val(), 'workspace', history.workspace)
+            const setDisplayNameOnDB = workspaceOnDB.child(key);
+            setDisplayNameOnDB.update({ "purposeOfWorkspace": data.workspacePurpose });
+        })
     };
 
     const goToPrevStep = () => {

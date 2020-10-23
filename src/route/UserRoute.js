@@ -1,12 +1,13 @@
 import React from 'react';
-import User from '../components/User/User';
 import { Route, Router, Switch } from 'react-router-dom';
+import CreateUserProfile from '../components/User/CreateUserProfile';
 
 const UserRoute = () => {
 
     return (
         <Switch>
-            <Route exact path="/user" component={User} />
+            {/* <Route exact path="/user" component={User} /> */}
+            <Route exact path="/user/create_profile" component={CreateUserProfile} />
         </Switch>
     );
 }

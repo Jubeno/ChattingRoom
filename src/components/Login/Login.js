@@ -77,7 +77,7 @@ function Login() {
                     const isMatchPassword = await checkPassword(data.password);
                     if ( isMatchPassword ) {
                         await setExpiredTimeUserSession(usersOnDB, data.nickname, 'nickname');
-                        history.push('/user');
+                        history.push('/user/create_profile', { workspace, nickname: data.nickname });
                     } else {
                         setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.NOT_MATCH })
                     }

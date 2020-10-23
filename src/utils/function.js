@@ -50,3 +50,7 @@ export const checkExpire = (target) => {
     }
     return result;
 }
+
+export const getKeyByProperty = (value, propertyKey, propertyValue) => {
+    return Object.keys(value).find(key => value[key][propertyKey] === propertyValue);
+}

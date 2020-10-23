@@ -11,6 +11,7 @@ import moment from 'moment';
 
 const CreateUser = props => {
     const history = useHistory();
+    const { workspace } = history.location.state;
     const { activeCreateUser } = props;
     const { register, handleSubmit } = useForm();
     const [errorName, setErrorName] = useState({isError: false, errorMessage: ''})
@@ -82,7 +83,12 @@ const CreateUser = props => {
         newUser.set({
             'nickname': nickname,
             'password': password,
-            'expiredTimeUserSession': expiredTime
+            'expiredTimeUserSession': expiredTime,
+            'workspace': workspace,
+            'gender': "",
+            'phoneNumber': "",
+            'birthday': "",
+            'displayName': ""
         });
     }
 
@@ -107,7 +113,7 @@ const CreateUser = props => {
         const isValidConfirmation = validateConfirmPassword(password, confirmPassword);
         if ( isValidName && isValidPassword && isValidConfirmation ) {
             createNewUser(nickname, password);
-            history.push('/user');
+            history.push('/user/create_profile', { workspace, nickname });
         }
     };
 

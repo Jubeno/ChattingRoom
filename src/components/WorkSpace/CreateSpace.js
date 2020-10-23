@@ -88,7 +88,7 @@ const CreateSpace = () => {
                 "password": data.password,
                 "expiredTimeWorkSpace": expiredTimeWorkSpace
             }, () => {
-                history.push('/workspace/profile');
+                history.push('/workspace/profile', { workspace: data.workspace });
             })
         }
     }
