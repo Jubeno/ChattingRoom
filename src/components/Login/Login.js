@@ -89,6 +89,7 @@ function Login() {
     const login = async data => {
         const isValidName = validateNickname(data.nickname);
         const isValidPassword = validatePassword(data.password);
+        const userId = await getUserId(data.nickname, workspace);
 
         if(isValidName && isValidPassword) {
             usersOnDB.orderByChild('nickname').equalTo(data.nickname).once('value', async response => {
@@ -99,9 +100,9 @@ function Login() {
                         await setExpiredTimeUserSession(usersOnDB, data.nickname, 'nickname');
                         const isHaveProfile = await checkIsHaveProfile()
                         if(isHaveProfile) {
-                            history.push('/chatroom', { workspace, nickname: data.nickname });
+                            history.push(`/chatroom/${userId}`, { workspace, nickname: data.nickname });
                         } else {
-                            const userId = await getUserId(data.nickname, workspace);
+                            
                             history.push(`/user/create_profile/${userId}`, { workspace, nickname: data.nickname });
                         }
                     } else {
