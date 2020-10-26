@@ -21,7 +21,8 @@ const CreateUser = props => {
     const [name, setName] = useState(null);
     const [password, setPassword] = useState(null);
     const [confirmPassword, setConfirmPassword] = useState(null);
-   
+    const createTime = moment().format('DDMMYYYYHHmm');
+    
     const validateNickname = async nickname => {
         let isValid = true;
         const nameRegex = /^[a-zA-Z0-9]+$/;
@@ -79,6 +80,9 @@ const CreateUser = props => {
     const createNewUser = ( nickname, password ) => {
         const newUser = usersOnDB.push();
         const expiredTime = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
+
+        const userId = btoa(`${nickname}-${createTime}`);
+
         localStorage.setItem("expiredTimeUserSession", expiredTime);
         newUser.set({
             'nickname': nickname,
@@ -88,7 +92,10 @@ const CreateUser = props => {
             'gender': "",
             'phoneNumber': "",
             'birthday': "",
-            'displayName': ""
+            'displayName': "",
+            'userID': userId,
+            'createTime': createTime,
+            'nickname_workspace': `${nickname}_${workspace}`
         });
     }
 
@@ -111,9 +118,10 @@ const CreateUser = props => {
         const isValidName = await validateNickname(nickname);
         const isValidPassword = validatePassword(password);
         const isValidConfirmation = validateConfirmPassword(password, confirmPassword);
+        const userId = btoa(`${nickname}-${createTime}`);
         if ( isValidName && isValidPassword && isValidConfirmation ) {
             createNewUser(nickname, password);
-            history.push('/user/create_profile', { workspace, nickname });
+            history.push(`/user/create_profile/${userId}`, { workspace, nickname });
         }
     };
 

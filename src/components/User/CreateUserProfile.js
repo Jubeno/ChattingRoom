@@ -13,7 +13,8 @@ import AwesomeSlider from 'react-awesome-slider';
 import withAutoplay from 'react-awesome-slider/dist/autoplay';
 import 'react-awesome-slider/dist/styles.css';
 
-const CreateUserProfile = () => {
+const CreateUserProfile = props => {
+    const userId = props.match.params.id;
     const AutoplaySlider = withAutoplay(AwesomeSlider);
     const history = useHistory();
     const { workspace, nickname } = history.location.state;
@@ -38,7 +39,7 @@ const CreateUserProfile = () => {
                 "phoneNumber": data.phoneNumber,
                 "birthday": data.birthday,
                 "displayAvatar": avatar
-            }, () => history.push('/chatroom'));
+            }, () => history.push(`/chatroom/${userId}`));
         })
     }
 
@@ -66,7 +67,7 @@ const CreateUserProfile = () => {
 
     const paramsSlider = {
         play: true,
-        cancelOnInteraction: false,
+        cancelOnInteraction: true,
         interval: 3000,
 
     }

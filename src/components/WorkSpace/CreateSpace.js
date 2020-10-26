@@ -82,11 +82,14 @@ const CreateSpace = () => {
 
         if (isValidName && isValidPassword && isValidConfirm) {
             const expiredTimeWorkSpace = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
+            const createTime = moment().format('DDMMYYYYHHmm');
             await localStorage.setItem('expiredTimeWorkSpace', expiredTimeWorkSpace);
             (await newWorkspace).set({    
                 "workspace": data.workspace,
                 "password": data.password,
-                "expiredTimeWorkSpace": expiredTimeWorkSpace
+                "expiredTimeWorkSpace": expiredTimeWorkSpace,
+                "createTime": createTime,
+                "workspaceID": btoa(`${data.workspace}-${createTime}`)
             }, () => {
                 history.push('/workspace/profile', { workspace: data.workspace });
             })

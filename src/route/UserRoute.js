@@ -7,7 +7,7 @@ const UserRoute = () => {
     return (
         <Switch>
             {/* <Route exact path="/user" component={User} /> */}
-            <Route exact path="/user/create_profile" component={CreateUserProfile} />
+            <Route exact path="/user/create_profile/:id" component={CreateUserProfile} />
         </Switch>
     );
 }

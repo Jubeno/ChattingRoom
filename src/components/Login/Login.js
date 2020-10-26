@@ -66,6 +66,26 @@ function Login() {
         return isValid;
     }
 
+    const checkIsHaveProfile = async () => {
+        let isHaveProfile = true;
+        await usersOnDB.orderByChild('displayName').equalTo('').once('value', response => {
+            if(response.exists()) {
+                isHaveProfile = false;
+            }
+        })
+        return isHaveProfile;
+    }
+
+    const getUserId = async (nickname, workspace) => {
+        let userId = '';
+        await usersOnDB.orderByChild('nickname_workspace').equalTo(`${nickname}_${workspace}`).once('value', response => {
+            if(response.exists()) {
+                userId = Object.values(response.val())[0].userID;
+            }
+        })
+        return userId;
+    }
+
     const login = async data => {
         const isValidName = validateNickname(data.nickname);
         const isValidPassword = validatePassword(data.password);
@@ -77,7 +97,13 @@ function Login() {
                     const isMatchPassword = await checkPassword(data.password);
                     if ( isMatchPassword ) {
                         await setExpiredTimeUserSession(usersOnDB, data.nickname, 'nickname');
-                        history.push('/user/create_profile', { workspace, nickname: data.nickname });
+                        const isHaveProfile = await checkIsHaveProfile()
+                        if(isHaveProfile) {
+                            history.push('/chatroom', { workspace, nickname: data.nickname });
+                        } else {
+                            const userId = await getUserId(data.nickname, workspace);
+                            history.push(`/user/create_profile/${userId}`, { workspace, nickname: data.nickname });
+                        }
                     } else {
                         setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.NOT_MATCH })
                     }
