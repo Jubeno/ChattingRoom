@@ -14,7 +14,6 @@ function Login() {
     const history = useHistory();
     const { workspace } = history.location.state;
     const [loading, setLoading] = useState(false);
-    console.log('%c loading: ', 'color: red' , loading);
     const [errorName, setErrorName] = useState({isErrorName: false, errorName: ''})
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
     const usersOnDB = firebase.database().ref('/user/list');
@@ -127,8 +126,8 @@ function Login() {
     return (
         <>
             { loading && <Loading /> }
-            <div className="login" id="login">
-                <Jumbotron className="container mt-5 pb-3 w-50">
+            <div className="login pt-5" id="login">
+                <Jumbotron className="container pb-3 w-50">
                     <h1 className="display-5 mb-5">Welcome to <span className="text-uppercase">{workspace}</span> workspace!!</h1>
                     <h1 className="display-5 text-left text-muted mb-3">Login</h1>
                     <Form onSubmit={handleSubmit(login)} className="mb-3">

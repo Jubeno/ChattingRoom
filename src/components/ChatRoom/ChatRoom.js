@@ -15,26 +15,24 @@ const ChatRoom = props => {
     const [ dataFromDB, setDataFromDB ] = useState({ user: null, workspace: null });
     const [ loading, setLoading ] = useState(false);
 
-    const getDataFromDB = async () => {
-        let dataUser = {};
-        let dataWorkspace = {};
-        await userOnDB.orderByChild('userID').equalTo(userId)
-        .once('value', response => {
-            dataUser = Object.values(response.val());
-        })
-
-        await workspaceOnDB.orderByChild('workspace').equalTo(workspace)
-        .once('value', response => {
-            dataWorkspace = Object.values(response.val());
-        })
-        setLoading(false);
-        return { dataUser, dataWorkspace };
-    }
-
-    useEffect( async () => {
+    useEffect(() => {
         setLoading(true);
-        const { dataUser, dataWorkspace } = await getDataFromDB();
-        setDataFromDB({ ...dataFromDB, user: dataUser[0], workspace: dataWorkspace[0] });
+        async function getDataFromDB() {
+            let dataUser = {};
+            let dataWorkspace = {};
+            await userOnDB.orderByChild('userID').equalTo(userId)
+            .once('value', response => {
+                dataUser = Object.values(response.val());
+            })
+    
+            await workspaceOnDB.orderByChild('workspace').equalTo(workspace)
+            .once('value', response => {
+                dataWorkspace = Object.values(response.val());
+            })
+            setDataFromDB({ ...dataFromDB, user: dataUser[0], workspace: dataWorkspace[0] });
+            setLoading(false);
+        }
+        getDataFromDB();
     }, [])
 
     return (
