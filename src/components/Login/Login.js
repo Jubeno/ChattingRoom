@@ -7,12 +7,14 @@ import { setExpiredTimeUserSession } from '../../utils/function';
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import { ERROR_MESSAGE_NAME, ERROR_MESSAGE_PASSWORD } from '../../utils/constant';
 import './Login.scss';
+import Loading from '../Common/Loading/Loading';
 
 function Login() {
     const { register, handleSubmit } = useForm();
     const history = useHistory();
     const { workspace } = history.location.state;
-    const [showLoading, setShowLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
+    console.log('%c loading: ', 'color: red' , loading);
     const [errorName, setErrorName] = useState({isErrorName: false, errorName: ''})
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
     const usersOnDB = firebase.database().ref('/user/list');
@@ -22,7 +24,6 @@ function Login() {
         await usersOnDB.orderByChild('password').equalTo(password).once('value', response => {
             if( response.exists() ) {
                 isValid = true;
-                setShowLoading(false);
             }
         })
         return isValid;
@@ -30,7 +31,6 @@ function Login() {
 
     const validateNickname = nickname => {
         let isValid = true;
-        setShowLoading(false);
         const nameRegex = /^[a-zA-Z0-9]+$/;
         if ( nickname.length === 0 ) { 
             isValid = false;
@@ -49,7 +49,6 @@ function Login() {
 
     const validatePassword = password => {
         let isValid = true;
-        setShowLoading(false);
         const nameRegex = /^[a-zA-Z0-9]+$/;
         if ( password.length === 0 ) { 
             isValid = false;
@@ -87,6 +86,7 @@ function Login() {
     }
 
     const login = async data => {
+        setLoading(true);
         const isValidName = validateNickname(data.nickname);
         const isValidPassword = validatePassword(data.password);
         const userId = await getUserId(data.nickname, workspace);
@@ -100,9 +100,10 @@ function Login() {
                         await setExpiredTimeUserSession(usersOnDB, data.nickname, 'nickname');
                         const isHaveProfile = await checkIsHaveProfile()
                         if(isHaveProfile) {
+                            setLoading(false);
                             history.push(`/chatroom/${userId}`, { workspace, nickname: data.nickname });
                         } else {
-                            
+                            setLoading(false);
                             history.push(`/user/create_profile/${userId}`, { workspace, nickname: data.nickname });
                         }
                     } else {
@@ -124,29 +125,29 @@ function Login() {
     }
 
     return (
-        <div className="login" id="login">
-            {showLoading &&
-                <Spinner color="primary" />
-            }
-            <Jumbotron className="container mt-5 pb-3 w-50">
-                <h1 className="display-5 mb-5">Welcome to <span className="text-uppercase">{workspace}</span> workspace!!</h1>
-                <h1 className="display-5 text-left text-muted mb-3">Login</h1>
-                <Form onSubmit={handleSubmit(login)} className="mb-3">
-                    <FormGroup>
-                        <Label className="text-muted font-weight-bold">Nickname</Label>
-                        <Input type="text" name="nickname" id="nickname" placeholder="Enter Your Nickname" onFocus={handleFocusNickName} innerRef={register} />
-                    </FormGroup>
-                    { errorName.isErrorName && <ErrorMessage content={errorName.errorName} /> }
-                    <FormGroup>
-                        <Label className="text-muted font-weight-bold">Password</Label>
-                        <Input type="password" name="password" id="password" placeholder="Enter Your Password" onFocus={handleFocusPassword} innerRef={register} />
-                    </FormGroup>
-                    { errorPassword.isErrorPassword && <ErrorMessage content={errorPassword.errorPassword} /> }
-                    <Button variant="primary" color="danger" type="submit" size="lg" className="mb-5" block>Login</Button>
-                </Form>
-                <h5 className="text-right font-weight-light font-italic display-5 text-muted">(*) Please use the account and password provided by your manager to log in. </h5>
-            </Jumbotron>
-        </div>
+        <>
+            { loading && <Loading /> }
+            <div className="login" id="login">
+                <Jumbotron className="container mt-5 pb-3 w-50">
+                    <h1 className="display-5 mb-5">Welcome to <span className="text-uppercase">{workspace}</span> workspace!!</h1>
+                    <h1 className="display-5 text-left text-muted mb-3">Login</h1>
+                    <Form onSubmit={handleSubmit(login)} className="mb-3">
+                        <FormGroup>
+                            <Label className="text-muted font-weight-bold">Nickname</Label>
+                            <Input type="text" name="nickname" id="nickname" placeholder="Enter Your Nickname" onFocus={handleFocusNickName} innerRef={register} />
+                        </FormGroup>
+                        { errorName.isErrorName && <ErrorMessage content={errorName.errorName} /> }
+                        <FormGroup>
+                            <Label className="text-muted font-weight-bold">Password</Label>
+                            <Input type="password" name="password" id="password" placeholder="Enter Your Password" onFocus={handleFocusPassword} innerRef={register} />
+                        </FormGroup>
+                        { errorPassword.isErrorPassword && <ErrorMessage content={errorPassword.errorPassword} /> }
+                        <Button variant="primary" color="danger" type="submit" size="lg" className="mb-5" block>Login</Button>
+                    </Form>
+                    <h5 className="text-right font-weight-light font-italic display-5 text-muted">(*) Please use the account and password provided by your manager to log in. </h5>
+                </Jumbotron>
+            </div>
+        </>
     );
 }
 

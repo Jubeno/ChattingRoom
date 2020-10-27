@@ -8,6 +8,7 @@ import { setExpiredTimeWorkSpace, validateWorkspace } from '../../utils/function
 import firebase from '../../Firebase';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
+import Loading from '../Common/Loading/Loading';
 
 
 
@@ -17,6 +18,7 @@ const SignIn = () => {
     const history = useHistory();
     const [errorWorkSpace, setErrorWorkSpace] = useState({ isError: null, errorMessage: '' });
     const listWorkSpaceDb = firebase.database().ref('/workspace/list');
+    const [loading, setLoading] = useState(false);
 
     const isValidFormData = async data => {
         const workspace = data.workspace;
@@ -39,16 +41,19 @@ const SignIn = () => {
                 }
             )
         }
+        setLoading(false);
         return isValid;
     }
 
     const loginWorkspace = async data => {
-        // dispatch({ type: 'setKeyWorkSpace', payload: '123123123123123' })
+        setLoading(true);
         const isValid = await isValidFormData(data);
         
         if(isValid) {
             localStorage.setItem('workspace', data.workspace);
             await setExpiredTimeWorkSpace(listWorkSpaceDb, data.workspace, 'workspace');
+
+            setLoading(false);
             history.push('/login', { workspace: data.workspace });
         }
     }
@@ -62,23 +67,26 @@ const SignIn = () => {
     }
 
     return (
-        <div className="signin" id="workspace">
-            <div className="top">
-                <p className="go_to_create" onClick={goToCreateWorkSpace}>Create your own workspace</p>
-            </div>
-            <div className="logo">
-                <img src="/img/logo.png" alt="logo"/>
-            </div>
-            <Form onSubmit={handleSubmit(loginWorkspace)} className="mb-3 container">
-                <FormGroup>
-                    <Label className="text-muted font-weight-bold">Enter your workspace:</Label>
-                    <Input type="text" name="workspace" onFocus={handleFocus} className="input text-muted" placeholder="yourname@work.xyz" innerRef={register} />
-                </FormGroup>
-                { errorWorkSpace.isError && <ErrorMessage content={errorWorkSpace.errorMessage} />}
+        <>
+            { loading && <Loading /> }
+            <div className="signin" id="workspace">
+                <div className="top">
+                    <p className="go_to_create" onClick={goToCreateWorkSpace}>Create your own workspace</p>
+                </div>
+                <div className="logo">
+                    <img src="/img/logo.png" alt="logo"/>
+                </div>
+                <Form onSubmit={handleSubmit(loginWorkspace)} className="mb-3 container">
+                    <FormGroup>
+                        <Label className="text-muted font-weight-bold">Enter your workspace:</Label>
+                        <Input type="text" name="workspace" onFocus={handleFocus} className="input text-muted" placeholder="yourname@work.xyz" innerRef={register} />
+                    </FormGroup>
+                    { errorWorkSpace.isError && <ErrorMessage content={errorWorkSpace.errorMessage} />}
 
-                <Button variant="primary" color="danger" type="submit" size="lg" block>Go to your workspace</Button>
-            </Form>
-        </div>
+                    <Button variant="primary" color="danger" type="submit" size="lg" block>Go to your workspace</Button>
+                </Form>
+            </div>
+        </>
     );
 }
 
