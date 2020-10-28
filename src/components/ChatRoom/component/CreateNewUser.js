@@ -1,0 +1,219 @@
+import React, { useState } from 'react';
+import Popup from 'reactjs-popup';
+import { useForm } from 'react-hook-form';
+import { Form, Input } from 'reactstrap';
+import firebase from 'firebase';
+import './EditProfileWorkspace.scss';
+import Loading from '../../Common/Loading/Loading';
+import { getKeyByProperty } from '../../../utils/function';
+import './CreateNewUser.scss';
+import moment from 'moment';
+import { ERROR_MESSAGE_NAME, ERROR_MESSAGE_PASSWORD, ERROR_MESSAGE_CONFIRM_PASSWORD, EXPIRED_TIME } from '../../../utils/constant';
+import ErrorMessage from '../../Common/ErrorMessage/ErrorMessage';
+
+const CreateNewUser = props => {
+    const { workspaceName, closeCreate } = props;
+    const { register, handleSubmit } = useForm();
+    const [loading, setLoading] = useState(false);
+    const [errorName, setErrorName] = useState({isError: false, errorMessage: ''})
+    const [errorPassword, setErrorPassword] = useState({isError: false, errorMessage: ''})
+    const [errorConfirmPassword, setErrorConfirmPassword] = useState({isError: false, errorMessage: ''})
+    const usersOnDB = firebase.database().ref('user/list/');
+    const [name, setName] = useState(null);
+    const [password, setPassword] = useState(null);
+    const [confirmPassword, setConfirmPassword] = useState(null);
+    const createTime = moment().format('DDMMYYYYHHmm');
+    
+    const validateNickname = async nickname => {
+        let isValid = true;
+        const nameRegex = /^[a-zA-Z0-9]+$/;
+        const isNotExistOnDB = await existThisNickNameOnDB(nickname);
+        if ( nickname.length === 0 ) { 
+            isValid = false;
+            setErrorName({ isError: true, errorMessage: ERROR_MESSAGE_NAME.EMPTY});
+            setLoading(false);
+        } else if ( nickname.length < 6 || nickname.length > 10 ) { 
+            isValid = false;
+            setErrorName({ isError: true, errorMessage: ERROR_MESSAGE_NAME.TOO_SHORT});
+            setLoading(false);
+        } else if ( !nickname.match(nameRegex) ) { 
+            isValid = false;
+            setErrorName({ isError: true, errorMessage: ERROR_MESSAGE_NAME.INVALID});
+            setLoading(false);
+        } else if(isNotExistOnDB) {
+            isValid = false; 
+            setErrorName({ isError: true, errorMessage: ERROR_MESSAGE_NAME.USED});
+            setLoading(false);
+        } else {
+            setErrorName({ isError: false, errorMessage: '' })
+            setLoading(false);
+        }
+        return isValid;
+    }
+
+    const validatePassword = password => {
+        let isValid = true;
+        const nameRegex = /^[a-zA-Z0-9]+$/;
+        if ( password.length === 0 ) { 
+            isValid = false;
+            setErrorPassword({ isError: true, errorMessage: ERROR_MESSAGE_PASSWORD.EMPTY});
+            setLoading(false);
+        } else if ( password.length < 6 || password.length > 10 ) { 
+            isValid = false;
+            setErrorPassword({ isError: true, errorMessage: ERROR_MESSAGE_PASSWORD.TOO_SHORT});
+            setLoading(false);
+        } else if ( !password.match(nameRegex) ) { 
+            isValid = false;
+            setErrorPassword({ isError: true, errorMessage: ERROR_MESSAGE_PASSWORD.INVALID});
+            setLoading(false);
+        } else {
+            setErrorPassword({ isError: false, errorMessage: ''});
+            setLoading(false);
+        }
+        return isValid;
+    }
+
+    const validateConfirmPassword = (password, confirmPassword) => {
+        let isValid = true;
+        if ( confirmPassword.length === 0 ) { 
+            isValid = false;
+            setErrorConfirmPassword({ isError: true, errorMessage: ERROR_MESSAGE_PASSWORD.EMPTY});
+            setLoading(false);
+        } else if ( password !== confirmPassword) {
+            isValid = false;
+            setErrorConfirmPassword({ isError: true, errorMessage: ERROR_MESSAGE_CONFIRM_PASSWORD.NOT_MATCH });
+            setLoading(false);
+        } else {
+            setErrorConfirmPassword({ isError: false, errorMessage: '' });
+            setLoading(false);
+        }
+        return isValid;
+    }
+
+    const handleChangeName = event => setName(event.target.value);
+
+    const handleChangePassword = event => setPassword(event.target.value);
+
+    const handleChangeConfirmation = event => setConfirmPassword(event.target.value);
+
+    const handleFocusName = () => setErrorName({ isError: false, errorMessage: ''});
+
+    const handleFocusPassword = () => setErrorPassword({ isError: false, errorMessage: ''});
+
+    const handleFocusConfirm = () => setErrorConfirmPassword({ isError: false, errorMessage: ''});
+
+    const isDisabledButtonSubmit = () => {
+        return name && password && confirmPassword;
+    } 
+
+    const createNewUser = async ( nickname, password ) => {
+        const newUser = usersOnDB.push();
+        const expiredTime = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
+
+        const userId = btoa(`${nickname}-${createTime}`);
+
+        // localStorage.setItem("expiredTimeUserSession", expiredTime);
+        await newUser.set({
+            'nickname': nickname,
+            'password': password,
+            'expiredTimeUserSession': expiredTime,
+            'workspace': workspaceName,
+            'gender': "",
+            'phoneNumber': "",
+            'birthday': "",
+            'displayName': "",
+            'userID': userId,
+            'createTime': createTime,
+            'nickname_workspace': `${nickname}_${workspaceName}`,
+            'isAdmin': false,
+            'isMissingProfile': true
+        });
+        setLoading(false);
+    }
+
+    const existThisNickNameOnDB = async (nickname) => {
+        let isExist = false;
+        await usersOnDB.orderByChild('nickname').equalTo(nickname).once('value', response => {
+            if ( response.exists() ) {
+                isExist = true;
+                setErrorName({ isError: true, errorMessage: ERROR_MESSAGE_NAME.USED })
+            }
+            
+        })
+        return isExist;
+    }
+
+    const acceptCreateNewUser = async data => {
+        setLoading(true);
+        const nickname = data.nickname;
+        const password = data.password;
+        const confirmPassword = data.confirmPassword;
+        const isValidName = await validateNickname(nickname);
+        const isValidPassword = validatePassword(password);
+        const isValidConfirmation = validateConfirmPassword(password, confirmPassword);
+        if ( isValidName && isValidPassword && isValidConfirmation ) {
+            createNewUser(nickname, password);
+            closeCreate();
+        }
+        
+    }
+
+    const cancel = () => closeCreate();
+    return (
+        <>
+            { loading && <Loading /> }
+            <Popup
+                open={true}
+                closeOnDocumentClick={false}
+                closeOnEscape={false}
+                className="create_new_user_popup"
+            >
+                <Form className="create_new_user" onSubmit={handleSubmit(acceptCreateNewUser)}>
+                    <h4>Create new member of workspace</h4>
+                    <hr />
+                    <div className="account">
+                        <label>Nickname:</label>
+                        <Input 
+                            type="text"
+                            name="nickname"
+                            autoFocus={true}
+                            innerRef={register}
+                            onFocus={handleFocusName}
+                            onChange={handleChangeName}
+                        />
+                    </div>
+                    { errorName.isError && <ErrorMessage content={errorName.errorMessage} /> }
+                    <div className="password">
+                        <label>Password:</label>
+                        <Input 
+                            type="password"
+                            name="password"
+                            innerRef={register}
+                            onFocus={handleFocusPassword}
+                            onChange={handleChangePassword}
+                        />
+                    </div>
+                    { errorPassword.isError && <ErrorMessage content={errorPassword.errorMessage} /> }
+                    <div className="confirmpassword">
+                        <label>Confirm password:</label>
+                        <Input 
+                            type="password"
+                            name="confirmPassword"
+                            innerRef={register}
+                            onFocus={handleFocusConfirm}
+                            onChange={handleChangeConfirmation}
+                        />
+                    </div>
+                    { errorConfirmPassword.isError && <ErrorMessage content={errorConfirmPassword.errorMessage} /> }
+                    <div className="button_submit_change_profile">
+                        <button className="cancel" onClick={cancel}>Cancel</button>
+                        <button className="accept" disabled={!isDisabledButtonSubmit()} type="submit">Create</button>
+                    </div>
+                    
+                </Form>
+            </Popup>
+        </>
+    );
+}
+
+export default CreateNewUser;

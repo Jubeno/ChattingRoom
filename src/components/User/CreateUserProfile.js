@@ -38,8 +38,9 @@ const CreateUserProfile = props => {
                 "gender": data.gender,
                 "phoneNumber": data.phoneNumber,
                 "birthday": data.birthday,
-                "displayAvatar": avatar
-            }, () => history.push(`/chatroom/${userId}`));
+                "displayAvatar": avatar,
+                "isMissingProfile": false
+            }, () => history.push(`/chatroom/${userId}`, {workspace}));
         })
     }
 

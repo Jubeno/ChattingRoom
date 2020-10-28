@@ -95,7 +95,8 @@ const CreateUser = props => {
             'displayName': "",
             'userID': userId,
             'createTime': createTime,
-            'nickname_workspace': `${nickname}_${workspace}`
+            'nickname_workspace': `${nickname}_${workspace}`,
+            'isAdmin': true
         });
     }
 

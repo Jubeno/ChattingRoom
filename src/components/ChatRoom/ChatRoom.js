@@ -24,7 +24,7 @@ const ChatRoom = props => {
             .once('value', response => {
                 dataUser = Object.values(response.val());
             })
-    
+
             await workspaceOnDB.orderByChild('workspace').equalTo(workspace)
             .once('value', response => {
                 dataWorkspace = Object.values(response.val());
@@ -35,16 +35,21 @@ const ChatRoom = props => {
         getDataFromDB();
     }, [])
 
+    // update workspace profile when edit is completed
+    workspaceOnDB.on('child_changed', response => {
+        setDataFromDB({ ...dataFromDB, workspace: response.val()});
+    })
+
     return (
         <>
             { loading && <Loading /> }
             <div className="chatroom" id="chatroom">
                 <div className="wrapper">
                     <div className="left">
-                        <LeftColumn user={dataFromDB.user} workspace={dataFromDB.workspace} />
+                        <LeftColumn user={dataFromDB?.user} workspace={dataFromDB?.workspace} />
                     </div>
                     <div className="right">
-                        <RightColumn user={dataFromDB.user} workspace={dataFromDB.workspace} />
+                        <RightColumn user={dataFromDB?.user} workspace={dataFromDB?.workspace} />
                     </div>
                 </div>
             </div>

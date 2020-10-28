@@ -1,0 +1,102 @@
+.edit_profile_workspace_popup-content {
+    width: 500px !important;
+    background-color: #188bff !important;
+    border-radius: 20px;
+
+    .edit_profile_workspace {
+        padding: 20px;
+        border-radius: 5px;
+
+        h4 {
+            color: white
+        }
+        .displayAvatar {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            margin-bottom: 1rem;
+            label {
+                width: 40%;
+                margin-bottom: 0;
+                font-size: 1.1rem;
+                font-weight: bold;
+                color: #fff;
+            }
+            .wrapper_avatar {
+                width: 60%;
+                
+                .avatar {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 60px;
+                    display: flex;
+                    align-items: center;
+                    margin: auto;
+                    position: relative;
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        border-radius: 60px;
+                        background-color: antiquewhite;
+                    }
+                    .reupload {
+                        position: absolute;
+                        left: calc(100% + 10px);
+                    }
+                }
+
+                .no_avatar {
+                    position: relative;
+                    .title_upload {
+                        position: absolute;
+                        left: 40px;
+                    }
+                    .box {
+
+                    }
+                }
+            }
+        }
+
+        .displayName, .purposeOfWorkspace {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            margin-bottom: 1rem;
+            label {
+                width: 40%;
+                margin-bottom: 0;
+                font-size: 1.1rem;
+                font-weight: bold;
+                color: #fff;
+            }
+            input {
+                width: 60%;
+            }
+        }
+        .button_submit_change_profile {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            .cancel {
+                width: 90px;
+                border: none;
+                margin-right: 10px;
+                border-radius: 10px;
+            }
+
+            .accept {
+                width: 90px;
+                border: none;
+                border-radius: 10px;
+            }
+            .cancel:active, .accept:active {
+                outline: none;
+            }
+            .cancel:focus, .accept:focus {
+                outline: none;
+            }
+        }
+    }
+}

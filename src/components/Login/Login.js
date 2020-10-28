@@ -3,7 +3,7 @@ import { Link, useHistory } from "react-router-dom";
 import { Jumbotron, Spinner, Form,  Button, FormGroup,  Label, Input, FormFeedback, Alert } from 'reactstrap';
 import firebase from '../../Firebase';
 import { useForm } from "react-hook-form";
-import { setExpiredTimeUserSession } from '../../utils/function';
+import { getKeyByProperty, setExpiredTimeUserSession } from '../../utils/function';
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import { ERROR_MESSAGE_NAME, ERROR_MESSAGE_PASSWORD } from '../../utils/constant';
 import './Login.scss';
@@ -64,14 +64,15 @@ function Login() {
         return isValid;
     }
 
-    const checkIsHaveProfile = async () => {
-        let isHaveProfile = true;
-        await usersOnDB.orderByChild('displayName').equalTo('').once('value', response => {
-            if(response.exists()) {
-                isHaveProfile = false;
+    const checkIsMissingProfile = async userID => {
+        let isMissingProfile = false;
+        await usersOnDB.orderByChild('userID').equalTo(userID).once('value', response => {
+            const value = Object.values(response.val())[0];
+            if(value.isMissingProfile) {
+                isMissingProfile = true;
             }
         })
-        return isHaveProfile;
+        return isMissingProfile;
     }
 
     const getUserId = async (nickname, workspace) => {
@@ -89,30 +90,28 @@ function Login() {
         const isValidName = validateNickname(data.nickname);
         const isValidPassword = validatePassword(data.password);
         const userId = await getUserId(data.nickname, workspace);
-
-        if(isValidName && isValidPassword) {
-            usersOnDB.orderByChild('nickname').equalTo(data.nickname).once('value', async response => {
-                if ( response.exists() ) {
-                    localStorage.setItem('nickname', data.nickname);
-                    const isMatchPassword = await checkPassword(data.password);
-                    if ( isMatchPassword ) {
-                        await setExpiredTimeUserSession(usersOnDB, data.nickname, 'nickname');
-                        const isHaveProfile = await checkIsHaveProfile()
-                        if(isHaveProfile) {
-                            setLoading(false);
-                            history.push(`/chatroom/${userId}`, { workspace, nickname: data.nickname });
-                        } else {
-                            setLoading(false);
-                            history.push(`/user/create_profile/${userId}`, { workspace, nickname: data.nickname });
-                        }
+        if(!isValidName || !isValidPassword) return
+        usersOnDB.orderByChild('nickname').equalTo(data.nickname).once('value', async response => {
+            if ( response.exists() ) {
+                localStorage.setItem('nickname', data.nickname);
+                const isMatchPassword = await checkPassword(data.password);
+                if ( isMatchPassword ) {
+                    await setExpiredTimeUserSession(usersOnDB, data.nickname, 'nickname');
+                    const isMissingProfile = await checkIsMissingProfile(userId);
+                    if(isMissingProfile) {
+                        setLoading(false);
+                        history.push(`/user/create_profile/${userId}`, { workspace, nickname: data.nickname });
                     } else {
-                        setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.NOT_MATCH })
+                        setLoading(false);
+                        history.push(`/chatroom/${userId}`, { workspace, nickname: data.nickname });
                     }
                 } else {
-                    setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.NOT_EXIST })
+                    setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.NOT_MATCH })
                 }
-            })
-        }
+            } else {
+                setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.NOT_EXIST })
+            }
+        })
         
     };
 
