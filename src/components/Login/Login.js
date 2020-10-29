@@ -25,6 +25,7 @@ function Login() {
                 isValid = true;
             }
         })
+        setLoading(false);
         return isValid;
     }
 
@@ -34,14 +35,18 @@ function Login() {
         if ( nickname.length === 0 ) { 
             isValid = false;
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.EMPTY});
+            setLoading(false);
         } else if ( nickname.length < 6 || nickname.length > 10 ) { 
             isValid = false;
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.TOO_SHORT});
+            setLoading(false);
         } else if ( !nickname.match(nameRegex) ) { 
             isValid = false;
             setErrorName({ isErrorName: true, errorName: ERROR_MESSAGE_NAME.INVALID});
+            setLoading(false);
         } else {
             setErrorName({ isErrorName: false, errorName: '' })
+            setLoading(false);
         }
         return isValid;
     }
@@ -52,14 +57,18 @@ function Login() {
         if ( password.length === 0 ) { 
             isValid = false;
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.EMPTY});
+            setLoading(false);
         } else if ( password.length < 6 || password.length > 10 ) { 
             isValid = false;
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.TOO_SHORT});
+            setLoading(false);
         } else if ( !password.match(nameRegex) ) { 
             isValid = false;
             setErrorPassword({ isErrorPassword: true, errorPassword: ERROR_MESSAGE_PASSWORD.INVALID});
+            setLoading(false);
         } else {
             setErrorPassword({ isErrorPassword: false, errorPassword: '' })
+            setLoading(false);
         }
         return isValid;
     }

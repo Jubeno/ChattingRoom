@@ -1,0 +1,41 @@
+.search_member_modal {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    background-color: #fff;
+    width: 486px;
+
+    .result_area {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        padding: 15px 15px 0 15px;
+        overflow-y: scroll;
+
+        .result_search_item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+
+            .name {
+                font-size: 1rem;
+                color: #000;
+                font-weight: bold;
+            }
+
+            .add_to_channel {
+                font-size: 1rem;
+                color: #000;
+                font-weight: bold;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                p {
+                    margin-left: 5px;
+                    margin-bottom: 0px;
+                }
+            }
+        }
+    }
+}

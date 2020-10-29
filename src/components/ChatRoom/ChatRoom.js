@@ -46,7 +46,7 @@ const ChatRoom = props => {
             <div className="chatroom" id="chatroom">
                 <div className="wrapper">
                     <div className="left">
-                        <LeftColumn user={dataFromDB?.user} workspace={dataFromDB?.workspace} />
+                        <LeftColumn userId={userId} user={dataFromDB?.user} workspace={dataFromDB?.workspace} />
                     </div>
                     <div className="right">
                         <RightColumn user={dataFromDB?.user} workspace={dataFromDB?.workspace} />
