@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ChevronDown } from 'react-feather';
 import { useForm } from 'react-hook-form';
 import Popup from 'reactjs-popup';
@@ -6,19 +6,38 @@ import { Form, Input } from 'reactstrap';
 import './CreateNewChannel.scss';
 import SearchMember from './SearchMember';
 import firebase from 'firebase';
+import { Context as ChannelContext, actions as ChannelActions } from '../../../contexts/Channel/ChannelContext';
+import { MentionsInput, Mention } from 'react-mentions'
+import moment from 'moment';
 
 const CreateNewChannel = props => {
     const { closeCreateChannel, userId } = props;
     const { register, handleSubmit } = useForm();
     const [ members, setMembers ] = useState([]);
-    const [ showSearchMember, setShowSearchMember ] = useState(false);
-    const [ resultSearch, setResultSearch ] = useState([]);
     const [ listUser, setListUser ] = useState([]);
     const [ paramSearch, setParamSearch ] = useState('');
     const userOnDB = firebase.database().ref('/user/list');
+    const channelOnDB = firebase.database().ref('/listChannel');
+    const userInChannel = firebase.database().ref('/userInChannel');
+    const createTime = moment().valueOf();
 
     const createNewChannel = async data => {
-        console.log('%c data: ', 'color: red' , data);
+        // setLoading
+
+        const newChannel = channelOnDB.push();
+        const newUserInChannel = userInChannel.push();
+        const channelId = btoa(`${data.channelName}-${createTime}`);
+
+        await newChannel.set({
+            name: data.channelName,
+            createTime,
+            channelId
+        })
+        await newUserInChannel.set({
+            members,
+            channelId,
+            channelName: data.channelName
+        })
     }
 
     useEffect(() => {
@@ -30,17 +49,18 @@ const CreateNewChannel = props => {
 
     const cancel = () => closeCreateChannel();
 
-    const searchMember = value => {
-        setShowSearchMember(true);
-        if(value !== "") {
-            setParamSearch(value);
-            const result = listUser.filter(item => (item.displayName.includes(paramSearch.toLowerCase()) && item.userID !== userId));
-            setResultSearch(result);
-        } else {
-            setResultSearch(listUser);
-        }
+    const searchMember = event => {
+        setParamSearch(event.target.value);
     };
 
+    const onAdd = id => {
+        setMembers([...members, id])
+    }
+
+    const listToDisplay = listUser.length > 0 && listUser.map(item => ({
+        id: item.userID,
+        display: item.displayName
+    }))
     return (
         <Popup
             open={true}
@@ -56,27 +76,36 @@ const CreateNewChannel = props => {
                     <Input 
                         type="text"
                         name="channelName"
-                        // autoFocus={true}
+                        autoFocus={true}
                         placeholder={'Benoo\'s channel'}
                         innerRef={register}
                     />
                 </div>
                 <div className="member_of_channel">
                     <label>Members:</label>
-                    <Input 
-                        type="text"
-                        name="members"
-                        innerRef={register}
-                        placeholder={'Benoo'}
-                        onChange={event => searchMember(event.target.value)}
-                        autocomplete="off"
-                        autoFocus={true}
-                    />
-                    { (resultSearch.length > 0 && showSearchMember) && <SearchMember resultSearch={resultSearch}/> }
+                    <MentionsInput 
+                        onChange={event => searchMember(event)} 
+                        className="mentions"
+                        value={paramSearch}
+                        markup="@{{__type__||__id__||__display__}}"
+                        placeholder="@Benoo"
+                        singleLine
+                        allowSpaceInQuery
+                        allowSuggestionsAboveCursor={false}
+                    >
+                        <Mention
+                            type="user"
+                            trigger="@"
+                            data={listToDisplay}
+                            className="mentions__mention"
+                            appendSpaceOnAdd
+                            onAdd={onAdd}
+                        />
+                    </MentionsInput>
                 </div>
                 <div className="button_create_new_channel">
                     <button className="cancel" onClick={cancel}>Cancel</button>
-                    <button className="accept" type="submit">Create</button>
+                    <button className="accept" >Create</button>
                 </div>
             </Form>
         </Popup>
