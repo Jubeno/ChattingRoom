@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Edit, Plus } from 'react-feather';
+import { Edit, Plus, Search } from 'react-feather';
 import DelayImage from '../Common/DelayImage/DelayImage';
 import CreateNewChannel from './component/CreateNewChannel';
 import CreateNewUser from './component/CreateNewUser';
 import EditProfileWorkspace from './component/EditProfileWorkspace';
+import ListChannel from './component/ListChannel';
+import ListDirectMessage from './component/ListDirectMessage';
+import SearchDirectMessage from './component/SearchDirectMessage';
 
 const LeftColumn = props => {
     const { user, workspace, userId } = props;
@@ -13,6 +16,7 @@ const LeftColumn = props => {
     const [ showEditProfile, setShowEditProfile ] = useState(false);
     const [ showCreateNewUser, setShowCreateNewUser ] = useState(false);
     const [ showCreateChannel, setShowCreateChannel ] = useState(false);
+    const [ showSearchDirectMessage, setShowSearchDirectMessage ] = useState(false);
 
     const editProfile = () => setShowEditProfile(true);
 
@@ -25,6 +29,11 @@ const LeftColumn = props => {
     const createNewChannel = () => setShowCreateChannel(true);
 
     const closeCreateChannel = () => setShowCreateChannel(false);
+
+    const searchDirectMessage = () => setShowSearchDirectMessage(show => !show);
+
+    const closeDirectMessage = () => setShowSearchDirectMessage(false);
+
     return (
         <>
             <div className="container_left">
@@ -46,7 +55,25 @@ const LeftColumn = props => {
                 <div className="list_channel">
                     <p className="title">Channel</p>
                     <div className="list">
-                        LIST
+                        <ListChannel />
+                    </div>
+                </div>
+                <div className="direct_message">
+                    <div className="top">
+                        <p className="title">Direct message</p>
+                        <div className="search_icon" onClick={searchDirectMessage}>
+                            <Search size={20} color="#fff"/>
+                        </div>
+                    </div>
+                    {
+                        showSearchDirectMessage && 
+                            <SearchDirectMessage 
+                                userId={userId}
+                                closeDirectMessage={closeDirectMessage}
+                            />
+                    }
+                    <div className="list">
+                        <ListDirectMessage userId={userId}/>
                     </div>
                 </div>
                 <div className="create_channel" onClick={createNewChannel}>
@@ -61,7 +88,7 @@ const LeftColumn = props => {
                         </div>
                 }
             </div>
-            { !showCreateChannel && <CreateNewChannel userId={userId} workspaceName={workspace?.workspace} closeCreateChannel={closeCreateChannel}/> }
+            { showCreateChannel && <CreateNewChannel userId={userId} workspaceName={workspace?.workspace} closeCreateChannel={closeCreateChannel}/> }
             { showCreateNewUser && <CreateNewUser workspaceName={workspace?.workspace} closeCreate={closeCreate}/> }
         </>
     );

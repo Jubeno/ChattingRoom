@@ -54,3 +54,7 @@ export const checkExpire = (target) => {
 export const getKeyByProperty = (value, propertyKey, propertyValue) => {
     return Object.keys(value).find(key => value[key][propertyKey] === propertyValue);
 }
+
+export const getCurrentTimeStamp = () => moment().valueOf();
+
+export const generateId = (a = '', b = '', c = '') => btoa(`${a}-${b}-${c}`);

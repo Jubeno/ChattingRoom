@@ -5,16 +5,17 @@ import LeftColumn from './LeftColumn';
 import RightColumn from './RightColumn';
 import firebase from "firebase";
 import Loading from '../Common/Loading/Loading';
+import { Context as GeneralContext, actions as GeneralActions } from '../../contexts/General/GeneralContext';
+import { userOnDB, workspaceOnDB } from '../../utils/database';
 
 const ChatRoom = props => {
     const userId = props.match.params.id;
     const history = useHistory();
     const { workspace } = history.location.state;
-    const userOnDB = firebase.database().ref('/user/list');
-    const workspaceOnDB = firebase.database().ref('/workspace/list');
     const [ dataFromDB, setDataFromDB ] = useState({ user: null, workspace: null });
     const [ loading, setLoading ] = useState(false);
 
+    // get data user
     useEffect(() => {
         setLoading(true);
         async function getDataFromDB() {
@@ -33,6 +34,26 @@ const ChatRoom = props => {
             setLoading(false);
         }
         getDataFromDB();
+    }, []);
+
+    // get list user
+    useEffect(() => {
+        async function getDataFromDB() {
+            let dataUser = {};
+            let dataWorkspace = {};
+            await userOnDB
+            .once('value', response => {
+                dataUser = Object.values(response.val());
+            })
+
+            await workspaceOnDB
+            .once('value', response => {
+                dataWorkspace = Object.values(response.val());
+            })
+            GeneralActions.setDataWorkspace({ user: dataUser, workspace: dataWorkspace })
+        }
+        getDataFromDB();
+        
     }, [])
 
     // update workspace profile when edit is completed
@@ -43,16 +64,19 @@ const ChatRoom = props => {
     return (
         <>
             { loading && <Loading /> }
-            <div className="chatroom" id="chatroom">
-                <div className="wrapper">
-                    <div className="left">
-                        <LeftColumn userId={userId} user={dataFromDB?.user} workspace={dataFromDB?.workspace} />
+            {
+                dataFromDB.user !== null && 
+                    <div className="chatroom" id="chatroom">
+                        <div className="wrapper">
+                            <div className="left">
+                                <LeftColumn userId={userId} user={dataFromDB?.user} workspace={dataFromDB?.workspace} />
+                            </div>
+                            <div className="right">
+                                <RightColumn user={dataFromDB?.user} workspace={dataFromDB?.workspace} />
+                            </div>
+                        </div>
                     </div>
-                    <div className="right">
-                        <RightColumn user={dataFromDB?.user} workspace={dataFromDB?.workspace} />
-                    </div>
-                </div>
-            </div>
+            }
         </>
     );
 }

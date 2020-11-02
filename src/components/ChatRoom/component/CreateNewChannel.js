@@ -9,6 +9,7 @@ import firebase from 'firebase';
 import { Context as ChannelContext, actions as ChannelActions } from '../../../contexts/Channel/ChannelContext';
 import { MentionsInput, Mention } from 'react-mentions'
 import moment from 'moment';
+import Loading from '../../Common/Loading/Loading';
 
 const CreateNewChannel = props => {
     const { closeCreateChannel, userId } = props;
@@ -16,14 +17,16 @@ const CreateNewChannel = props => {
     const [ members, setMembers ] = useState([]);
     const [ listUser, setListUser ] = useState([]);
     const [ paramSearch, setParamSearch ] = useState('');
+    const [ channelName, setChannelName ] = useState('');
     const userOnDB = firebase.database().ref('/user/list');
     const channelOnDB = firebase.database().ref('/listChannel');
     const userInChannel = firebase.database().ref('/userInChannel');
     const createTime = moment().valueOf();
-
+    const [ loading, setLoading ] = useState(false);
+    
     const createNewChannel = async data => {
-        // setLoading
-
+        setLoading(true);
+        
         const newChannel = channelOnDB.push();
         const newUserInChannel = userInChannel.push();
         const channelId = btoa(`${data.channelName}-${createTime}`);
@@ -38,8 +41,11 @@ const CreateNewChannel = props => {
             channelId,
             channelName: data.channelName
         })
+        setLoading(false);
+        closeCreateChannel();
     }
 
+    // get list suggestion
     useEffect(() => {
         userOnDB.once('value', response => {
             const valueOnDB = Object.values(response.val());
@@ -61,54 +67,67 @@ const CreateNewChannel = props => {
         id: item.userID,
         display: item.displayName
     }))
+
+    const handleChangeChannelName = event => {
+        setChannelName(event.target.value);
+    }
+
+    const handleDisabledCreateButton = () => {
+        return channelName.length > 0 && members.length > 0
+    }
+
     return (
-        <Popup
-            open={true}
-            closeOnDocumentClick={false}
-            closeOnEscape={false}
-            className="create_new_channel_popup"
-        >
-            <Form onSubmit={handleSubmit(createNewChannel)} className="form_create_new_channel">
-                <h4>Create new channel</h4>
-                <hr/>
-                <div className="channel_name">
-                    <label>Channel name:</label>
-                    <Input 
-                        type="text"
-                        name="channelName"
-                        autoFocus={true}
-                        placeholder={'Benoo\'s channel'}
-                        innerRef={register}
-                    />
-                </div>
-                <div className="member_of_channel">
-                    <label>Members:</label>
-                    <MentionsInput 
-                        onChange={event => searchMember(event)} 
-                        className="mentions"
-                        value={paramSearch}
-                        markup="@{{__type__||__id__||__display__}}"
-                        placeholder="@Benoo"
-                        singleLine
-                        allowSpaceInQuery
-                        allowSuggestionsAboveCursor={false}
-                    >
-                        <Mention
-                            type="user"
-                            trigger="@"
-                            data={listToDisplay}
-                            className="mentions__mention"
-                            appendSpaceOnAdd
-                            onAdd={onAdd}
+        <>
+            { loading && <Loading /> }
+            <Popup
+                open={true}
+                closeOnDocumentClick={false}
+                closeOnEscape={false}
+                className="create_new_channel_popup"
+            >
+                <Form onSubmit={handleSubmit(createNewChannel)} className="form_create_new_channel">
+                    <h4>Create new channel</h4>
+                    <hr/>
+                    <div className="channel_name">
+                        <label>Channel name:</label>
+                        <Input 
+                            type="text"
+                            name="channelName"
+                            autoFocus={true}
+                            placeholder={'Benoo\'s channel'}
+                            innerRef={register}
+                            onChange={handleChangeChannelName}
                         />
-                    </MentionsInput>
-                </div>
-                <div className="button_create_new_channel">
-                    <button className="cancel" onClick={cancel}>Cancel</button>
-                    <button className="accept" >Create</button>
-                </div>
-            </Form>
-        </Popup>
+                    </div>
+                    <div className="member_of_channel">
+                        <label>Members:</label>
+                        <MentionsInput 
+                            onChange={event => searchMember(event)} 
+                            className="mentions"
+                            value={paramSearch}
+                            markup="@{{__type__||__id__||__display__}}"
+                            placeholder="@Benoo"
+                            singleLine
+                            allowSpaceInQuery
+                            allowSuggestionsAboveCursor={false}
+                        >
+                            <Mention
+                                type="user"
+                                trigger="@"
+                                data={listToDisplay}
+                                className="mentions__mention"
+                                appendSpaceOnAdd
+                                onAdd={onAdd}
+                            />
+                        </MentionsInput>
+                    </div>
+                    <div className="button_create_new_channel">
+                        <button className="cancel" onClick={cancel}>Cancel</button>
+                        <button className="accept" disabled={!handleDisabledCreateButton()}>Create</button>
+                    </div>
+                </Form>
+            </Popup>
+        </>
     );
 }
 
