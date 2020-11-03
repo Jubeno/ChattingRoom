@@ -152,7 +152,7 @@ const CreateNewUser = props => {
         const isValidPassword = validatePassword(password);
         const isValidConfirmation = validateConfirmPassword(password, confirmPassword);
         if ( isValidName && isValidPassword && isValidConfirmation ) {
-            createNewUser(nickname, password);
+            await createNewUser(nickname, password);
             closeCreate();
         }
         

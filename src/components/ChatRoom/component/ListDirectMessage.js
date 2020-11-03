@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { directMessageOnDB } from '../../../utils/database';
-import { Context as GeneralContext, actions as GeneralActions } from '../../../contexts/General/GeneralContext';
+import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../../contexts/DirectMessage/DirectMessageContext';
 import { X } from 'react-feather';
 import { getKeyByProperty } from '../../../utils/function';
 
 const ListDirectMessage = () => {
-    const { listDirectMessage } = useContext(GeneralContext).state;
+    const { listDirectMessage } = useContext(DirectMessageContext).state;
     const [ listDirect, setListDirect ] = useState(listDirectMessage);
-    const { dataWorkspace } = useContext(GeneralContext).state;
+    const { dataWorkspace } = useContext(DirectMessageContext).state;
 
     useEffect(() => {
         setListDirect(listDirectMessage);
@@ -25,7 +25,7 @@ const ListDirectMessage = () => {
             })
             
             setListDirect(listDirect);
-            GeneralActions.createInitialListDirectMessage(listDirect);
+            DirectMessageActions.createInitialListDirectMessage(listDirect);
         }
         getDataFromDB();
     }, []);
@@ -39,7 +39,7 @@ const ListDirectMessage = () => {
             const key = getKeyByProperty(response.val(), 'conversationID', item.conversationID);
             directMessageOnDB.child(key).remove();
         })
-        GeneralActions.deleteConversation(item.conversationID);
+        DirectMessageActions.deleteConversation(item.conversationID);
     }
 
     return (

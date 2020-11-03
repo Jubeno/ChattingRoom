@@ -2,12 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
 import { userOnDB, directMessageOnDB } from '../../../utils/database';
 import { generateId, getCurrentTimeStamp } from '../../../utils/function';
-import { Context as GeneralContext, actions as GeneralActions } from '../../../contexts/General/GeneralContext';
+import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../../contexts/DirectMessage/DirectMessageContext';
 
 const SearchDirectMessage = props => {
     const { userId, closeDirectMessage } = props;
     const [ paramSearch, setParamSearch ] = useState('');
-    const { dataWorkspace, listDirectMessage } = useContext(GeneralContext).state;
+    const { dataWorkspace, listDirectMessage } = useContext(DirectMessageContext).state;
     const [ listDisplay, setListDisplay ] = useState([]);
 
     const searchMember = event => {
@@ -36,7 +36,7 @@ const SearchDirectMessage = props => {
         }
         await newConversation.set(data)
 
-        GeneralActions.createListDirectMessage(data);
+        DirectMessageActions.createListDirectMessage(data);
         closeDirectMessage();
     }
 

@@ -41,6 +41,11 @@ const CreateNewChannel = props => {
             channelId,
             channelName: data.channelName
         })
+        ChannelActions.createChannel({
+            name: data.channelName,
+            createTime,
+            channelId
+        })
         setLoading(false);
         closeCreateChannel();
     }

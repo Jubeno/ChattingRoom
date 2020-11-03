@@ -5,7 +5,7 @@ import LeftColumn from './LeftColumn';
 import RightColumn from './RightColumn';
 import firebase from "firebase";
 import Loading from '../Common/Loading/Loading';
-import { Context as GeneralContext, actions as GeneralActions } from '../../contexts/General/GeneralContext';
+import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../contexts/DirectMessage/DirectMessageContext';
 import { userOnDB, workspaceOnDB } from '../../utils/database';
 
 const ChatRoom = props => {
@@ -50,7 +50,7 @@ const ChatRoom = props => {
             .once('value', response => {
                 dataWorkspace = Object.values(response.val());
             })
-            GeneralActions.setDataWorkspace({ user: dataUser, workspace: dataWorkspace })
+            DirectMessageActions.setDataWorkspace({ user: dataUser, workspace: dataWorkspace })
         }
         getDataFromDB();
         

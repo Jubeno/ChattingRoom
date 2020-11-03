@@ -1,9 +1,16 @@
-import { SELECT_MEMBER } from './ChannelActions';
+import { CREATE_CHANNEL, DELETE_CHANNEL, SELECT_MEMBER, SET_INITIAL_LIST_CHANNEL } from './ChannelActions';
 
 const WorkSpaceReducer = (state, action) => {
     switch (action.type) {
         case SELECT_MEMBER:
             return { ...state, listMember: state.listMember.concat(action.payload) };
+        case SET_INITIAL_LIST_CHANNEL:
+            return { ...state, listChannel: action.payload };
+        case DELETE_CHANNEL:
+            const deletedList = state.listChannel.filter(item => item.channelId !== action.payload);
+            return { ...state, listChannel: deletedList };
+        case CREATE_CHANNEL:
+            return { ...state, listChannel: state.listChannel.concat(action.payload) };
         default:
             return state;
     }

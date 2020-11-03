@@ -25,3 +25,5 @@ export const ERROR_MESSAGE_NAME_WORKSPACE = {
 }
 
 export const EXPIRED_TIME = 120 //  MINUTES
+
+export const GENERAL_CHANNEL_ID = "I2dlbmVyYWwtMTYwNDI4MjA0NDQ1OA==";

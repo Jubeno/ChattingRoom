@@ -89,6 +89,8 @@
                         max-height: 350px;
                         overflow-y: scroll;
 
+
+
                         .channel_item, .direct_message_item {
                             transition: all 0.5s;
                             
@@ -108,20 +110,25 @@
                                 cursor: pointer;
                             }
 
-                            .delete_conversation {
+                            .delete_conversation, .delete_channel {
                                 display: none;
                                 opacity: 0.7;
                                 cursor: pointer;
                             }
                         }
                         .channel_item:hover, .direct_message_item:hover {
-                            background-color: #106151;
+                            background-color: #187ba8;
                             
                             p {
                                 font-weight: bold;
                             }
 
                             .delete_conversation {
+                                display: initial;
+                                cursor: pointer;
+                            }
+
+                            .delete_channel {
                                 display: initial;
                                 cursor: pointer;
                             }

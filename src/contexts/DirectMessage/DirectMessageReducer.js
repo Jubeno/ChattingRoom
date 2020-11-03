@@ -1,6 +1,6 @@
-import { CREATE_LIST_DIRECT_MESSAGE, SET_DATA_WORKSPACE, CREATE_INITIAL_DIRECT_MESSAGE, DELETE_DIRECT_MESSAGE } from './GeneralActions';
+import { CREATE_LIST_DIRECT_MESSAGE, SET_DATA_WORKSPACE, CREATE_INITIAL_DIRECT_MESSAGE, DELETE_DIRECT_MESSAGE } from './DirectMessageActions';
 
-const GeneralReducer = (state, action) => {
+const DirectMessageReducer = (state, action) => {
     switch (action.type) {
         case SET_DATA_WORKSPACE:
             return { ...state, dataWorkspace: action.payload };
@@ -16,4 +16,4 @@ const GeneralReducer = (state, action) => {
     }
 };
 
-export default GeneralReducer;
+export default DirectMessageReducer;

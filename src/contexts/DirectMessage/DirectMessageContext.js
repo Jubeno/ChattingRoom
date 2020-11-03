@@ -1,6 +1,6 @@
 import createDataContext from '../createDataContext';
-import { SET_DATA_WORKSPACE, CREATE_LIST_DIRECT_MESSAGE, CREATE_INITIAL_DIRECT_MESSAGE, DELETE_DIRECT_MESSAGE } from './GeneralActions';
-import GeneralReducer from './GeneralReducer';
+import { SET_DATA_WORKSPACE, CREATE_LIST_DIRECT_MESSAGE, CREATE_INITIAL_DIRECT_MESSAGE, DELETE_DIRECT_MESSAGE } from './DirectMessageActions';
+import DirectMessage from './DirectMessageReducer';
 
 const setDataWorkspace = dispatch => data => {
     dispatch({ type: SET_DATA_WORKSPACE, payload: data })
@@ -19,7 +19,7 @@ const deleteConversation = dispatch => conversationId => {
 }
 
 export const { Provider, Context, actions } = createDataContext(
-    GeneralReducer,
+    DirectMessage,
     { setDataWorkspace, createListDirectMessage, createInitialListDirectMessage, deleteConversation },
     { dataWorkspace: {}, listDirectMessage: [], initialListDirectMessage: [] }
 );
