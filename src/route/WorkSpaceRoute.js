@@ -8,7 +8,7 @@ const WorkSpaceRoute = () => {
 
     return (
         <Switch>
-            <Route exact path="/workspace" component={SignIn} />
+            <Route path={["/","/workspace"]} component={SignIn} />
             <Route exact path="/workspace/create" component={CreateSpace} />
             <Route exact path="/workspace/profile" component={ProfileSpace} />
         </Switch>

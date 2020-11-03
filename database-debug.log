@@ -1,0 +1,9 @@
+13:14:29.328 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+13:14:29.464 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
+13:16:16.225 [Thread-1] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
+13:16:16.232 [NamespaceSystem-akka.actor.default-dispatcher-10] INFO com.firebase.core.namespace.Terminator$Terminator - 2 actors left to terminate: fake-server, benoo149
+13:16:16.239 [NamespaceSystem-akka.actor.default-dispatcher-17] INFO com.firebase.core.namespace.NamespaceActor - Stopping namespace actor for benoo149
+13:16:16.239 [NamespaceSystem-akka.actor.default-dispatcher-19] INFO com.firebase.core.namespace.NamespaceActor - Stopping namespace actor for fake-server
+13:16:16.240 [NamespaceSystem-akka.actor.default-dispatcher-17] INFO com.firebase.core.namespace.NamespaceActor - Gauges removed for benoo149
+13:16:16.241 [NamespaceSystem-akka.actor.default-dispatcher-19] INFO com.firebase.core.namespace.NamespaceActor - Gauges removed for fake-server
+13:16:16.245 [Thread-1] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.
