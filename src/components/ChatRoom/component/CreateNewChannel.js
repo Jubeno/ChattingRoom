@@ -10,6 +10,9 @@ import { Context as ChannelContext, actions as ChannelActions } from '../../../c
 import { MentionsInput, Mention } from 'react-mentions'
 import moment from 'moment';
 import Loading from '../../Common/Loading/Loading';
+import { channelOnDB, userInChannelOnDB, userOnDB } from '../../../utils/database';
+import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../../contexts/DirectMessage/DirectMessageContext';
+import { getCurrentTimeStamp } from '../../../utils/function';
 
 const CreateNewChannel = props => {
     const { closeCreateChannel, userId } = props;
@@ -18,17 +21,17 @@ const CreateNewChannel = props => {
     const [ listUser, setListUser ] = useState([]);
     const [ paramSearch, setParamSearch ] = useState('');
     const [ channelName, setChannelName ] = useState('');
-    const userOnDB = firebase.database().ref('/user/list');
-    const channelOnDB = firebase.database().ref('/listChannel');
-    const userInChannel = firebase.database().ref('/userInChannel');
-    const createTime = moment().valueOf();
     const [ loading, setLoading ] = useState(false);
-    
+    const [ listDisplay, setListDisplay ] = useState([]);
+    const createTime = getCurrentTimeStamp();
+    const { dataWorkspace } = useContext(DirectMessageContext).state;
+
+
     const createNewChannel = async data => {
         setLoading(true);
         
         const newChannel = channelOnDB.push();
-        const newUserInChannel = userInChannel.push();
+        const newUserInChannel = userInChannelOnDB.push();
         const channelId = btoa(`${data.channelName}-${createTime}`);
 
         await newChannel.set({
@@ -58,6 +61,17 @@ const CreateNewChannel = props => {
         })
     }, [])
 
+    useEffect(() => {
+        let filterCurrentAccount = dataWorkspace?.user?.filter(item => item.userID !== userId );
+        const result = filterCurrentAccount.slice(members.length)
+        const listToDisplay = result.map(item => ({
+            id: item.userID,
+            display: item.displayName
+        }));
+
+        setListDisplay(listToDisplay);
+    }, [members])
+
     const cancel = () => closeCreateChannel();
 
     const searchMember = event => {
@@ -67,11 +81,6 @@ const CreateNewChannel = props => {
     const onAdd = id => {
         setMembers([...members, id])
     }
-
-    const listToDisplay = listUser.length > 0 && listUser.map(item => ({
-        id: item.userID,
-        display: item.displayName
-    }))
 
     const handleChangeChannelName = event => {
         setChannelName(event.target.value);
@@ -119,7 +128,7 @@ const CreateNewChannel = props => {
                             <Mention
                                 type="user"
                                 trigger="@"
-                                data={listToDisplay}
+                                data={listDisplay}
                                 className="mentions__mention"
                                 appendSpaceOnAdd
                                 onAdd={onAdd}

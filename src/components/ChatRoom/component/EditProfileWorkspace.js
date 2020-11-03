@@ -92,7 +92,6 @@ const EditProfileWorkspace = forwardRef((props, ref) => {
                                             </CustomUploadButton>
                                         </div>
                                     </div>   
-                                
                             }
                         </div>
                     </div>

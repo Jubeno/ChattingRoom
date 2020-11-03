@@ -1,10 +1,13 @@
 import React from 'react';
+import TopBar from './componentRightColumn/TopBar';
 
 const RightColumn = () => {
 
     return (
         <>
-            Right
+            <div className="container_right">
+                <TopBar />
+            </div>
         </>
     );
 }
