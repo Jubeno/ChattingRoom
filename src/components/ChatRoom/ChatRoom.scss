@@ -110,6 +110,10 @@
                                 cursor: pointer;
                             }
 
+                            .channel_name {
+                                width: 100%;
+                            }
+
                             .delete_conversation, .delete_channel {
                                 display: none;
                                 opacity: 0.7;
@@ -262,18 +266,99 @@
             border-bottom-right-radius: 40px;
 
             .container_right {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 10px;
+                border-radius: 20px;
                 .topbar {
                     width: 100%;
-                    height: 50px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-bottom: 1px solid gray;
+                    padding: 10px;
 
                     .friend_info {
-                        .avatar {
-                            width: 50px;
-                            height: 50px;
-                        }
+                        display: flex;
+                        flex-direction: column;
                         .name {
-                            
+                            font-size: 20px;
+                            font-weight: bold;
+                            cursor: default;
                         }
+                        .number_of_member {
+                            font-size: 12px;
+                            font-style: italic;
+                            cursor: default;
+                            svg {
+                                margin-right: 5px;
+                            }
+                        }
+                    }
+                    .context_menu {
+                        cursor: pointer;
+                        svg {
+                            transition: all 0.5s ease-in-out;
+                        }
+                    }
+                    .context_menu:hover svg {
+                        transform: scale(1.3) rotate(360deg);
+                    }
+                }
+                .chat_content {
+                    flex-grow: 1;
+                    overflow-y: scroll;
+                    padding: 15px 10px;
+                }
+                .input_box {
+                    width: 100%;
+                    display: flex;
+                    background-color: #a4e9e1;
+                    padding: 10px 15px;
+                    border-radius: 40px;
+                    .emoji_message {
+                        width: 50px;
+                        height: 50px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        background-color: #80D0C7;
+                        border-radius: 25px;
+                        cursor: pointer;
+                    }
+
+                    .input_send_message {
+                        flex-grow: 1;
+                        border: none;
+                        background-color: transparent;
+                        padding-left: 20px;
+                        font-size: large;
+                        color: #5f5959;
+                    }
+                    .button_submit {
+                        border: none;
+                        background-color: #f3a4be;
+                        border-radius: 35px;
+                        padding: 8px;
+                        cursor: pointer;
+
+                        svg {
+                            transition: all 0.5s;
+                        }
+                    }
+                    .button_submit:hover svg{
+                        transform: rotate(45deg);
+                    }
+                    .button_submit:hover {
+                        background-color: #e24177;
+                    }
+                    .input_send_message:active, .button_submit:active {
+                        outline: none;
+                    }
+                    .input_send_message:focus, .button_submit:focus {
+                        outline: none;
                     }
                 }
             }

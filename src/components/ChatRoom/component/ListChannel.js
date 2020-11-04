@@ -41,6 +41,21 @@ const ListChannel = () => {
 
     const isNotGeneralChannel = (item) => item.channelId !== GENERAL_CHANNEL_ID;
 
+    const openChannel = async item => {
+        let data = {};
+        await channelOnDB.orderByChild('channelId').equalTo(item.channelId).once('value', response => {
+            if(response.exists()) {
+                data.infor = Object.values(response.val())[0];
+            }
+        })
+        await userInChannelOnDB.orderByChild('channelId').equalTo(item.channelId).once('value', response => {
+            if( response.exists()) {
+                data.members = Object.values(response.val())[0].members;
+            }
+        })
+        ChannelActions.setInformationChannel(data);
+    }
+
     return (
         <>
             <div>
@@ -48,7 +63,12 @@ const ListChannel = () => {
                     channels.length > 0 && 
                         channels?.map((item, key) => 
                             <div className="channel_item" key={key}>
-                                <p>{item.name}</p>
+                                <p 
+                                    className="channel_name"
+                                    onClick={() => openChannel(item)}
+                                >
+                                    {item.name}
+                                </p>
                                 {
                                     isNotGeneralChannel(item) &&
                                         <X 

@@ -1,12 +1,41 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import TopBar from './componentRightColumn/TopBar';
+import { Context as ChannelContext, actions as ChannelActions } from '../../contexts/Channel/ChannelContext';
+import { channelOnDB, userInChannelOnDB } from '../../utils/database';
+import { GENERAL_CHANNEL_ID } from '../../utils/constant';
+import ChatContent from './componentRightColumn/ChatContent';
+import InputBox from './componentRightColumn/InputBox';
 
-const RightColumn = () => {
 
+const RightColumn = props => {
+    const { channelData } = useContext(ChannelContext).state;
+    const [ dataChannel, setDataChannel ] = useState({});
+
+    useEffect(() => {
+        async function getInitialChannel() {
+            let data = {};
+            await channelOnDB.orderByChild('channelId').equalTo(GENERAL_CHANNEL_ID).once('value', response => {
+                if( response.exists() ) {
+                    data.infor = response.val() && Object.values(response.val())[0];
+                }
+            })
+            await userInChannelOnDB.orderByChild('channelId').equalTo(GENERAL_CHANNEL_ID).once('value', response => {
+                if( response.exists() ) {
+                    data.members = response.val() && Object.values(response.val())[0].members;
+                }
+            })
+            setDataChannel(data);
+        }
+        getInitialChannel();
+    }, [])
+
+    const dataToFill = channelData.infor === null ? dataChannel : channelData;
     return (
         <>
             <div className="container_right">
-                <TopBar />
+                <TopBar data={dataToFill}/>
+                <ChatContent />
+                <InputBox data={dataToFill} { ...props }/>
             </div>
         </>
     );

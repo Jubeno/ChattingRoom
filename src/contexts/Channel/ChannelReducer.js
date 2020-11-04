@@ -1,4 +1,4 @@
-import { CREATE_CHANNEL, DELETE_CHANNEL, SELECT_MEMBER, SET_INITIAL_LIST_CHANNEL } from './ChannelActions';
+import { CREATE_CHANNEL, DELETE_CHANNEL, SELECT_MEMBER, SET_INFOR_CHANNEL, SET_INITIAL_LIST_CHANNEL } from './ChannelActions';
 
 const WorkSpaceReducer = (state, action) => {
     switch (action.type) {
@@ -11,6 +11,15 @@ const WorkSpaceReducer = (state, action) => {
             return { ...state, listChannel: deletedList };
         case CREATE_CHANNEL:
             return { ...state, listChannel: state.listChannel.concat(action.payload) };
+        case SET_INFOR_CHANNEL:
+            return { 
+                    ...state, channelData: 
+                    {
+                        ...state.channelData, 
+                        infor: action.payload.infor,
+                        members: action.payload.members
+                    }
+                };
         default:
             return state;
     }
