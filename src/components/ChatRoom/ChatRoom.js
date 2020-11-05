@@ -41,12 +41,12 @@ const ChatRoom = props => {
         async function getDataFromDB() {
             let dataUser = {};
             let dataWorkspace = {};
-            await userOnDB
+            await userOnDB.orderByChild('workspace').equalTo(workspace)
             .once('value', response => {
                 dataUser = Object.values(response.val());
             })
 
-            await workspaceOnDB
+            await workspaceOnDB.orderByChild('workspace').equalTo(workspace)
             .once('value', response => {
                 dataWorkspace = Object.values(response.val());
             })

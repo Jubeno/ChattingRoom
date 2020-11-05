@@ -16,8 +16,10 @@ const WorkSpaceReducer = (state, action) => {
                     ...state, channelData: 
                     {
                         ...state.channelData, 
+                        isActive: true,
                         infor: action.payload.infor,
-                        members: action.payload.members
+                        members: action.payload.members,
+                        listChat: action.payload.listChat
                     }
                 };
         default:

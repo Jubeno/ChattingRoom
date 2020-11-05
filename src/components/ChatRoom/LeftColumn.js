@@ -10,6 +10,7 @@ import SearchDirectMessage from './component/SearchDirectMessage';
 
 const LeftColumn = props => {
     const { user, workspace, userId } = props;
+    const workspaceID = workspace.workspaceID
     const avatarWorkspace = workspace?.displayAvatar;
     const nameWorkspace = workspace?.displayName;
     const purposeWorkspace = workspace?.purposeOfWorkspace;
@@ -55,7 +56,7 @@ const LeftColumn = props => {
                 <div className="list_channel">
                     <p className="title">Channel</p>
                     <div className="list">
-                        <ListChannel />
+                        <ListChannel workspaceId={workspace?.workspaceID}/>
                     </div>
                 </div>
                 <div className="direct_message">
@@ -69,6 +70,7 @@ const LeftColumn = props => {
                         showSearchDirectMessage && 
                             <SearchDirectMessage 
                                 userId={userId}
+                                workspaceId={workspaceID}
                                 closeDirectMessage={closeDirectMessage}
                             />
                     }
@@ -88,7 +90,7 @@ const LeftColumn = props => {
                         </div>
                 }
             </div>
-            { showCreateChannel && <CreateNewChannel userId={userId} workspaceName={workspace?.workspace} closeCreateChannel={closeCreateChannel}/> }
+            { showCreateChannel && <CreateNewChannel workspaceId={workspace?.workspaceID} userId={userId} workspaceName={workspace?.workspace} closeCreateChannel={closeCreateChannel}/> }
             { showCreateNewUser && <CreateNewUser workspaceName={workspace?.workspace} closeCreate={closeCreate}/> }
         </>
     );

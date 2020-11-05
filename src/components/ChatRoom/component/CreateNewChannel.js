@@ -10,12 +10,12 @@ import { Context as ChannelContext, actions as ChannelActions } from '../../../c
 import { MentionsInput, Mention } from 'react-mentions'
 import moment from 'moment';
 import Loading from '../../Common/Loading/Loading';
-import { channelOnDB, userInChannelOnDB, userOnDB } from '../../../utils/database';
+import { channelOnDB, chatInChannelOnDB, userInChannelOnDB, userOnDB } from '../../../utils/database';
 import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../../contexts/DirectMessage/DirectMessageContext';
 import { getCurrentTimeStamp } from '../../../utils/function';
 
 const CreateNewChannel = props => {
-    const { closeCreateChannel, userId } = props;
+    const { closeCreateChannel, userId, workspaceId, workspaceName } = props;
     const { register, handleSubmit } = useForm();
     const [ members, setMembers ] = useState([]);
     const [ listUser, setListUser ] = useState([]);
@@ -32,22 +32,31 @@ const CreateNewChannel = props => {
         
         const newChannel = channelOnDB.push();
         const newUserInChannel = userInChannelOnDB.push();
+        const newListChat = chatInChannelOnDB.push();
         const channelId = btoa(`${data.channelName}-${createTime}`);
 
         await newChannel.set({
             name: data.channelName,
             createTime,
-            channelId
+            channelId,
+            workspaceId
         })
         await newUserInChannel.set({
             members,
             channelId,
-            channelName: data.channelName
+            channelName: data.channelName,
+            workspaceId
+        })
+        await newListChat.set({
+            name: data.channelName,
+            channelId,
+            workspaceId
         })
         ChannelActions.createChannel({
             name: data.channelName,
             createTime,
-            channelId
+            channelId,
+            workspaceId
         })
         setLoading(false);
         closeCreateChannel();
@@ -55,7 +64,7 @@ const CreateNewChannel = props => {
 
     // get list suggestion
     useEffect(() => {
-        userOnDB.once('value', response => {
+        userOnDB.orderByChild('workspace').equalTo(workspaceName).once('value', response => {
             const valueOnDB = Object.values(response.val());
             setListUser(valueOnDB)
         })

@@ -2,10 +2,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import { X } from 'react-feather';
 import { getKeyByProperty } from '../../../utils/function';
 import { GENERAL_CHANNEL_ID } from '../../../utils/constant';
-import { channelOnDB, userInChannelOnDB } from '../../../utils/database';
+import { channelOnDB, chatInChannelOnDB, userInChannelOnDB } from '../../../utils/database';
 import { Context as ChannelContext, actions as ChannelActions } from '../../../contexts/Channel/ChannelContext';
 
-const ListChannel = () => {
+const ListChannel = props => {
+    const { workspaceId } = props;
     const { listChannel } = useContext(ChannelContext).state;
     const [ channels, setChannels ] = useState(listChannel);
 
@@ -16,8 +17,8 @@ const ListChannel = () => {
     useEffect(() => {
         async function getDataFromDB() {
             let channels = [];
-            await channelOnDB.once('value', response => {
-                channels = Object.values(response.val());
+            await channelOnDB.orderByChild('workspaceId').equalTo(workspaceId).once('value', response => {
+                channels = response.val() ? Object.values(response.val()) : [];
             })
             setChannels(channels);
             ChannelActions.setInitialListChannel(channels);
@@ -32,10 +33,14 @@ const ListChannel = () => {
         });
 
         await userInChannelOnDB.once('value', response => {
-            const key = getKeyByProperty(response.val(), 'channelId', item.channelId);
+            const key = response.val() && getKeyByProperty(response.val(), 'channelId', item.channelId);
             userInChannelOnDB.child(key).remove();
         })
 
+        await chatInChannelOnDB.once('value', response => {
+            const key = getKeyByProperty(response.val(), 'channelId', item.channelId);
+            chatInChannelOnDB.child(key).remove();
+        })
         ChannelActions.deleteChannel(item.channelId);
     }
 
@@ -53,6 +58,11 @@ const ListChannel = () => {
                 data.members = Object.values(response.val())[0].members;
             }
         })
+        await chatInChannelOnDB.orderByChild('channelId').equalTo(item.channelId).once('value', response => {
+            if( response.exists() ) {
+                data.listChat = response.val() && Object.values(response.val())[0].listChat;
+            }
+        })
         ChannelActions.setInformationChannel(data);
     }
 
@@ -60,7 +70,7 @@ const ListChannel = () => {
         <>
             <div>
                 {
-                    channels.length > 0 && 
+                    channels?.length > 0 && 
                         channels?.map((item, key) => 
                             <div className="channel_item" key={key}>
                                 <p 

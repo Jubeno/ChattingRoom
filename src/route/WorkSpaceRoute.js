@@ -4,13 +4,13 @@ import CreateSpace from '../components/WorkSpace/CreateSpace';
 import ProfileSpace from '../components/WorkSpace/ProfileSpace';
 import SignIn from '../components/WorkSpace/SignIn';
 
-const WorkSpaceRoute = () => {
+const WorkSpaceRoute = props => {
 
     return (
         <Switch>
-            <Route path={["/","/workspace"]} component={SignIn} />
-            <Route exact path="/workspace/create" component={CreateSpace} />
-            <Route exact path="/workspace/profile" component={ProfileSpace} />
+            <Route exact path="/workspace" component={SignIn} />
+            <Route path="/workspace/create" component={CreateSpace} />
+            <Route path="/workspace/profile" component={ProfileSpace} />
         </Switch>
     );
 }

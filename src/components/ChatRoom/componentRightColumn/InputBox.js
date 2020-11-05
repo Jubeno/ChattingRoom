@@ -1,32 +1,36 @@
 import React, { useContext } from 'react';
 import { Send, Smile } from 'react-feather';
 import { useForm } from 'react-hook-form';
-import { channelOnDB } from '../../../utils/database';
+import { MESSAGE_TYPE } from '../../../utils/constant';
+import { chatInChannelOnDB } from '../../../utils/database';
 import { generateId, getCurrentTimeStamp, getKeyByProperty } from '../../../utils/function';
 
 const InputBox = props => {
     const { user, data } = props;
-    console.log('%c data: ', 'color: red' , data);
     const { register, handleSubmit, reset } = useForm();
     const currentTime = getCurrentTimeStamp();
-    const userId = user.userID;
+    const userId = user?.userID;
     const channelId = data?.infor?.channelId;
-
+    const displayName = user?.displayName;
+    const avatar = user?.displayAvatar || '';
 
     const clearInput = () => reset();
 
     const sendMessage = async value => {
         const messageId = generateId(userId, channelId, value.messageContent)
-        await channelOnDB.once('value', response => {
+        await chatInChannelOnDB.once('value', response => {
             const key = getKeyByProperty( response.val(), 'channelId', channelId)
-            const newMessage = channelOnDB.child(`${key}/listChat`).push();
+            const newMessage = chatInChannelOnDB.child(`${key}/listChat`).push();
 
             newMessage.update({
                 value: value.messageContent,
                 sendTime: currentTime,
                 senderId: userId,
                 receiverId: channelId,
-                messageId
+                messageId,
+                messageType: MESSAGE_TYPE.TEXT,
+                displayName,
+                avatar
             })
         })
         clearInput();
@@ -47,7 +51,7 @@ const InputBox = props => {
                     name="messageContent"
                     ref={register}
                     placeholder="Type a message"
-                    
+                    autoComplete="off"
                 />
                 <button
                     type="submit"

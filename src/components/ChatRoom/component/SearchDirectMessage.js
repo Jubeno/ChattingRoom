@@ -5,7 +5,7 @@ import { generateId, getCurrentTimeStamp } from '../../../utils/function';
 import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../../contexts/DirectMessage/DirectMessageContext';
 
 const SearchDirectMessage = props => {
-    const { userId, closeDirectMessage } = props;
+    const { userId, closeDirectMessage, workspaceId } = props;
     const [ paramSearch, setParamSearch ] = useState('');
     const { dataWorkspace, listDirectMessage } = useContext(DirectMessageContext).state;
     const [ listDisplay, setListDisplay ] = useState([]);
@@ -32,7 +32,8 @@ const SearchDirectMessage = props => {
         const data = {
             conversationID,
             createdBy: userId,
-            friendId: id
+            friendId: id,
+            workspaceId
         }
         await newConversation.set(data)
 
