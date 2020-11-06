@@ -3,7 +3,8 @@ import { Settings, Users } from 'react-feather';
 
 const TopBar = props => {
     const { data } = props;
-    const name = data?.infor?.name;
+    const isChannel = data?.type === "CHANNEL";
+    const name = isChannel ? data?.infor?.name : data?.infor?.displayName;
     const numberOfMember = data?.members?.length;
     return (
         <>
@@ -12,10 +13,13 @@ const TopBar = props => {
                     <div className="name">
                         {name}
                     </div>
-                    <div className="number_of_member">
-                        <Users size={15}/>
-                        {numberOfMember} members
-                    </div>
+                    {
+                        isChannel && 
+                            <div className="number_of_member">
+                                <Users size={15}/>
+                                {numberOfMember} members
+                            </div>
+                    }
                 </div>
                 <div className="context_menu">
                     <Settings />

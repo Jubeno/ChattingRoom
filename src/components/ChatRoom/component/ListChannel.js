@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import { X } from 'react-feather';
 import { getKeyByProperty } from '../../../utils/function';
 import { GENERAL_CHANNEL_ID } from '../../../utils/constant';
-import { channelOnDB, chatInChannelOnDB, userInChannelOnDB } from '../../../utils/database';
+import { channelOnDB, chatInChannelOnDB, userInChannelOnDB, userOnDB } from '../../../utils/database';
 import { Context as ChannelContext, actions as ChannelActions } from '../../../contexts/Channel/ChannelContext';
 
 const ListChannel = props => {
-    const { workspaceId } = props;
+    const { workspaceId, userId } = props;
     const { listChannel } = useContext(ChannelContext).state;
     const [ channels, setChannels ] = useState(listChannel);
 
@@ -17,7 +17,7 @@ const ListChannel = props => {
     useEffect(() => {
         async function getDataFromDB() {
             let channels = [];
-            await channelOnDB.orderByChild('workspaceId').equalTo(workspaceId).once('value', response => {
+            await userInChannelOnDB.orderByChild('workspaceId').equalTo(workspaceId).once('value', response => {
                 channels = response.val() ? Object.values(response.val()) : [];
             })
             setChannels(channels);
@@ -48,6 +48,7 @@ const ListChannel = props => {
 
     const openChannel = async item => {
         let data = {};
+        data.type = "CHANNEL";
         await channelOnDB.orderByChild('channelId').equalTo(item.channelId).once('value', response => {
             if(response.exists()) {
                 data.infor = Object.values(response.val())[0];
@@ -63,32 +64,38 @@ const ListChannel = props => {
                 data.listChat = response.val() && Object.values(response.val())[0].listChat;
             }
         })
-        ChannelActions.setInformationChannel(data);
+        ChannelActions.setInformation(data);
     }
 
+    const isUserInChannel = (channel) => channel?.members?.includes(userId);
     return (
         <>
             <div>
                 {
                     channels?.length > 0 && 
-                        channels?.map((item, key) => 
-                            <div className="channel_item" key={key}>
-                                <p 
-                                    className="channel_name"
-                                    onClick={() => openChannel(item)}
-                                >
-                                    {item.name}
-                                </p>
-                                {
-                                    isNotGeneralChannel(item) &&
-                                        <X 
-                                            onClick={() => deleteChannel(item)}
-                                            className="delete_channel" 
-                                            color="#fff" 
-                                            size={18}
-                                        />
-                                }
-                            </div>
+                        channels?.map((item, key) => {
+                            return isUserInChannel(item) ?
+                                <div className="channel_item" key={key}>
+                                    <p 
+                                        className="channel_name"
+                                        onClick={() => openChannel(item)}
+                                    >
+                                       
+                                       
+                                        {item.channelName}
+                                    </p>
+                                    {
+                                        isNotGeneralChannel(item) &&
+                                            <X 
+                                                onClick={() => deleteChannel(item)}
+                                                className="delete_channel" 
+                                                color="#fff" 
+                                                size={18}
+                                            />
+                                    }
+                                </div>
+                                : null
+                            }
                         )
                 }
             </div>

@@ -24,11 +24,11 @@ const deleteChannel = dispatch => channelId => {
     dispatch({ type: DELETE_CHANNEL, payload: channelId })
 }
 
-const setInformationChannel = dispatch => data => {
+const setInformation = dispatch => data => {
     dispatch({ type: SET_INFOR_CHANNEL, payload: data })
 }
 export const { Provider, Context, actions } = createDataContext(
     ChannelReducer,
-    { selectMember, setInitialListChannel, deleteChannel, createChannel, setInformationChannel },
+    { selectMember, setInitialListChannel, deleteChannel, createChannel, setInformation },
     { listMember: [], listChannel: [], channelData: { isActive: false, infor: null, members: null, listChat: null } }
 );

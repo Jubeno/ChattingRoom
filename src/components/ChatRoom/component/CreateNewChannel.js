@@ -17,7 +17,7 @@ import { getCurrentTimeStamp } from '../../../utils/function';
 const CreateNewChannel = props => {
     const { closeCreateChannel, userId, workspaceId, workspaceName } = props;
     const { register, handleSubmit } = useForm();
-    const [ members, setMembers ] = useState([]);
+    const [ members, setMembers ] = useState([userId]);
     const [ listUser, setListUser ] = useState([]);
     const [ paramSearch, setParamSearch ] = useState('');
     const [ channelName, setChannelName ] = useState('');
@@ -53,9 +53,9 @@ const CreateNewChannel = props => {
             workspaceId
         })
         ChannelActions.createChannel({
-            name: data.channelName,
-            createTime,
+            members,
             channelId,
+            channelName: data.channelName,
             workspaceId
         })
         setLoading(false);
