@@ -71,15 +71,20 @@ const CreateNewChannel = props => {
     }, [])
 
     useEffect(() => {
-        let filterCurrentAccount = dataWorkspace?.user?.filter(item => item.userID !== userId );
-        const result = filterCurrentAccount.slice(members.length)
-        const listToDisplay = result.map(item => ({
+        // let filterCurrentAccount = dataWorkspace?.user?.filter(item => item.userID !== userId );
+        // const result = filterCurrentAccount.slice(members.length)
+        // const listToDisplay = result.map(item => ({
+        //     id: item.userID,
+        //     display: item.displayName
+        // }));
+
+        // setListDisplay(listToDisplay);
+        const listToDisplay = dataWorkspace?.user?.map(item => ({
             id: item.userID,
             display: item.displayName
         }));
-
         setListDisplay(listToDisplay);
-    }, [members])
+    }, [])
 
     const cancel = () => closeCreateChannel();
 

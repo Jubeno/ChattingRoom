@@ -30,5 +30,5 @@ const setInformation = dispatch => data => {
 export const { Provider, Context, actions } = createDataContext(
     ChannelReducer,
     { selectMember, setInitialListChannel, deleteChannel, createChannel, setInformation },
-    { listMember: [], listChannel: [], channelData: { isActive: false, infor: null, members: null, listChat: null } }
+    { listMember: [], listChannel: [], channelData: { isActive: false, infor: {}, members: [], listChat: {} } }
 );

@@ -8,7 +8,6 @@ const SearchDirectMessage = props => {
     const { userId, closeDirectMessage, workspaceId } = props;
     const [ paramSearch, setParamSearch ] = useState('');
     const { dataWorkspace, listDirectMessage } = useContext(DirectMessageContext).state;
-    console.log('%c listDirectMessage: ', 'color: red' , listDirectMessage);
     const [ listDisplay, setListDisplay ] = useState([]);
 
     const searchMember = event => {
