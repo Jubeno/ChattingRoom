@@ -4,12 +4,16 @@ import moment from 'moment';
 
 const MessageItem = props => {
     const { data, userId } = props;
-    console.log('userId: ', data);
     const name = data.displayName;
     const content = data.value;
     const avatar = data.avatar !== '' ? data.avatar : '/img/avatar-placeholder.png';
-    const sendTime = moment(data.sendTime).format('HH:mm DD/MM/YYYY');
-    console.log('sendTime: ', sendTime);
+
+    const getSendTime = format => {
+        return moment(data.sendTime).format(format);
+    }
+
+    const isToday = moment().diff(data.sendTime, 'days') === 0;
+    const sendTime = isToday ? getSendTime('HH:mm') : getSendTime('HH:mm DD/MM/YYYY');
     const isMyMessage = () => data.senderId === userId;
 
     useEffect(() => {
@@ -17,20 +21,24 @@ const MessageItem = props => {
     }, [])
 
     return (
-        <div className="message_item">
-            <div className="avatar">
-                <DelayImage src={avatar}  />
-            </div>
-            <div className="content">
-                <div className="name">{name}</div>
-                <div className="message_content">
-                    {content}
+            <div className={`${isMyMessage() ? 'my_message_item' : 'other_message_item'}`}>
+                <div className={`${isMyMessage() ? 'my_message' : 'other_message'}`}>
+                    <div className="avatar">
+                        <DelayImage src={avatar}  />
+                    </div>
+                    <div className="content">
+                        <div>
+                            <div className="name">{name}</div>
+                            <div className="message_content">
+                                {content}
+                            </div>
+                        </div>
+                        <div className="sendtime">
+                            {sendTime}
+                        </div>
+                    </div>
                 </div>
-                <div className="sendtime">
-                    {sendTime}
-                </div>
             </div>
-        </div>
     );
 }
 

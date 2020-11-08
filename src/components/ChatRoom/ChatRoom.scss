@@ -353,38 +353,103 @@
                     overflow-y: scroll;
                     padding: 15px 10px;
 
-                    .message_item {
-                        width: 70%;
-                        max-width: 500px;
+                    .my_message_item {
                         display: flex;
-                        margin-bottom: 20px;
-                        .avatar {
-                            width: 50px;
-                            height: 50px;
+                        justify-content: flex-end;
+                        .my_message {
+                            width: 70%;
+                            max-width: 500px;
+                            display: flex;
+                            margin-bottom: 20px;
+                            flex-direction: row-reverse;
+                            .avatar {
+                                width: 50px;
+                                height: 50px;
 
-                            img {
-                                width: 100%;
-                                height: 100%;
-                                border-radius: 25px;
+                                img {
+                                    width: 100%;
+                                    height: 100%;
+                                    border-radius: 25px;
+                                }
+                            }
+
+                            .content {
+                                padding-right: 5px;
+                                width: calc(100% - 50px);
+                                display: flex;
+                                flex-direction: row-reverse;
+                                .name {
+                                    font-size: 14px;
+                                    font-weight: lighter;
+                                    font-style: italic;
+                                    text-align: right;
+                                }
+
+                                .message_content {
+                                    width: fit-content;
+                                    background-color: #e24177;
+                                    padding: 10px 20px;
+                                    border-top-left-radius: 20px;
+                                    border-bottom-right-radius: 20px;
+                                    border-bottom-left-radius: 20px;
+                                }
+                                .sendtime {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: flex-end;
+                                    padding-right: 5px;
+                                    font-size: 14px;
+                                    color: #817a7a;
+                                    font-weight: lighter;
+                                }
                             }
                         }
+                    }
+                    .other_message_item {
+                        display: flex;
+                        .other_message {
+                            width: 70%;
+                            max-width: 500px;
+                            display: flex;
+                            margin-bottom: 20px;
+                            .avatar {
+                                width: 50px;
+                                height: 50px;
 
-                        .content {
-                            padding-left: 5px;
-                            width: calc(100% - 50px);
-                            .name {
-                                font-size: 14px;
-                                font-weight: lighter;
-                                font-style: italic;
+                                img {
+                                    width: 100%;
+                                    height: 100%;
+                                    border-radius: 25px;
+                                }
                             }
 
-                            .message_content {
-                                width: fit-content;
-                                background-color: #e24177;
-                                padding: 10px 20px;
-                                border-top-right-radius: 20px;
-                                border-bottom-right-radius: 20px;
-                                border-bottom-left-radius: 20px;
+                            .content {
+                                padding-left: 5px;
+                                width: calc(100% - 50px);
+                                display: flex;
+                                .name {
+                                    font-size: 14px;
+                                    font-weight: lighter;
+                                    font-style: italic;
+                                }
+
+                                .message_content {
+                                    width: fit-content;
+                                    background-color: #e2d9d9;
+                                    padding: 10px 20px;
+                                    border-top-right-radius: 20px;
+                                    border-bottom-right-radius: 20px;
+                                    border-bottom-left-radius: 20px;
+                                }
+                                .sendtime {
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: flex-end;
+                                    padding-left: 5px;
+                                    font-size: 14px;
+                                    color: #817a7a;
+                                    font-weight: lighter;
+                                }
                             }
                         }
                     }
