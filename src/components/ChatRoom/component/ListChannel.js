@@ -4,6 +4,7 @@ import { getKeyByProperty } from '../../../utils/function';
 import { GENERAL_CHANNEL_ID } from '../../../utils/constant';
 import { channelOnDB, chatInChannelOnDB, userInChannelOnDB, userOnDB } from '../../../utils/database';
 import { Context as ChannelContext, actions as ChannelActions } from '../../../contexts/Channel/ChannelContext';
+import firebase from 'firebase'
 
 const ListChannel = props => {
     const { workspaceId, userId } = props;
@@ -49,21 +50,28 @@ const ListChannel = props => {
     const openChannel = async item => {
         let data = {};
         data.type = "CHANNEL";
-        await channelOnDB.orderByChild('channelId').equalTo(item.channelId).once('value', response => {
+        await firebase.database().ref(`/listChannel/${item.channelId}`).once('value', response => {
             if(response.exists()) {
-                data.infor = Object.values(response.val())[0];
+                data.infor = response.val();
             }
         })
-        await userInChannelOnDB.orderByChild('channelId').equalTo(item.channelId).once('value', response => {
+        
+        await firebase.database().ref(`/userInChannel/${item.channelId}`).once('value', response => {
             if( response.exists()) {
-                data.members = Object.values(response.val())[0].members;
+                data.members = Object.values(response.val().members);
             }
         })
-        await chatInChannelOnDB.orderByChild('channelId').equalTo(item.channelId).once('value', response => {
+        await firebase.database().ref(`/chatInChannel/${item.channelId}`).once('value', response => {
             if( response.exists() ) {
-                data.listChat = response.val() && Object.values(response.val())[0].listChat;
+                if(response.val().listChat) {
+                    data.listChat = Object.values(response.val().listChat);
+                } else {
+                    data.listChat = [];
+                }
             }
         })
+
+        // query limit
         ChannelActions.setInformation(data);
     }
 

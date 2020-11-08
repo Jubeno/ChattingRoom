@@ -21,6 +21,7 @@ const InputBox = props => {
     const clearInput = () => reset();
 
     const sendMessage = async value => {
+        if(value.messageContent === '') return
         const messageId = generateId(userId, isChannel ? channelId : friendId, value.messageContent)
 
         if (isChannel) {

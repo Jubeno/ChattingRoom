@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { chatInChannelOnDB, messageOnDB } from '../../../utils/database';
 import MessageItem from './MessageItem';
+import ScrollToBottom from 'react-scroll-to-bottom';
+import firebase from 'firebase';
 
 const ChatInChannel = props => {
     const { data, userId } = props;
@@ -21,12 +23,16 @@ const ChatInChannel = props => {
     })
 
     const loadList = initial ? listChat : listRealTime;
+    
     return (
-        <div className="chat_content">
+        <ScrollToBottom 
+            className="chat_content" 
+            followButtonClassName="button_to_bottom"
+        >
             {
                 loadList?.map((item, key) => <MessageItem key={key} data={item} userId={userId}/>)
             }
-        </div>
+        </ScrollToBottom>
     );
 }
 
