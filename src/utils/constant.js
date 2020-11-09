@@ -31,3 +31,5 @@ export const GENERAL_CHANNEL_ID = "I2dlbmVyYWwtMTYwNDU1ODAzNzAzMw==";
 export const MESSAGE_TYPE = {
     TEXT: 'TEXT'
 }
+
+export const INITIAL_MESSAGE_CHAT = 40;

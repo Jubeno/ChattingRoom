@@ -1,16 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { X } from 'react-feather';
 import { getKeyByProperty } from '../../../utils/function';
-import { GENERAL_CHANNEL_ID } from '../../../utils/constant';
-import { channelOnDB, chatInChannelOnDB, userInChannelOnDB, userOnDB } from '../../../utils/database';
+import { GENERAL_CHANNEL_ID, INITIAL_MESSAGE_CHAT } from '../../../utils/constant';
+import { channelOnDB, chatInChannelOnDB, userInChannelOnDB, userOnDB, DATABASE } from '../../../utils/database';
 import { Context as ChannelContext, actions as ChannelActions } from '../../../contexts/Channel/ChannelContext';
-import firebase from 'firebase'
+import firebase from 'firebase';
+import moment from 'moment';
+
 
 const ListChannel = props => {
     const { workspaceId, userId } = props;
     const { listChannel } = useContext(ChannelContext).state;
     const [ channels, setChannels ] = useState(listChannel);
-
+    
+    
     useEffect(() => {
         setChannels(listChannel);
     }, [listChannel]);
@@ -48,30 +51,33 @@ const ListChannel = props => {
     const isNotGeneralChannel = (item) => item.channelId !== GENERAL_CHANNEL_ID;
 
     const openChannel = async item => {
+        const startTime = moment().subtract(65, 'minutes').valueOf();
+
         let data = {};
         data.type = "CHANNEL";
-        await firebase.database().ref(`/listChannel/${item.channelId}`).once('value', response => {
+        await DATABASE.ref(`/listChannel/${item.channelId}`).once('value', response => {
             if(response.exists()) {
                 data.infor = response.val();
             }
         })
         
-        await firebase.database().ref(`/userInChannel/${item.channelId}`).once('value', response => {
+        await DATABASE.ref(`/userInChannel/${item.channelId}`).once('value', response => {
             if( response.exists()) {
                 data.members = Object.values(response.val().members);
             }
         })
-        await firebase.database().ref(`/chatInChannel/${item.channelId}`).once('value', response => {
-            if( response.exists() ) {
-                if(response.val().listChat) {
-                    data.listChat = Object.values(response.val().listChat);
-                } else {
-                    data.listChat = [];
-                }
+
+        await DATABASE.ref(`/chatInChannel/${item.channelId}/listChat`)
+        // .orderByChild('sendTime')
+        // .startAt(startTime)
+        .limitToLast(INITIAL_MESSAGE_CHAT)
+        .once('value', response => {
+            if( response.val() ) {
+                data.listChat = Object.values(response.val());
+            } else {
+                data.listChat = [];
             }
         })
-
-        // query limit
         ChannelActions.setInformation(data);
     }
 
