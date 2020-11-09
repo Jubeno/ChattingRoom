@@ -49,6 +49,7 @@ const ListDirectMessage = props => {
     }
 
     const openDirectMessage = async item => {
+        localStorage.setItem('friendId', item.friendId);
         let data = {};
         const dataConversation = await getData(messageOnDB, 'conversationID', item.conversationID);
         const dataFriend = await getData(userOnDB, 'userID', item.friendId);
@@ -62,20 +63,25 @@ const ListDirectMessage = props => {
         }
         ChannelActions.setInformation(data);
     }
+    const isUserInConversation = (conversation) => {
+        console.log('conversation: ', conversation);
 
+    }
     return (
         <>
             {
-                listDirect?.length > 0 && listDirect?.map((item, key) =>
-                    <div className="direct_message_item" key={key}>
-                        <p onClick={() => openDirectMessage(item)}>{getUserNameById(item?.friendId)}</p>
-                        <X 
-                            onClick={() => deleteConversation(item)}
-                            className="delete_conversation" 
-                            color="#fff" 
-                            size={18}
-                        />
-                    </div>
+                listDirect?.length > 0 && listDirect?.map((item, key) => {
+                    return isUserInConversation(item);
+                }
+                    // <div className="direct_message_item" key={key}>
+                    //     <p onClick={() => openDirectMessage(item)}>{getUserNameById(item?.friendId)}</p>
+                    //     <X 
+                    //         onClick={() => deleteConversation(item)}
+                    //         className="delete_conversation" 
+                    //         color="#fff" 
+                    //         size={18}
+                    //     />
+                    // </div>
                 )
             }
         </>

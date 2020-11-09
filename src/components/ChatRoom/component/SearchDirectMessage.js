@@ -27,10 +27,11 @@ const SearchDirectMessage = props => {
             closeDirectMessage();
             return
         } else {
-            const newConversation = directMessageOnDB.push();
-            const newMessage = messageOnDB.push();
             const currentTime = getCurrentTimeStamp();
             const conversationID = generateId(userId, id, currentTime);
+            const newConversation = directMessageOnDB.child(conversationID);
+            const newMessage = messageOnDB.child(conversationID);
+            
             const data = {
                 conversationID,
                 createdBy: userId,

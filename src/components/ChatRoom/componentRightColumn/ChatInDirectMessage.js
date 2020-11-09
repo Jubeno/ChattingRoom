@@ -1,32 +1,107 @@
-import React, { useEffect, useState } from 'react';
-import { chatInChannelOnDB, messageOnDB } from '../../../utils/database';
+import React, { useEffect, useState, useRef } from 'react';
+import { DATABASE } from '../../../utils/database';
 import MessageItem from './MessageItem';
+import { INITIAL_MESSAGE_CHAT } from '../../../utils/constant';
+import Loading from '../../Common/Loading/Loading';
 
 const ChatInDirectMessage = props => {
-    const { data } = props;
+    const { data, userId } = props;
     const conversationId = data.conversationId;
     const listChat = data?.listChat && Object.values(data?.listChat);
-    const [ listRealTime, setListRealTime ] = useState([]);
-    const [ initial, setInitial ] = useState(true);
+    const messageListRef = useRef(null);
+    const messagesEndRef = useRef(null)
+    const [ list, setList ] = useState([]);
+    const firstMessage = list[0]?.sendTime;
+    const [hasMore, setHasMore] = useState(true);
+    const [showContent, setShowContent] = useState(true);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    }
 
     useEffect(() => {
-        return () => setListRealTime([])
-    }, [])
+        // loading on change channel
+        setShowContent(true);
+        setList(listChat)
+
+        // scroll to bottom at initial
+        setTimeout(() => {
+            scrollToBottom();
+        }, 0);
+
+        // hide content until scroll to bottom is done
+        setTimeout(() => {
+            setShowContent(false)
+        }, 850);
+
+    }, [conversationId])
 
     // chat real time
-    conversationId && messageOnDB.orderByChild('conversationID').equalTo(conversationId).on('child_changed', response => {
-        setInitial(false);
-        const value = response.val() && Object.values(response.val().listChat);
-        setListRealTime(value);
+    DATABASE
+    .ref(`/chatInDirectMessage/${conversationId}`)
+    .on('child_changed', response => {
+        console.log('response: ', response.val());
+        const id = localStorage.getItem('friendId')
+        let value = {};
+        if( response.val() ) {
+            value = Object.values(response.val()).pop();
+        }
+        if(id === value.receiverId) {
+            setList([...list, value]);
+            scrollToBottom();
+        }
     })
-
-    const loadList = initial ? listChat : listRealTime;
-    return (
-        <div className="chat_content">
-            {
-                loadList?.map((item, key) => <MessageItem key={key} data={item}/>)
+    
+    const loadMore = () => {
+        DATABASE
+        .ref(`/chatInDirectMessage/${conversationId}/listChat`)
+        .orderByChild('sendTime')
+        .endAt(firstMessage)
+        .limitToLast(INITIAL_MESSAGE_CHAT)
+        .once('value', response => {
+            if(response.val()) {
+                const value = Object.values(response.val());
+                if(value?.length !== 1 ) {
+                    value.pop();
+                    setList([...value, ...list])
+                } else {
+                    setHasMore(false);
+                }
             }
-        </div>
+        })
+    }
+
+    const renderButtonLoadMore = () => {
+        let ele = {};
+        if(listChat.length >= INITIAL_MESSAGE_CHAT) {
+            ele =  <div className={`btn_loadmore ${!hasMore && 'no_more_to_load'}`} onClick={loadMore}>Loadmore</div>
+        } else ele = null;
+        return ele;
+    }
+    return (
+        <>
+            {showContent && 
+                <div className="loading_content">
+                    <Loading />
+                </div>
+            }
+            <div 
+                className="chat_content" 
+                ref={messageListRef}
+            >
+                { renderButtonLoadMore() }
+                {
+                    list?.map((item, key) => 
+                        <MessageItem 
+                            key={key} 
+                            data={item} 
+                            userId={userId}
+                        />
+                    )
+                }
+                <div ref={messagesEndRef} />
+            </div>
+        </>
     );
 }
 

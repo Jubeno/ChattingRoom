@@ -51,7 +51,7 @@ const ListChannel = props => {
     const isNotGeneralChannel = (item) => item.channelId !== GENERAL_CHANNEL_ID;
 
     const openChannel = async item => {
-        const startTime = moment().subtract(65, 'minutes').valueOf();
+        localStorage.setItem('channelId', item.channelId);
 
         let data = {};
         data.type = "CHANNEL";
@@ -94,8 +94,6 @@ const ListChannel = props => {
                                         className="channel_name"
                                         onClick={() => openChannel(item)}
                                     >
-                                       
-                                       
                                         {item.channelName}
                                     </p>
                                     {

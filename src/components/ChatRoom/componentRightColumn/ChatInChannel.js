@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { chatInChannelOnDB, DATABASE, messageOnDB } from '../../../utils/database';
+import { DATABASE } from '../../../utils/database';
 import MessageItem from './MessageItem';
 import { INITIAL_MESSAGE_CHAT } from '../../../utils/constant';
 import Loading from '../../Common/Loading/Loading';
@@ -9,8 +9,6 @@ const ChatInChannel = props => {
     const { data, userId } = props;
     const channelId = data?.infor?.channelId;
     const listChat = data?.listChat && Object.values(data?.listChat);
-    const [ listRealTime, setListRealTime ] = useState([]);
-    const [ initial, setInitial ] = useState(true);
     const messageListRef = useRef(null);
     const messagesEndRef = useRef(null)
     const [ list, setList ] = useState([]);
@@ -21,15 +19,14 @@ const ChatInChannel = props => {
 
     const scrollToBottom = () => {
         messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
-      }
+    }
 
     useEffect(() => {
-        if(initial) {
-            setList(listChat)
-        } else {
-            setList(listRealTime)
-        }
+        // loading on change channel
+        setShowContent(true);
+        setList(listChat)
 
+        // scroll to bottom at initial
         setTimeout(() => {
             scrollToBottom();
         }, 0);
@@ -37,30 +34,24 @@ const ChatInChannel = props => {
         // hide content until scroll to bottom is done
         setTimeout(() => {
             setShowContent(false)
-        }, 750);
+        }, 850);
 
-        return () => setListRealTime([])
-    }, [])
+    }, [channelId])
 
-    // // chat real time
-    // DATABASE
-    // .ref(`/chatInChannel/${channelId}/listChat`)
-    // .orderByChild('sendTime')
-    // .limitToLast(INITIAL_MESSAGE_CHAT)
-    // .on('child_changed', response => {
-    //     console.log('%c response: ', 'color: red' , response.val());
-    //     setInitial(false);
-    //     let value;
-    //     if( response.val() ) {
-    //         value = Object.values(response.val());
-    //     } else {
-    //         value = [];
-    //     }
-    //     console.log('%c value: ', 'color: red' , value);
-    //     setListRealTime(value);
-        
-    //     setList(value);
-    // })
+    // chat real time
+    DATABASE
+    .ref(`/chatInChannel/${channelId}`)
+    .on('child_changed', response => {
+        const id = localStorage.getItem('channelId')
+        let value = {};
+        if( response.val() ) {
+            value = Object.values(response.val()).pop();
+        }
+        if(id === value.receiverId) {
+            setList([...list, value]);
+            scrollToBottom();
+        }
+    })
     
     const loadMore = () => {
         DATABASE
@@ -71,7 +62,6 @@ const ChatInChannel = props => {
         .once('value', response => {
             if(response.val()) {
                 const value = Object.values(response.val());
-                console.log('%c value: ', 'color: red' , value.length);
                 if(value?.length !== 1 ) {
                     value.pop();
                     setList([...value, ...list])
@@ -84,10 +74,9 @@ const ChatInChannel = props => {
 
     const renderButtonLoadMore = () => {
         let ele = {};
-        ele = 
-            <div className={`btn_loadmore ${!hasMore && 'no_more_to_load'}`} onClick={loadMore}>
-                Loadmore
-            </div>
+        if(listChat.length >= INITIAL_MESSAGE_CHAT) {
+            ele =  <div className={`btn_loadmore ${!hasMore && 'no_more_to_load'}`} onClick={loadMore}>Loadmore</div>
+        } else ele = null;
         return ele;
     }
     return (
