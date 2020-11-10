@@ -6,6 +6,7 @@ import { chatInChannelOnDB, messageOnDB } from '../../../utils/database';
 import { generateId, getCurrentTimeStamp, getKeyByProperty } from '../../../utils/function';
 import { Context, actions } from '../../../contexts/Channel/ChannelContext';
 import UploadFile from './UploadFile';
+import Emoji from './Emoji';
 
 
 const InputBox = props => {
@@ -20,6 +21,8 @@ const InputBox = props => {
     const friendId = data?.friendId;
     const isChannel = data?.type === "CHANNEL";
     const [openUpload, setOpenUpload] = useState(false);
+    const [openEmoji, setOpenEmoji] = useState(false);
+
     const clearInput = () => reset();
 
     const sendInChannel = async (value) => {
@@ -72,6 +75,8 @@ const InputBox = props => {
 
     const openUploadFile = () => setOpenUpload(show => !show);
 
+    const openSendEmoji = () => setOpenEmoji(show => !show);
+
     return (
         <>
             <form 
@@ -81,7 +86,7 @@ const InputBox = props => {
                 <div className="additional_file" onClick={openUploadFile}>
                     <Plus />
                 </div>
-                <div className="emoji_message">
+                <div className="emoji_message" onClick={openSendEmoji}>
                     <Smile />
                 </div>
                 <input 
@@ -107,6 +112,9 @@ const InputBox = props => {
                     friendId={friendId}
                     isChannel={isChannel}
                     channelId={channelId}
+                />
+                <Emoji 
+                    open={openEmoji}
                 />
             </form>
             

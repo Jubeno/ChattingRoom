@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Check, File, Image, X } from 'react-feather';
 import CustomUploadButton from 'react-firebase-file-uploader/lib/CustomUploadButton';
 import firebase from 'firebase';
-import {Animated} from "react-animated-css";
 import { messageOnDB } from '../../../utils/database';
 import { generateId, getCurrentTimeStamp } from '../../../utils/function';
 import { MESSAGE_TYPE } from '../../../utils/constant';
