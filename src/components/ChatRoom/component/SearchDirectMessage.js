@@ -3,9 +3,10 @@ import { MentionsInput, Mention } from 'react-mentions';
 import { userOnDB, messageOnDB, directMessageOnDB } from '../../../utils/database';
 import { generateId, getCurrentTimeStamp } from '../../../utils/function';
 import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../../contexts/DirectMessage/DirectMessageContext';
+import { MESSAGE_TYPE } from '../../../utils/constant';
 
 const SearchDirectMessage = props => {
-    const { userId, closeDirectMessage, workspaceId } = props;
+    const { userProfile, userId, closeDirectMessage, workspaceId } = props;
     const [ paramSearch, setParamSearch ] = useState('');
     const { dataWorkspace, listDirectMessage } = useContext(DirectMessageContext).state;
     const [ listDisplay, setListDisplay ] = useState([]);
@@ -36,10 +37,29 @@ const SearchDirectMessage = props => {
                 conversationID,
                 createdBy: userId,
                 friendId: id,
-                workspaceId
+                workspaceId,
+                members: [userId, id]
             }
-            await newConversation.set(data)
-            await newMessage.set(data)
+            await newConversation.set({
+                conversationID,
+                createdBy: userId,
+                friendId: id,
+                workspaceId,
+                members: [userId, id]
+            })
+            await newMessage.set({
+                conversationID,
+                createdBy: userId,
+                friendId: id,
+                workspaceId,
+                members: [userId, id],
+                listChat: [
+                    {                    
+                        value: `${userProfile.displayName} created this conversation`,
+                        messageType: MESSAGE_TYPE.SYSTEM
+                    }
+                ]
+            })
             DirectMessageActions.createListDirectMessage(data);
             closeDirectMessage();
         }

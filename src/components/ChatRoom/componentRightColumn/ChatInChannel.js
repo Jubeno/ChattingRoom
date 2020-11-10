@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { DATABASE } from '../../../utils/database';
 import MessageItem from './MessageItem';
-import { INITIAL_MESSAGE_CHAT } from '../../../utils/constant';
+import { HIDE_CONTENT_TIME, INITIAL_MESSAGE_CHAT, MESSAGE_TYPE } from '../../../utils/constant';
 import Loading from '../../Common/Loading/Loading';
 
 
@@ -18,7 +18,9 @@ const ChatInChannel = props => {
 
 
     const scrollToBottom = () => {
-        messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+        if(messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+        }
     }
 
     useEffect(() => {
@@ -34,7 +36,7 @@ const ChatInChannel = props => {
         // hide content until scroll to bottom is done
         setTimeout(() => {
             setShowContent(false)
-        }, 850);
+        }, HIDE_CONTENT_TIME);
 
     }, [channelId])
 
@@ -75,7 +77,7 @@ const ChatInChannel = props => {
     const renderButtonLoadMore = () => {
         let ele = {};
         if(listChat.length >= INITIAL_MESSAGE_CHAT) {
-            ele =  <div className={`btn_loadmore ${!hasMore && 'no_more_to_load'}`} onClick={loadMore}>Loadmore</div>
+            ele =  <div className={`btn_loadmore ${!hasMore && 'no_more_to_load'}`} onClick={loadMore}>See older messages</div>
         } else ele = null;
         return ele;
     }
@@ -94,10 +96,10 @@ const ChatInChannel = props => {
                 {
                     list?.map((item, key) => 
                         <MessageItem 
-                            key={key} 
-                            data={item} 
-                            userId={userId}
-                        />
+                                key={key} 
+                                data={item} 
+                                userId={userId}
+                            />
                     )
                 }
                 <div ref={messagesEndRef} />

@@ -11,6 +11,8 @@ const WorkSpaceReducer = (state, action) => {
             return { ...state, listChannel: deletedList };
         case CREATE_CHANNEL:
             return { ...state, listChannel: state.listChannel.concat(action.payload) };
+        case CREATE_CHANNEL:
+            return { ...state, channelData: {...state.channelData, isActive: false} };
         case SET_INFOR_CHANNEL:
             return { 
                     ...state, channelData: 

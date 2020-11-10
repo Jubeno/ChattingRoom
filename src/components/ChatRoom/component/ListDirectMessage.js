@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { directMessageOnDB, getData, messageOnDB, userOnDB } from '../../../utils/database';
+import { DATABASE, directMessageOnDB, getData, messageOnDB, userOnDB } from '../../../utils/database';
 import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../../contexts/DirectMessage/DirectMessageContext';
 import { X } from 'react-feather';
 import { getKeyByProperty } from '../../../utils/function';
@@ -19,10 +19,12 @@ const ListDirectMessage = props => {
         async function getDataFromDB() {
             let listDirect = [];
 
-            await directMessageOnDB.orderByChild('createdBy').equalTo(userId).once('value', response => {
-                if ( response.exists() ) {
+            await DATABASE.ref('/directMessage').once('value', response => {
+                if ( response.val() ) {
                     const value = Object.values(response.val());
                     listDirect = value;
+                } else {
+                    listDirect = [];
                 }
             })
             
@@ -46,6 +48,7 @@ const ListDirectMessage = props => {
             messageOnDB.child(key).remove();
         })
         DirectMessageActions.deleteConversation(item.conversationID);
+        ChannelActions.hideChatContent();
     }
 
     const openDirectMessage = async item => {
@@ -63,25 +66,55 @@ const ListDirectMessage = props => {
         }
         ChannelActions.setInformation(data);
     }
+    
     const isUserInConversation = (conversation) => {
-        console.log('conversation: ', conversation);
-
+        return conversation?.members?.includes(userId);
     }
+
+    DATABASE
+    .ref(`/directMessage`)
+    .on('child_removed', response => {
+        let value;
+        if(response.val()) {
+            value = response.val().conversationID;
+        }
+        const newListDirect = listDirect.filter(item => item.conversationID !== value);
+        setListDirect(newListDirect)
+    })
+    
+    DATABASE
+    .ref(`/directMessage`)
+    .on('child_added', response => {
+        if(listDirect.length > 0) {return}
+        else {
+            let value;
+            if(response.val()) {
+                value = response.val();
+            }
+    
+            const newListDirect = listDirect.findIndex(item => item.conversationID);
+            if(newListDirect === -1) {
+                setListDirect([...listDirect, value])
+            }
+        }
+    })
     return (
         <>
             {
                 listDirect?.length > 0 && listDirect?.map((item, key) => {
-                    return isUserInConversation(item);
-                }
-                    // <div className="direct_message_item" key={key}>
-                    //     <p onClick={() => openDirectMessage(item)}>{getUserNameById(item?.friendId)}</p>
-                    //     <X 
-                    //         onClick={() => deleteConversation(item)}
-                    //         className="delete_conversation" 
-                    //         color="#fff" 
-                    //         size={18}
-                    //     />
-                    // </div>
+                    return isUserInConversation(item) 
+                    ?
+                        <div className="direct_message_item" key={key}>
+                            <p onClick={() => openDirectMessage(item)}>{getUserNameById(item?.friendId)}</p>
+                            <X 
+                                onClick={() => deleteConversation(item)}
+                                className="delete_conversation" 
+                                color="#fff" 
+                                size={18}
+                            />
+                        </div>
+                    : null
+                    }
                 )
             }
         </>

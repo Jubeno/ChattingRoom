@@ -1,44 +1,40 @@
-import React, { useEffect } from 'react';
-import DelayImage from '../../Common/DelayImage/DelayImage';
-import moment from 'moment';
+import React from 'react';
+import { MESSAGE_TYPE } from '../../../utils/constant';
+import FILE from '../../Common/Message/FILE';
+import IMAGE from '../../Common/Message/IMAGE';
+import SYSTEM from '../../Common/Message/SYSTEM';
+import TEXT from '../../Common/Message/TEXT';
+
 
 const MessageItem = props => {
     const { data, userId } = props;
-    const name = data.displayName;
-    const content = data.value;
-    const avatar = data.avatar !== '' ? data.avatar : '/img/avatar-placeholder.png';
 
-    const getSendTime = format => {
-        return moment(data.sendTime).format(format);
+    const renderMessageType = () => {
+        let messageItem = <div>Can't load message, please reload this page</div>;
+        switch (data.messageType) {
+            case MESSAGE_TYPE.TEXT:
+                messageItem = <TEXT data={data} userId={userId}/>
+                break;
+            case MESSAGE_TYPE.SYSTEM:
+                messageItem = <SYSTEM data={data} userId={userId}/>
+                break;
+            case MESSAGE_TYPE.FILE:
+                messageItem = <FILE data={data} userId={userId}/>
+                break;
+            case MESSAGE_TYPE.IMAGE:
+                messageItem = <IMAGE data={data} userId={userId}/>
+                break;
+            
+            default:
+                break;
+        }
+        return messageItem;
     }
 
-    const isToday = moment().diff(data.sendTime, 'days') === 0;
-    const sendTime = isToday ? getSendTime('HH:mm') : getSendTime('HH:mm DD/MM/YYYY');
-    const isMyMessage = () => data.senderId === userId;
-
-    useEffect(() => {
-
-    }, [])
-
     return (
-            <div className={`${isMyMessage() ? 'my_message_item' : 'other_message_item'}`}>
-                <div className={`${isMyMessage() ? 'my_message' : 'other_message'}`}>
-                    <div className="avatar">
-                        <DelayImage src={avatar}  />
-                    </div>
-                    <div className="content">
-                        <div>
-                            <div className="name">{name}</div>
-                            <div className="message_content">
-                                {content}
-                            </div>
-                        </div>
-                        <div className="sendtime">
-                            {sendTime}
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <>
+            {renderMessageType()}
+        </>
     );
 }
 

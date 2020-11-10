@@ -13,9 +13,10 @@ import Loading from '../../Common/Loading/Loading';
 import { channelOnDB, chatInChannelOnDB, userInChannelOnDB, userOnDB } from '../../../utils/database';
 import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../../contexts/DirectMessage/DirectMessageContext';
 import { getCurrentTimeStamp } from '../../../utils/function';
+import { MESSAGE_TYPE } from '../../../utils/constant';
 
 const CreateNewChannel = props => {
-    const { closeCreateChannel, userId, workspaceId, workspaceName } = props;
+    const { userProfile, closeCreateChannel, userId, workspaceId, workspaceName } = props;
     const { register, handleSubmit } = useForm();
     const [ members, setMembers ] = useState([userId]);
     const [ listUser, setListUser ] = useState([]);
@@ -50,7 +51,13 @@ const CreateNewChannel = props => {
         await newListChat.set({
             name: data.channelName,
             channelId,
-            workspaceId
+            workspaceId,
+            listChat: [
+                {                    
+                    value: `${userProfile.displayName} created this channel`,
+                    messageType: MESSAGE_TYPE.SYSTEM
+                }
+            ]
         })
         ChannelActions.createChannel({
             members,

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { DATABASE } from '../../../utils/database';
 import MessageItem from './MessageItem';
-import { INITIAL_MESSAGE_CHAT } from '../../../utils/constant';
+import { HIDE_CONTENT_TIME, INITIAL_MESSAGE_CHAT } from '../../../utils/constant';
 import Loading from '../../Common/Loading/Loading';
 
 const ChatInDirectMessage = props => {
@@ -16,7 +16,9 @@ const ChatInDirectMessage = props => {
     const [showContent, setShowContent] = useState(true);
 
     const scrollToBottom = () => {
-        messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+        if(messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+        }
     }
 
     useEffect(() => {
@@ -32,7 +34,7 @@ const ChatInDirectMessage = props => {
         // hide content until scroll to bottom is done
         setTimeout(() => {
             setShowContent(false)
-        }, 850);
+        }, HIDE_CONTENT_TIME);
 
     }, [conversationId])
 
@@ -40,7 +42,6 @@ const ChatInDirectMessage = props => {
     DATABASE
     .ref(`/chatInDirectMessage/${conversationId}`)
     .on('child_changed', response => {
-        console.log('response: ', response.val());
         const id = localStorage.getItem('friendId')
         let value = {};
         if( response.val() ) {
@@ -74,7 +75,7 @@ const ChatInDirectMessage = props => {
     const renderButtonLoadMore = () => {
         let ele = {};
         if(listChat.length >= INITIAL_MESSAGE_CHAT) {
-            ele =  <div className={`btn_loadmore ${!hasMore && 'no_more_to_load'}`} onClick={loadMore}>Loadmore</div>
+            ele = <div className={`btn_loadmore ${!hasMore && 'no_more_to_load'}`} onClick={loadMore}>See older messages</div>
         } else ele = null;
         return ele;
     }
@@ -93,10 +94,10 @@ const ChatInDirectMessage = props => {
                 {
                     list?.map((item, key) => 
                         <MessageItem 
-                            key={key} 
-                            data={item} 
-                            userId={userId}
-                        />
+                                key={key} 
+                                data={item} 
+                                userId={userId}
+                            />
                     )
                 }
                 <div ref={messagesEndRef} />

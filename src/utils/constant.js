@@ -29,7 +29,11 @@ export const EXPIRED_TIME = 120 //  MINUTES
 export const GENERAL_CHANNEL_ID = "I2dlbmVyYWwtMTYwNDU1ODAzNzAzMw==";
 
 export const MESSAGE_TYPE = {
-    TEXT: 'TEXT'
+    TEXT: 'TEXT',
+    SYSTEM: 'SYSTEM',
+    FILE: 'FILE',
+    IMAGE: 'IMAGE'
 }
 
-export const INITIAL_MESSAGE_CHAT = 40;
+export const INITIAL_MESSAGE_CHAT = 20;
+export const HIDE_CONTENT_TIME = 620;

@@ -1,10 +1,12 @@
-import React, { useContext } from 'react';
-import { Send, Smile } from 'react-feather';
+import React, { useState, useContext } from 'react';
+import { Plus, Send, Smile } from 'react-feather';
 import { useForm } from 'react-hook-form';
 import { MESSAGE_TYPE } from '../../../utils/constant';
 import { chatInChannelOnDB, messageOnDB } from '../../../utils/database';
 import { generateId, getCurrentTimeStamp, getKeyByProperty } from '../../../utils/function';
 import { Context, actions } from '../../../contexts/Channel/ChannelContext';
+import UploadFile from './UploadFile';
+
 
 const InputBox = props => {
     const { user, data } = props;
@@ -17,48 +19,58 @@ const InputBox = props => {
     const conversationId = data?.conversationId;
     const friendId = data?.friendId;
     const isChannel = data?.type === "CHANNEL";
-
+    const [openUpload, setOpenUpload] = useState(false);
     const clearInput = () => reset();
 
+    const sendInChannel = async (value) => {
+        const messageId = generateId(userId, isChannel ? channelId : friendId, value.messageContent)
+        await chatInChannelOnDB.once('value', response => {
+            const key = getKeyByProperty( response.val(), 'channelId', channelId)
+            const newMessage = chatInChannelOnDB.child(`${key}/listChat`).push();
+
+            newMessage.update({
+                value: value.messageContent,
+                sendTime: currentTime,
+                senderId: userId,
+                receiverId: channelId,
+                messageId,
+                messageType: MESSAGE_TYPE.TEXT,
+                displayName,
+                avatar
+            })
+        })
+    }
+
+    const sendInDirect = async (value) => {
+        const messageId = generateId(userId, isChannel ? channelId : friendId, value.messageContent)
+        await messageOnDB.once('value', response => {
+            const key = getKeyByProperty( response.val(), 'conversationID', conversationId )
+            const newMessage = messageOnDB.child(`${key}/listChat`).push();
+
+            newMessage.update({
+                value: value.messageContent,
+                sendTime: currentTime,
+                senderId: userId,
+                receiverId: friendId,
+                messageId,
+                messageType: MESSAGE_TYPE.TEXT,
+                displayName,
+                avatar
+            })
+        })
+    }
     const sendMessage = async value => {
         if(value.messageContent === '') return
-        const messageId = generateId(userId, isChannel ? channelId : friendId, value.messageContent)
 
         if (isChannel) {
-            await chatInChannelOnDB.once('value', response => {
-                const key = getKeyByProperty( response.val(), 'channelId', channelId)
-                const newMessage = chatInChannelOnDB.child(`${key}/listChat`).push();
-    
-                newMessage.update({
-                    value: value.messageContent,
-                    sendTime: currentTime,
-                    senderId: userId,
-                    receiverId: channelId,
-                    messageId,
-                    messageType: MESSAGE_TYPE.TEXT,
-                    displayName,
-                    avatar
-                })
-            })
+            await sendInChannel(value);
         } else {
-            await messageOnDB.once('value', response => {
-                const key = getKeyByProperty( response.val(), 'conversationID', conversationId )
-                const newMessage = messageOnDB.child(`${key}/listChat`).push();
-
-                newMessage.update({
-                    value: value.messageContent,
-                    sendTime: currentTime,
-                    senderId: userId,
-                    receiverId: friendId,
-                    messageId,
-                    messageType: MESSAGE_TYPE.TEXT,
-                    displayName,
-                    avatar
-                })
-            })
+            await sendInDirect(value);
         }
         clearInput();
     }
+
+    const openUploadFile = () => setOpenUpload(show => !show);
 
     return (
         <>
@@ -66,6 +78,9 @@ const InputBox = props => {
                 onSubmit={handleSubmit(sendMessage)}
                 className="input_box"
             >
+                <div className="additional_file" onClick={openUploadFile}>
+                    <Plus />
+                </div>
                 <div className="emoji_message">
                     <Smile />
                 </div>
@@ -83,7 +98,18 @@ const InputBox = props => {
                 >
                     <Send size={35} color="#fff"/>
                 </button>
+                <UploadFile 
+                    conversationId={conversationId}
+                    open={openUpload}
+                    userId={userId}
+                    displayName={displayName}
+                    avatar={avatar}
+                    friendId={friendId}
+                    isChannel={isChannel}
+                    channelId={channelId}
+                />
             </form>
+            
         </>
     );
 }

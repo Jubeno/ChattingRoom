@@ -70,6 +70,7 @@ const LeftColumn = props => {
                     {
                         showSearchDirectMessage && 
                             <SearchDirectMessage 
+                                userProfile={user}
                                 userId={userId}
                                 workspaceId={workspaceID}
                                 closeDirectMessage={closeDirectMessage}
@@ -91,7 +92,7 @@ const LeftColumn = props => {
                         </div>
                 }
             </div>
-            { showCreateChannel && <CreateNewChannel workspaceId={workspace?.workspaceID} userId={userId} workspaceName={workspace?.workspace} closeCreateChannel={closeCreateChannel}/> }
+            { showCreateChannel && <CreateNewChannel userProfile={user} workspaceId={workspace?.workspaceID} userId={userId} workspaceName={workspace?.workspace} closeCreateChannel={closeCreateChannel}/> }
             { showCreateNewUser && <CreateNewUser workspaceName={workspace?.workspace} closeCreate={closeCreate}/> }
         </>
     );
