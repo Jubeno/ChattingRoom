@@ -35,18 +35,21 @@ const CreateNewChannel = props => {
         const newUserInChannel = userInChannelOnDB.child(channelId);
         const newListChat = chatInChannelOnDB.child(channelId);
         
-
         await newChannel.set({
             name: data.channelName,
             createTime,
             channelId,
-            workspaceId
+            workspaceId,
+            createBy: userId,
+            isPrivate: data.isPrivate
         })
         await newUserInChannel.set({
             members,
             channelId,
             channelName: data.channelName,
-            workspaceId
+            workspaceId,
+            createBy: userId,
+            isPrivate: data.isPrivate
         })
         await newListChat.set({
             name: data.channelName,
@@ -54,7 +57,7 @@ const CreateNewChannel = props => {
             workspaceId,
             listChat: [
                 {                    
-                    value: `${userProfile.displayName} created this channel`,
+                    value: `${userProfile.displayName} created this ${data.isPrivate ? 'private' : ''} channel`,
                     messageType: MESSAGE_TYPE.SYSTEM
                 }
             ]
@@ -63,7 +66,9 @@ const CreateNewChannel = props => {
             members,
             channelId,
             channelName: data.channelName,
-            workspaceId
+            workspaceId,
+            createBy: userId,
+            isPrivate: data.isPrivate
         })
         setLoading(false);
         closeCreateChannel();
@@ -100,6 +105,8 @@ const CreateNewChannel = props => {
     };
 
     const onAdd = id => {
+        if(id === userId) return;
+        if(members.includes(id)) return;
         setMembers([...members, id])
     }
 
@@ -136,29 +143,46 @@ const CreateNewChannel = props => {
                     </div>
                     <div className="member_of_channel">
                         <label>Members:</label>
-                        <MentionsInput 
-                            onChange={event => searchMember(event)} 
-                            className="mentions"
-                            value={paramSearch}
-                            markup="@{{__type__||__id__||__display__}}"
-                            placeholder="@Benoo"
-                            singleLine
-                            allowSpaceInQuery
-                            allowSuggestionsAboveCursor={false}
-                        >
-                            <Mention
-                                type="user"
-                                trigger="@"
-                                data={listDisplay}
-                                className="mentions__mention"
-                                appendSpaceOnAdd
-                                onAdd={onAdd}
+                        <div className="member_input">
+                            <MentionsInput 
+                                onChange={event => searchMember(event)} 
+                                className="mentions"
+                                value={paramSearch}
+                                markup="@{{__type__||__id__||__display__}}"
+                                placeholder="@Benoo"
+                                singleLine
+                                allowSpaceInQuery
+                                allowSuggestionsAboveCursor={false}
+                            >
+                                <Mention
+                                    type="user"
+                                    trigger="@"
+                                    data={listDisplay}
+                                    className="mentions__mention"
+                                    appendSpaceOnAdd
+                                    onAdd={onAdd}
+                                />
+                            </MentionsInput>
+                            <p className="member_notice">Note: All duplicate members will be removed</p>
+                        </div>
+                        
+                    </div>
+                    <div className="private_channel">
+                        <label>Private:</label>
+                        <div className="private_input">
+                            <Input 
+                                type="checkbox"
+                                name="isPrivate"
+                                innerRef={register}
+                                className="_input"
                             />
-                        </MentionsInput>
+                            <p className="private_notice">Note: If the channel is private, no one can add / remove members except the channel's creator. Some functions will be limited.</p>
+                        </div>
+                        
                     </div>
                     <div className="button_create_new_channel">
                         <button className="cancel" onClick={cancel}>Cancel</button>
-                        <button className="accept" disabled={!handleDisabledCreateButton()}>Create</button>
+                        <button className="accept" type="submit" disabled={!handleDisabledCreateButton()}>Create</button>
                     </div>
                 </Form>
             </Popup>

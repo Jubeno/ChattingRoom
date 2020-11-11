@@ -1,0 +1,203 @@
+#setting_channel.setting_channel {
+    position: absolute;
+    right: -20px;
+    top: calc(100% - 10px);
+    width: 170px;
+    height: auto;
+    background-color: #fff;
+    border-radius: 10px;
+    z-index: 10;
+    box-shadow: -2px 5px 9px -5px rgba(0, 0, 0, 0.75);
+    .setting_item {
+        text-align: left;
+        font-size: 14px;
+        font-style: italic;
+        margin-bottom: 10px;
+        background-color: transparent;
+        transition: all 0.5s;
+        padding: 10px 20px;
+        border-radius: 10px;
+    }
+    .setting_item:last-child {
+        margin-bottom: 5px;
+    }
+    .setting_item:first-child {
+        margin-top: 5px;
+    }
+    .setting_item:hover {
+        background-color: #F4D03F;
+    }
+
+    .edit_channel_popup-content {
+        width: 700px !important;
+        background-color: #0093E9 !important;
+        background-image: linear-gradient(45deg, #0093E9 0%, #80D0C7 100%) !important;
+        border-radius: 40px;
+    
+        .form_create_new_channel {
+            padding: 20px;
+            border-radius: 5px;
+    
+            h4 {
+                color: white
+            }
+            input:focus {
+                outline: none;
+            }
+            .channel_name {
+                display: flex;
+                width: 100%;
+                align-items: center;
+                margin-bottom: 1.5rem;
+                label {
+                  width: 30%;
+                    margin-bottom: 0;
+                    font-size: 1.1rem;
+                    font-weight: bold;
+                    color: #fff;
+                }
+                input {
+                    width: 70%;
+                }
+            }
+            .private_channel {
+                display: flex;
+                width: 100%;
+                align-items: center;
+                margin-bottom: 1.5rem;
+                label {
+                  width: 30%;
+                    margin-bottom: 0;
+                    font-size: 1.1rem;
+                    font-weight: bold;
+                    color: #fff;
+                }
+                .private_input {
+                    display: flex;
+                    width: 70%;
+                    align-items: center;
+                    ._input {
+                      position: unset;
+                      margin-left: 0;
+                      margin-right: 20px;
+                    }
+                    .private_notice {
+                      width: 90%;
+                      margin-bottom: 0;
+                      font-size: 13px;
+                      font-weight: 300;
+                      font-style: italic;
+                      color: #fff;
+                    }
+                }
+            }
+            .button_create_new_channel {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                margin-top: 50px;
+                .cancel {
+                    width: 110px;
+                    border: none;
+                    margin-right: 70px;
+                    border-radius: 40px;
+                }
+    
+                .accept {
+                    width: 110px;
+                    border: none;
+                    border-radius: 40px;
+                }
+                .cancel:active, .accept:active {
+                    outline: none;
+                }
+                .cancel:focus, .accept:focus {
+                    outline: none;
+                }
+            }
+        }
+    }
+
+    .edit_member_popup-content {
+        width: 500px !important;
+        background-color: #0093E9 !important;
+        background-image: linear-gradient(135deg, #0093E9 0%, #80D0C7 100%) !important;
+        border-radius: 20px;
+        max-height: 500px;
+        overflow-y: scroll;
+        .title {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            border-bottom: 1px solid gray;
+            margin-bottom: 10px;
+            color: #fff;
+            padding: 10px 5px;
+        }
+        .add_member {
+            display: flex;
+            padding: 10px;
+            background-color: transparent;
+            border-radius: 20px;
+            align-items: center;
+            cursor: pointer;
+            .add_icon {
+                width: 50px;
+                height: 50px;
+            }
+            .text {
+                font-size: 1.5em;
+                font-weight: 800;
+                font-style: italic;
+                color: #fff;
+                padding: 0 10px;
+            }
+        }
+        .member_item {
+            display: flex;
+            padding: 10px;
+            background-color: transparent;
+            border-radius: 20px;
+            .avatar {
+                width: 50px;
+                height: 50px;
+                border-radius: 25px;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 25px;
+                }
+            }
+            .infor {
+                display: flex;
+                justify-content: space-between;
+                flex-grow: 1;
+                align-items: center;
+                padding: 0 10px;
+
+                .name {
+                    font-size: 1.5em;
+                    font-weight: 800;
+                    font-style: italic;
+                    color: #fff;
+                    cursor: default;
+                }
+
+                .icon {
+                    .remove {
+                        opacity: 0;
+                        cursor: pointer;
+                    }
+                } 
+            }
+        }
+        .member_item:hover {
+            background-color: #0d81c5;
+
+            .icon .remove {
+                opacity: 0.7;
+            }
+        }
+    }
+}

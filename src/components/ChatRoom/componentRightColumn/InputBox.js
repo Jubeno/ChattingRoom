@@ -21,7 +21,7 @@ const InputBox = props => {
     const friendId = data?.friendId;
     const isChannel = data?.type === "CHANNEL";
     const [openUpload, setOpenUpload] = useState(false);
-    const [openEmoji, setOpenEmoji] = useState(false);
+    // const [openEmoji, setOpenEmoji] = useState(false);
 
     const clearInput = () => reset();
 
@@ -75,7 +75,7 @@ const InputBox = props => {
 
     const openUploadFile = () => setOpenUpload(show => !show);
 
-    const openSendEmoji = () => setOpenEmoji(show => !show);
+    // const openSendEmoji = () => setOpenEmoji(show => !show);
 
     return (
         <>
@@ -86,9 +86,9 @@ const InputBox = props => {
                 <div className="additional_file" onClick={openUploadFile}>
                     <Plus />
                 </div>
-                <div className="emoji_message" onClick={openSendEmoji}>
+                {/* <div className="emoji_message" onClick={openSendEmoji}>
                     <Smile />
-                </div>
+                </div> */}
                 <input 
                     type="text"
                     className="input_send_message"
@@ -113,9 +113,9 @@ const InputBox = props => {
                     isChannel={isChannel}
                     channelId={channelId}
                 />
-                <Emoji 
+                {/* <Emoji 
                     open={openEmoji}
-                />
+                /> */}
             </form>
             
         </>

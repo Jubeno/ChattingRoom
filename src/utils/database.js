@@ -1,6 +1,7 @@
 import firebase from 'firebase';
 
 export const DATABASE = firebase.database();
+export const STORAGE = firebase.storage();
 
 export const userOnDB = firebase.database().ref('/user/list');
 export const workspaceOnDB = firebase.database().ref('/workspace/list');

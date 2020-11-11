@@ -2,14 +2,15 @@
     height: 100vh;
     background-color: #F4D03F;
     background-image: linear-gradient(225deg, #F4D03F 0%, #16A085 100%);
-    
     padding: 5% 0 0 10%;
+    
     .wrapper {
         display: flex;
         height: 90%;
         width: 90%;
         box-shadow: -6px 10px 111px 9px rgba(0,0,0,0.75);
         border-radius: 40px;
+        min-width: 800px;
 
         .left {
             background-color: #0093E9;
@@ -129,12 +130,18 @@
                             .channel_name {
                                 width: 100%;
                             }
+                            .icon {
+                                display: flex;
 
-                            .delete_conversation, .delete_channel {
-                                display: none;
-                                opacity: 0.7;
-                                cursor: pointer;
+                                .delete_conversation, .delete_channel {
+                                    display: none;
+                                    opacity: 0.7;
+                                    cursor: pointer;
+                                }
                             }
+                            
+
+
                         }
                         .channel_item:hover, .direct_message_item:hover {
                             background-color: #187ba8;
@@ -321,7 +328,7 @@
                     align-items: center;
                     border-bottom: 1px solid gray;
                     padding: 10px;
-
+                    position: relative;
                     .friend_info {
                         display: flex;
                         flex-direction: column;
@@ -341,6 +348,7 @@
                     }
                     .context_menu {
                         cursor: pointer;
+                        position: relative;
                         svg {
                             transition: all 0.5s ease-in-out;
                         }

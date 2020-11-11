@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { X } from 'react-feather';
+import { Lock, X } from 'react-feather';
 import { getKeyByProperty } from '../../../utils/function';
 import { GENERAL_CHANNEL_ID, INITIAL_MESSAGE_CHAT } from '../../../utils/constant';
 import { channelOnDB, chatInChannelOnDB, userInChannelOnDB, userOnDB, DATABASE } from '../../../utils/database';
@@ -13,7 +13,23 @@ const ListChannel = props => {
     const { listChannel } = useContext(ChannelContext).state;
     const [ channels, setChannels ] = useState(listChannel);
     
-    
+    DATABASE
+    .ref('/listChannel')
+    .orderByChild('workspaceId')
+    .equalTo(workspaceId)
+    .on('child_changed', response => {
+        const value = response.val();
+        const channelNeedUpdateId = value.channelId;
+        const channelNeedUpdate = listChannel.find(item => item.channelId === channelNeedUpdateId);
+        const channelRemain = listChannel.filter(item => item.channelId !== channelNeedUpdateId);
+
+        if(channelNeedUpdate) {
+            channelNeedUpdate.channelName = value.name;
+            channelNeedUpdate.isPrivate = value.isPrivate;
+        }
+        setChannels([channelNeedUpdate, ...channelRemain])
+    })
+
     useEffect(() => {
         setChannels(listChannel);
     }, [listChannel]);
@@ -46,6 +62,7 @@ const ListChannel = props => {
             chatInChannelOnDB.child(key).remove();
         })
         ChannelActions.deleteChannel(item.channelId);
+        ChannelActions.hideChatContent();
     }
 
     const isNotGeneralChannel = (item) => item.channelId !== GENERAL_CHANNEL_ID;
@@ -82,6 +99,7 @@ const ListChannel = props => {
     }
 
     const isUserInChannel = (channel) => channel?.members?.includes(userId);
+
     return (
         <>
             <div>
@@ -96,15 +114,24 @@ const ListChannel = props => {
                                     >
                                         {item.channelName}
                                     </p>
-                                    {
-                                        isNotGeneralChannel(item) &&
-                                            <X 
-                                                onClick={() => deleteChannel(item)}
-                                                className="delete_channel" 
-                                                color="#fff" 
-                                                size={18}
-                                            />
-                                    }
+                                    <div className="icon">
+                                        {
+                                            item?.isPrivate &&
+                                                <Lock 
+                                                    color="#fff" 
+                                                    size={18}
+                                                />
+                                        }
+                                        {
+                                            isNotGeneralChannel(item) &&
+                                                <X 
+                                                    onClick={() => deleteChannel(item)}
+                                                    className="delete_channel" 
+                                                    color="#fff" 
+                                                    size={18}
+                                                />
+                                        }
+                                    </div>
                                 </div>
                                 : null
                             }

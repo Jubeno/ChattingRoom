@@ -5,7 +5,8 @@ import {
     DELETE_CHANNEL, 
     CREATE_CHANNEL,
     SET_INFOR_CHANNEL,
-    HIDE_CHAT_CONTENT
+    HIDE_CHAT_CONTENT,
+    EDIT_CHANNEL
 } from './ChannelActions';
 import ChannelReducer from './ChannelReducer';
 
@@ -19,6 +20,9 @@ const setInitialListChannel = dispatch => data => {
 
 const createChannel = dispatch => data => {
     dispatch({ type: CREATE_CHANNEL, payload: data })
+}
+const editChannel = dispatch => data => {
+    dispatch({ type: EDIT_CHANNEL, payload: data })
 }
 
 const deleteChannel = dispatch => channelId => {
@@ -34,6 +38,6 @@ const hideChatContent = dispatch => () => {
 }
 export const { Provider, Context, actions } = createDataContext(
     ChannelReducer,
-    { selectMember, setInitialListChannel, deleteChannel, createChannel, setInformation, hideChatContent },
+    { selectMember, editChannel, setInitialListChannel, deleteChannel, createChannel, setInformation, hideChatContent },
     { listMember: [], listChannel: [], channelData: { isActive: false, infor: {}, members: [], listChat: {} } }
 );

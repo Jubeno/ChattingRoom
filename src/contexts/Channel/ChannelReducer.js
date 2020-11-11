@@ -1,4 +1,4 @@
-import { CREATE_CHANNEL, DELETE_CHANNEL, SELECT_MEMBER, SET_INFOR_CHANNEL, SET_INITIAL_LIST_CHANNEL } from './ChannelActions';
+import { CREATE_CHANNEL, DELETE_CHANNEL, EDIT_CHANNEL, HIDE_CHAT_CONTENT, SELECT_MEMBER, SET_INFOR_CHANNEL, SET_INITIAL_LIST_CHANNEL } from './ChannelActions';
 
 const WorkSpaceReducer = (state, action) => {
     switch (action.type) {
@@ -11,7 +11,17 @@ const WorkSpaceReducer = (state, action) => {
             return { ...state, listChannel: deletedList };
         case CREATE_CHANNEL:
             return { ...state, listChannel: state.listChannel.concat(action.payload) };
-        case CREATE_CHANNEL:
+        case EDIT_CHANNEL:
+            return { ...state, channelData: { 
+                ...state.channelData, 
+                infor: {
+                    ...state.channelData.infor, 
+                    name: action.payload.name,
+                    isPrivate: action.payload.isPrivate
+                    }
+                }
+            };
+        case HIDE_CHAT_CONTENT:
             return { ...state, channelData: {...state.channelData, isActive: false} };
         case SET_INFOR_CHANNEL:
             return { 

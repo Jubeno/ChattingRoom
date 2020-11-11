@@ -20,7 +20,7 @@
             align-items: center;
             margin-bottom: 1.5rem;
             label {
-                width: 25%;
+              width: 25%;
                 margin-bottom: 0;
                 font-size: 1.1rem;
                 font-weight: bold;
@@ -30,6 +30,40 @@
                 width: 75%;
             }
         }
+        .private_channel {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            label {
+              width: 25%;
+                margin-bottom: 0;
+                font-size: 1.1rem;
+                font-weight: bold;
+                color: #fff;
+            }
+            .private_input {
+                display: flex;
+                width: calc(100% - 200px);
+                align-items: center;
+                ._input {
+                  position: unset;
+                  margin-left: 0;
+                  margin-right: 20px;
+                }
+                .private_notice {
+                  width: 90%;
+                  margin-bottom: 0;
+                  font-size: 13px;
+                  font-weight: 300;
+                  font-style: italic;
+                  color: #fff;
+                }
+            }
+            // input {
+            //     width: 75%;
+            // }
+        }
         .member_of_channel {
             display: flex;
             width: 100%;
@@ -37,14 +71,16 @@
             margin-bottom: 1.5rem;
             position: relative;
             label {
-                width: 25%;
+              width: 25%;
                 margin-bottom: 0;
                 font-size: 1.1rem;
                 font-weight: bold;
                 color: #fff;
             }
-            .mentions {
-                width: 75%;
+            .member_input {
+              width: 75%;
+              .mentions {
+                width: 100%;
                 display: block;
                 height: calc(1.5em + .75rem + 2px);
                 
@@ -61,8 +97,17 @@
                     height: 100%;
                     padding: .375rem .75rem;
                 }
-
+              }
+              .member_notice {
+                position: absolute;
+                top: calc(100% - 13px);
+                font-size: 13px;
+                font-weight: 300;
+                font-style: italic;
+                color: #fff;
+              }
             }
+            
             .search_member {
                 width: 8%;
                 display: flex;

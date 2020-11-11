@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Settings, Users } from 'react-feather';
+import SettingChannel from './SettingChannel';
+
 
 const TopBar = props => {
-    const { data } = props;
+    const { data, userId, user } = props;
     const isChannel = data?.type === "CHANNEL";
     const name = isChannel ? data?.infor?.name : data?.infor?.displayName;
     const numberOfMember = data?.members?.length;
+    const [showSetting, setShowSetting] = useState(false);
+
     return (
         <>
             <div className="topbar">
@@ -22,8 +26,16 @@ const TopBar = props => {
                     }
                 </div>
                 <div className="context_menu">
-                    <Settings />
+                    <Settings onClick={() => setShowSetting(show => !show)}/>
                 </div>
+                {showSetting && 
+                    <SettingChannel 
+                        user={user}
+                        userId={userId} 
+                        data={data} 
+                        closeMenu={() => setShowSetting(false)}
+                        />
+                    }
             </div>
         </>
     );
