@@ -9,12 +9,13 @@ import { DATABASE } from '../../utils/database';
 
 
 const RightColumn = props => {
-    const { userId, user } = props;
+    const { userId, user, workspace } = props;
     const { channelData } = useContext(ChannelContext).state;
+   
     const isChannel = channelData.type === 'CHANNEL';
     const dataToFill = channelData;
     const channelId = channelData?.infor?.channelId || '' ;
-    const [data, setData] = useState([]);
+    const [data, setData] = useState({})
 
     useEffect(() => {
         setData(channelData);
@@ -41,7 +42,7 @@ const RightColumn = props => {
                         ? <IntroduceApp />
                         : 
                             <>
-                                <TopBar userId={userId} data={data} user={user}/>
+                                <TopBar userId={userId} data={data} user={user} channelId={channelId}/>
                                 {
                                     isChannel 
                                         ? <ChatInChannel userId={userId} data={data}/> 

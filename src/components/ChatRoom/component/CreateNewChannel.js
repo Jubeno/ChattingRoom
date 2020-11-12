@@ -10,15 +10,17 @@ import { Context as ChannelContext, actions as ChannelActions } from '../../../c
 import { MentionsInput, Mention } from 'react-mentions'
 import moment from 'moment';
 import Loading from '../../Common/Loading/Loading';
-import { channelOnDB, chatInChannelOnDB, userInChannelOnDB, userOnDB } from '../../../utils/database';
+import { channelOnDB, chatInChannelOnDB, DATABASE, userInChannelOnDB, userOnDB } from '../../../utils/database';
 import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../../contexts/DirectMessage/DirectMessageContext';
 import { getCurrentTimeStamp } from '../../../utils/function';
 import { MESSAGE_TYPE } from '../../../utils/constant';
 
 const CreateNewChannel = props => {
     const { userProfile, closeCreateChannel, userId, workspaceId, workspaceName } = props;
+    console.log('%c userProfile: ', 'color: red' , userProfile);
     const { register, handleSubmit } = useForm();
-    const [ members, setMembers ] = useState([userId]);
+    const [ members, setMembers ] = useState([{userId, name: userProfile.nickname}]);
+    console.log('%c members: ', 'color: red' , members);
     const [ listUser, setListUser ] = useState([]);
     const [ paramSearch, setParamSearch ] = useState('');
     const [ channelName, setChannelName ] = useState('');
@@ -44,12 +46,19 @@ const CreateNewChannel = props => {
             isPrivate: data.isPrivate
         })
         await newUserInChannel.set({
-            members,
+            // members,
             channelId,
             channelName: data.channelName,
             workspaceId,
             createBy: userId,
             isPrivate: data.isPrivate
+        })
+
+        members.map( async item => {
+            await DATABASE.ref(`/userInChannel/${channelId}/members`).child(item.userId).update({
+                userId: item.userId,
+                name: item.name
+            })
         })
         await newListChat.set({
             name: data.channelName,
@@ -104,10 +113,11 @@ const CreateNewChannel = props => {
         setParamSearch(event.target.value);
     };
 
-    const onAdd = id => {
+    const onAdd = (id, display) => {
+        const selected = {userId: id, name: display};
         if(id === userId) return;
-        if(members.includes(id)) return;
-        setMembers([...members, id])
+        if(members.includes(selected)) return;
+        setMembers([...members, selected])
     }
 
     const handleChangeChannelName = event => {

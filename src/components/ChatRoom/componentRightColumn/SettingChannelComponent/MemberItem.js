@@ -1,64 +1,89 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'react-feather';
+import { Badge } from 'reactstrap';
+import { MESSAGE_TYPE } from '../../../../utils/constant';
 import { DATABASE } from '../../../../utils/database';
+import { generateId, getCurrentTimeStamp } from '../../../../utils/function';
 
 const MemberItem = props => {
-    const { data, channelId } = props;
-    
-    const [userProfile, setUserProfile] = useState({});
-    const avatar = userProfile?.displayAvatar || '/img/avatar-placeholder.png';
-    const name = userProfile?.displayName;
+    const { data, channelId, userId, inforChannel, isChannel, user } = props;
+    const isOwnerOfChannel = () => data.userId === inforChannel.createBy;
+    const creatorAccount = () => userId === inforChannel.createBy;
+    const name = data?.name;
 
-    useEffect(() => {
-        async function getUserProfile() {
-            await DATABASE
-            .ref('/user/list')
-            .orderByChild('userID')
-            .equalTo(data)
-            .once('value', response => {
-                const value = response.val();
-                if(value) {
-                    setUserProfile(Object.values(value)[0]);
-                }
-            })
-        }
-        getUserProfile();
-    }, [])
+    const currentTime = getCurrentTimeStamp();
+    const messageId = generateId(userId, channelId, currentTime);
 
-    const getKeyToRemove = (array, value) => {
-        for (let key = 0; key < array.length; key++) {
-            if (array[key] === value) {
-                return key;
-            }
-        }
+    const getKeyToRemove = (object, value) => {
+        return Object.keys(object).find(key => object[key].userId === value.userId)
     }
 
     const removeMember = async () => {
-        console.log('%c data: ', 'color: red' , data);
         await DATABASE
         .ref(`/userInChannel/${channelId}/members`)
         .once('value', response => {
             const value = response.val();
             if(value) {
                 const key = getKeyToRemove(value, data);
-                DATABASE.ref(`/userInChannel/${channelId}/members/${key}`).remove();
+                DATABASE.ref(`/userInChannel/${channelId}/members`).child(key).remove();
             }
         })
+        
+        //send system message
+        await DATABASE.ref(`/chatInChannel/${channelId}/listChat`).push().update({
+            value: `${user.displayName} has removed ${name} from this channel`,
+            messageType: MESSAGE_TYPE.SYSTEM,
+            sendTime: currentTime,
+            senderId: userId,
+            receiverId: channelId,
+            messageId
+        })
+    }
+
+    const isShowRemoveMember = () => {
+        let isShow = false;
+        if(creatorAccount()) {
+            if(inforChannel.isPrivate) {
+                if(isOwnerOfChannel()) {
+                    isShow = false;
+                } else {
+                    isShow = true;
+                }
+            } else {
+                if(isOwnerOfChannel()) {
+                    isShow = false;
+                } else {
+                    isShow = true;
+                }
+            }
+        } else {
+            if(inforChannel.isPrivate) {
+                isShow = false;
+            } else {
+                if(isOwnerOfChannel()) {
+                    isShow = false;
+                } else {
+                    isShow = true;
+                }
+            }
+        }
+        return isShow;
     }
 
     return (
         <>
             <div className="member_item">
-                <div className="avatar">
-                    <img src={avatar} alt="avatar"/>
-                </div>
                 <div className="infor">
                     <div className="name">
                         {name}
+                        {isOwnerOfChannel() && <Badge pill style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 10 }}>owner</Badge>}
                     </div>
-                    <div className="icon" onClick={removeMember}>
-                        <X color="#fff" className="remove"/>
-                    </div>
+                    {
+                        isShowRemoveMember() &&
+                            <div className="icon" onClick={removeMember}>
+                                <X color="#fff" className="remove"/>
+                            </div>
+                    }
                 </div>
             </div>
         </>

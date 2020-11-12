@@ -123,81 +123,198 @@
         background-color: #0093E9 !important;
         background-image: linear-gradient(135deg, #0093E9 0%, #80D0C7 100%) !important;
         border-radius: 20px;
-        max-height: 500px;
-        overflow-y: scroll;
-        .title {
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: 700;
-            border-bottom: 1px solid gray;
-            margin-bottom: 10px;
-            color: #fff;
-            padding: 10px 5px;
-        }
-        .add_member {
-            display: flex;
-            padding: 10px;
-            background-color: transparent;
-            border-radius: 20px;
-            align-items: center;
-            cursor: pointer;
-            .add_icon {
-                width: 50px;
-                height: 50px;
-            }
-            .text {
+
+        .top {
+            position: relative;
+            .title {
+                text-align: center;
                 font-size: 1.5em;
-                font-weight: 800;
-                font-style: italic;
+                font-weight: 700;
+                border-bottom: 1px solid gray;
+                margin-bottom: 10px;
                 color: #fff;
-                padding: 0 10px;
+                padding: 10px 5px;
+            }
+
+            .close_popup {
+                position: absolute;
+                top: 10px;
+                right: 10px;
             }
         }
-        .member_item {
-            display: flex;
-            padding: 10px;
-            background-color: transparent;
-            border-radius: 20px;
-            .avatar {
-                width: 50px;
-                height: 50px;
-                border-radius: 25px;
-
-                img {
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 25px;
-                }
-            }
-            .infor {
+        
+            .add_member {
                 display: flex;
-                justify-content: space-between;
-                flex-grow: 1;
+                padding: 10px;
+                background-color: transparent;
+                border-radius: 20px;
                 align-items: center;
-                padding: 0 10px;
-
-                .name {
+                cursor: pointer;
+                .add_icon {
+                    width: 50px;
+                    height: 50px;
+                }
+                .text {
                     font-size: 1.5em;
                     font-weight: 800;
                     font-style: italic;
                     color: #fff;
-                    cursor: default;
+                    padding: 0 10px;
+                    width: 100%;
+
+                    .mentions {
+                        margin-top: 0!important;
+                        margin-bottom: 0!important;
+                        width: 100%;
+                        display: block;
+                        height: 40px;
+                        font-size: 1rem;
+                        font-weight: 400;
+                        line-height: 1.5;
+                        color: #495057;
+                        background-color: #fff;
+                        background-clip: padding-box;
+                        border-radius: .25rem;
+        
+                        input {
+                            border: none;
+                            height: 100%;
+                            padding: .375rem .75rem;
+                        }
+        
+                    }
+                    .mentions__suggestions {
+                        margin-top: 25px !important;
+                    }
+                    .mentions {
+                        margin: 1em 0;
+                      }
+                      
+                    .mentions__control {
+                    display: inline-block;
+                    width: 100%;
+                    height: 100%;
+                    }
+                    .mentions__higlighter {
+                    padding: 1px;
+                    border: 2px inset transparent;
+                    height: 100%;
+                    }
+                    .mentions__input {
+                    padding: 5px;
+                    border: 2px inset;
+                    }
+                    .mentions__input:focus {
+                        outline: none;
+                    }
+                    .mentions--multiLine .mentions__control {
+                    font-family: monospace;
+                    font-size: 14pt;
+                    border: 1px solid silver;
+                    }
+                    .mentions--multiLine .mentions__highlighter {
+                    padding: 9px;
+                    }
+                    .mentions--multiLine .mentions__input {
+                    padding: 9px;
+                    min-height: 63px;
+                    outline: 0;
+                    border: 0;
+                    }
+                    
+                    .mentions__suggestions__list {
+                    // background-color: #0093E9;
+                    // background-image: linear-gradient(45deg, #0093E9 0%, #80D0C7 100%);
+                    background-color: #fff;
+                    border: 1px solid rgba(0, 0, 0, 0.15);
+                    font-size: 10pt;
+                    font-style: italic;
+                    }
+                    
+                    .mentions__suggestions__item {
+                    padding: 5px 30px;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+                    }
+                    
+                    .mentions__suggestions__item--focused {
+                    background-color: #FFDEE9;
+                    background-image: linear-gradient(225deg, #FFDEE9 0%, #B5FFFC 100%);
+                    }
+                    
+                    .mentions__mention {
+                    background-color: transparent !important;
+                    
+                    }
+                }
+            }
+            .error_on_add {
+                font-size: 15px;
+                font-weight: 500;
+                font-style: italic;
+                color: rgb(204, 18, 18);
+                margin-left: 80px;
+            }
+            .bottom {
+                max-height: 500px;
+                min-height: 300px;
+                overflow-y: scroll;
+                .member_item {
+                    display: flex;
+                    padding: 10px;
+                    background-color: transparent;
+                    border-radius: 20px;
+                    .avatar {
+                        width: 50px;
+                        height: 50px;
+                        border-radius: 25px;
+        
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            border-radius: 25px;
+                        }
+                    }
+                    .infor {
+                        display: flex;
+                        justify-content: space-between;
+                        flex-grow: 1;
+                        align-items: center;
+                        padding: 0 10px;
+        
+                        .name {
+                            font-size: 1.5em;
+                            font-weight: 800;
+                            font-style: italic;
+                            color: #fff;
+                            cursor: default;
+                        }
+        
+                        .icon {
+                            .remove {
+                                opacity: 0;
+                                cursor: pointer;
+                            }
+                        } 
+                    }
+                }
+                .member_item:hover {
+                    background-color: #0d81c5;
+        
+                    .icon .remove {
+                        opacity: 0.7;
+                    }
                 }
 
-                .icon {
-                    .remove {
-                        opacity: 0;
-                        cursor: pointer;
-                    }
-                } 
-            }
         }
-        .member_item:hover {
-            background-color: #0d81c5;
+        
+    }
 
-            .icon .remove {
-                opacity: 0.7;
-            }
-        }
+    .add_member_popup-content {
+        width: 400px !important;
+        background-color: #0093E9 !important;
+        background-image: linear-gradient(135deg, #0093E9 0%, #80D0C7 100%) !important;
+        border-radius: 20px;
+
+        
     }
 }

@@ -4,11 +4,10 @@ import EditMember from './SettingChannelComponent/EditMember';
 import './SettingChannelComponent/SettingChannel.scss'
 
 const SettingChannel = props => {
-    const { data, userId, closeMenu, user } = props;
+    const { data, userId, closeMenu, user, member, isChannel } = props;
     const inforChannel = data.infor;
     const [showEditChannel, setShowEditChannel] = useState(false);
     const [showEditMember, setShowEditMember] = useState(false);
-    const members = data.members;
     const isOwnerOfChannel = () => inforChannel.createBy === userId;
 
     const editChannel = () => {
@@ -65,7 +64,8 @@ const SettingChannel = props => {
                         close={() => setShowEditMember(false)}
                         closeMenu={closeMenu}
                         user={user}
-                        members={members}
+                        member={member}
+                        isChannel={isChannel}
                     />
                 }
             </div>

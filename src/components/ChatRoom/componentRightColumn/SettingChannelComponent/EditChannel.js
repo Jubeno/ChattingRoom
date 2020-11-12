@@ -28,7 +28,6 @@ const EditChannel = props => {
     const isOwnerOfChannel = () => userId === inforChannel.createBy;
 
     const editChannelByCreator = async (data) => {
-        
         await updateChannel.update({
             name: data.channelName,
             isPrivate: data.isPrivate

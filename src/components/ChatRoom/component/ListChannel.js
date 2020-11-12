@@ -18,16 +18,19 @@ const ListChannel = props => {
     .orderByChild('workspaceId')
     .equalTo(workspaceId)
     .on('child_changed', response => {
-        const value = response.val();
-        const channelNeedUpdateId = value.channelId;
-        const channelNeedUpdate = listChannel.find(item => item.channelId === channelNeedUpdateId);
-        const channelRemain = listChannel.filter(item => item.channelId !== channelNeedUpdateId);
-
-        if(channelNeedUpdate) {
-            channelNeedUpdate.channelName = value.name;
-            channelNeedUpdate.isPrivate = value.isPrivate;
+        if(listChannel.length === 0) {
+            return
+        } else {
+            const value = response.val();
+            const channelNeedUpdateId = value.channelId;
+            const channelNeedUpdate = listChannel?.find(item => item.channelId === channelNeedUpdateId) ;
+            const channelRemain = listChannel.filter(item => item.channelId !== channelNeedUpdateId);
+            if(channelNeedUpdate) {
+                channelNeedUpdate.channelName = value.name;
+                channelNeedUpdate.isPrivate = value.isPrivate;
+            }
+            setChannels([channelNeedUpdate, ...channelRemain])
         }
-        setChannels([channelNeedUpdate, ...channelRemain])
     })
 
     useEffect(() => {
@@ -85,8 +88,6 @@ const ListChannel = props => {
         })
 
         await DATABASE.ref(`/chatInChannel/${item.channelId}/listChat`)
-        // .orderByChild('sendTime')
-        // .startAt(startTime)
         .limitToLast(INITIAL_MESSAGE_CHAT)
         .once('value', response => {
             if( response.val() ) {
@@ -98,7 +99,10 @@ const ListChannel = props => {
         ChannelActions.setInformation(data);
     }
 
-    const isUserInChannel = (channel) => channel?.members?.includes(userId);
+    const isUserInChannel = (channel) => {
+        const members = Object.values(channel?.members);
+        return members.findIndex(item => item.userId === userId) !== -1
+    };
 
     return (
         <>
