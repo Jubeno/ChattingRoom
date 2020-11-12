@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Check, File, Image, X } from 'react-feather';
 import CustomUploadButton from 'react-firebase-file-uploader/lib/CustomUploadButton';
 import firebase from 'firebase';
-import { messageOnDB } from '../../../utils/database';
+import { DATABASE, messageOnDB } from '../../../utils/database';
 import { generateId, getCurrentTimeStamp } from '../../../utils/function';
 import { MESSAGE_TYPE } from '../../../utils/constant';
 
@@ -31,18 +31,34 @@ const UploadFile = props => {
     const sendFile = async () => {
         const messageId = generateId(userId, isChannel ? channelId : friendId, document.name)
         const newMessage = messageOnDB.child(`${conversationId}/listChat`).push();
+        const newChannelMessage = DATABASE.ref(`/chatInChannel`).child(`${channelId}/listChat`).push();
 
-        newMessage.update({
-            value: document.name,
-            url: document.url,
-            sendTime: currentTime,
-            senderId: userId,
-            receiverId: friendId,
-            messageId,
-            messageType: MESSAGE_TYPE.FILE,
-            displayName,
-            avatar
-        })
+        if(isChannel) {
+            newChannelMessage.update({
+                value: document.name,
+                url: document.url,
+                sendTime: currentTime,
+                senderId: userId,
+                receiverId: channelId,
+                messageId,
+                messageType: MESSAGE_TYPE.FILE,
+                displayName,
+                avatar
+            })
+        } else {
+            newMessage.update({
+                value: document.name,
+                url: document.url,
+                sendTime: currentTime,
+                senderId: userId,
+                receiverId: friendId,
+                messageId,
+                messageType: MESSAGE_TYPE.FILE,
+                displayName,
+                avatar
+            })
+        }
+        
         setDocument({ isDone: false, name: '', url: '' })
     }
     const cancelSendImage = () => {
@@ -52,18 +68,34 @@ const UploadFile = props => {
     const sendImage = async () => {
         const messageId = generateId(userId, isChannel ? channelId : friendId, document.name)
         const newMessage = messageOnDB.child(`${conversationId}/listChat`).push();
+        const newChannelMessage = DATABASE.ref(`/chatInChannel`).child(`${channelId}/listChat`).push();
 
-        newMessage.update({
-            value: image.name,
-            url: image.url,
-            sendTime: currentTime,
-            senderId: userId,
-            receiverId: friendId,
-            messageId,
-            messageType: MESSAGE_TYPE.IMAGE,
-            displayName,
-            avatar
-        })
+        if(isChannel) {
+            newChannelMessage.update({
+                value: image.name,
+                url: image.url,
+                sendTime: currentTime,
+                senderId: userId,
+                receiverId: channelId,
+                messageId,
+                messageType: MESSAGE_TYPE.IMAGE,
+                displayName,
+                avatar
+            })
+        } else {
+            newMessage.update({
+                value: image.name,
+                url: image.url,
+                sendTime: currentTime,
+                senderId: userId,
+                receiverId: friendId,
+                messageId,
+                messageType: MESSAGE_TYPE.IMAGE,
+                displayName,
+                avatar
+            })
+        }
+       
         setImage({ isDone: false, name: '', url: '' })
     }
     return (

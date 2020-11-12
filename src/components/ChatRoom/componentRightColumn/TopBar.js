@@ -54,9 +54,9 @@ const TopBar = props => {
                             </div>
                     }
                 </div>
-                <div className="context_menu">
+                {isChannel && <div className="context_menu">
                     <Settings onClick={() => setShowSetting(show => !show)}/>
-                </div>
+                </div>}
                 {showSetting && 
                     <SettingChannel 
                         user={user}
