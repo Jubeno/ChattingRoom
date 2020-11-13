@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Edit, Plus, Search } from 'react-feather';
+import { Edit, List, Plus, Search } from 'react-feather';
 import DelayImage from '../Common/DelayImage/DelayImage';
 import CreateNewChannel from './component/CreateNewChannel';
 import CreateNewUser from './component/CreateNewUser';
 import EditProfileWorkspace from './component/EditProfileWorkspace';
 import ListChannel from './component/ListChannel';
 import ListDirectMessage from './component/ListDirectMessage';
+import ListMember from './component/ListMember';
 import SearchDirectMessage from './component/SearchDirectMessage';
 
 const LeftColumn = props => {
@@ -18,6 +19,7 @@ const LeftColumn = props => {
     const [ showCreateNewUser, setShowCreateNewUser ] = useState(false);
     const [ showCreateChannel, setShowCreateChannel ] = useState(false);
     const [ showSearchDirectMessage, setShowSearchDirectMessage ] = useState(false);
+    const [ showListMember, setShowListMember ] = useState(false);
 
     const editProfile = () => setShowEditProfile(true);
 
@@ -80,6 +82,13 @@ const LeftColumn = props => {
                         <ListDirectMessage userId={userId}/>
                     </div>
                 </div>
+                {
+                    user?.isAdmin &&
+                        <div className="list_user" onClick={() => setShowListMember(true)}>
+                            <List color="rgb(86, 86, 87)" size={18}/>
+                            <p className="text">List member</p>
+                        </div>
+                }
                 <div className="create_channel" onClick={createNewChannel}>
                     <Plus color="rgb(86, 86, 87)" size={18}/>
                     <p className="text">Create channel</p>
@@ -92,8 +101,31 @@ const LeftColumn = props => {
                         </div>
                 }
             </div>
-            { showCreateChannel && <CreateNewChannel userProfile={user} workspaceId={workspace?.workspaceID} userId={userId} workspaceName={workspace?.workspace} closeCreateChannel={closeCreateChannel}/> }
-            { showCreateNewUser && <CreateNewUser workspaceName={workspace?.workspace} closeCreate={closeCreate}/> }
+            { showListMember && 
+                <ListMember 
+                    close={() => setShowListMember(false)}
+                    userProfile={user} 
+                    workspaceId={workspace?.workspaceID} 
+                    userId={userId} 
+                    workspaceName={workspace?.workspace}
+                    openCreateNewUser={createNewUser}
+                />
+            }
+            { showCreateChannel && 
+                <CreateNewChannel 
+                    userProfile={user} 
+                    workspaceId={workspace?.workspaceID} 
+                    userId={userId} 
+                    workspaceName={workspace?.workspace} 
+                    closeCreateChannel={closeCreateChannel}
+                /> 
+            }
+            { showCreateNewUser && 
+                <CreateNewUser 
+                    workspaceName={workspace?.workspace} 
+                    closeCreate={closeCreate}
+                /> 
+            }
         </>
     );
 }

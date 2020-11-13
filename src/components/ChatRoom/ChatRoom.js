@@ -23,7 +23,11 @@ const ChatRoom = props => {
             let dataWorkspace = {};
             await userOnDB.orderByChild('userID').equalTo(userId)
             .once('value', response => {
-                dataUser = Object.values(response.val());
+                if(!response.val()) {
+                    history.push('/workspace')
+                } else {
+                    dataUser = Object.values(response.val());
+                }
             })
 
             await workspaceOnDB.orderByChild('workspace').equalTo(workspace)

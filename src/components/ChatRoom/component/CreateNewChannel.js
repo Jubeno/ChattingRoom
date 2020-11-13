@@ -17,10 +17,8 @@ import { MESSAGE_TYPE } from '../../../utils/constant';
 
 const CreateNewChannel = props => {
     const { userProfile, closeCreateChannel, userId, workspaceId, workspaceName } = props;
-    console.log('%c userProfile: ', 'color: red' , userProfile);
     const { register, handleSubmit } = useForm();
     const [ members, setMembers ] = useState([{userId, name: userProfile.displayName}]);
-    console.log('%c members: ', 'color: red' , members);
     const [ listUser, setListUser ] = useState([]);
     const [ paramSearch, setParamSearch ] = useState('');
     const [ channelName, setChannelName ] = useState('');

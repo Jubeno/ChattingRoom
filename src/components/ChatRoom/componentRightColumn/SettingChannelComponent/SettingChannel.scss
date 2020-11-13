@@ -317,4 +317,47 @@
 
         
     }
+
+    .confirm_delete_channel_popup-content {
+        width: 400px !important;
+        border-radius: 20px;
+        padding: 30px 25px!important;
+        .top {
+            margin-bottom: 30px;
+            .title {
+                color: #495057;
+                font-size: 16px;
+                font-weight: 600;
+                font-style: italic;
+            }
+        }
+
+        .bottom {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .button {
+                border: none;
+                color: #ffffff;
+                padding: 10px 20px;
+                border-radius: 30px;
+                width: 100px;
+            }
+
+            .accept {
+                font-weight: 600;
+                background-color: #64b6e6;
+                margin-right: 50px;
+            }
+
+            .cancel {
+                background-color: #646c74;
+                
+            }
+            .button:active, .button:focus {
+                outline: none;
+            }
+        }
+    }
 }

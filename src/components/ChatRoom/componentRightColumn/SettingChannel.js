@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ConfirmDeleteChannel from './SettingChannelComponent/ConfirmDeleteChannel';
 import EditChannel from './SettingChannelComponent/EditChannel';
 import EditMember from './SettingChannelComponent/EditMember';
 import './SettingChannelComponent/SettingChannel.scss'
@@ -8,6 +9,7 @@ const SettingChannel = props => {
     const inforChannel = data.infor;
     const [showEditChannel, setShowEditChannel] = useState(false);
     const [showEditMember, setShowEditMember] = useState(false);
+    const [showConfirmDeleteChannel, setShowConfirmDeleteChannel] = useState(false);
     const isOwnerOfChannel = () => inforChannel.createBy === userId;
 
     const editChannel = () => {
@@ -20,6 +22,7 @@ const SettingChannel = props => {
 
     const deleteChannel = async () => {
         console.log('%c deleteChannel: ', 'color: red' );
+        setShowConfirmDeleteChannel(show => !show);
     }
 
     const leaveChannel = async () => {
@@ -66,6 +69,11 @@ const SettingChannel = props => {
                         user={user}
                         member={member}
                         isChannel={isChannel}
+                    />
+                }
+                {showConfirmDeleteChannel &&
+                    <ConfirmDeleteChannel 
+                        close={() => setShowConfirmDeleteChannel(false)}
                     />
                 }
             </div>
