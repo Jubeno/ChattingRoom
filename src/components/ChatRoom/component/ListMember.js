@@ -57,6 +57,20 @@ const ListMember = props => {
         const nameToDelete = item.displayName;
         const channelsUserIn = getAllChannelUserIsIn(userIdToDelete);
 
+        // delete in direct message
+        await DATABASE
+        .ref(`/directMessage`)
+        .orderByChild('friendId')
+        .equalTo(userIdToDelete)
+        .once('value', response => {
+            if(response.val()) {
+                const keyToRemove = Object.keys(response.val())[0];
+                DATABASE.ref(`/directMessage`).child(keyToRemove).remove();
+                DATABASE.ref(`/chatInDirectMessage`).child(keyToRemove).remove();
+            }
+        })
+        
+        // delete in user list
         await DATABASE
         .ref(`/user/list`)
         .orderByChild('userID')

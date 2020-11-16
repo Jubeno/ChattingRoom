@@ -21,7 +21,6 @@ const SettingChannel = props => {
     }
 
     const deleteChannel = async () => {
-        console.log('%c deleteChannel: ', 'color: red' );
         setShowConfirmDeleteChannel(show => !show);
     }
 
@@ -73,6 +72,7 @@ const SettingChannel = props => {
                 }
                 {showConfirmDeleteChannel &&
                     <ConfirmDeleteChannel 
+                        inforChannel={inforChannel}
                         close={() => setShowConfirmDeleteChannel(false)}
                     />
                 }
