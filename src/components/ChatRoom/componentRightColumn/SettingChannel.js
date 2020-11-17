@@ -75,6 +75,7 @@ const SettingChannel = props => {
                 }
                 {showConfirmDeleteChannel &&
                     <ConfirmDeleteChannel 
+                        inforChannel={inforChannel}
                         close={() => setShowConfirmDeleteChannel(false)}
                     />
                 }

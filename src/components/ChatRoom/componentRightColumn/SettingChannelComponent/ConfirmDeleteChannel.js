@@ -1,12 +1,18 @@
 import React from 'react';
 import Popup from 'reactjs-popup';
-
+import { DATABASE } from '../../../../utils/database';
+import { Context as ChannelContext, actions as ChannelActions } from '../../../../contexts/Channel/ChannelContext';
 
 const ConfirmDeleteChannel = props => {
-    const { close } = props;
+    const { close, inforChannel } = props;
+    const channelId = inforChannel.channelId;
 
     const acceptDelete = () => {
-        
+        DATABASE.ref(`/listChannel`).child(channelId).remove();
+        DATABASE.ref(`/userInChannel`).child(channelId).remove();
+        DATABASE.ref(`/chatInChannel`).child(channelId).remove();
+        ChannelActions.deleteChannel(channelId);
+        ChannelActions.hideChatContent();
     }
 
     const cancelDelete = () => {
