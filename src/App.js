@@ -11,8 +11,12 @@ import { MainProvider } from './MainProvider';
 import PrivateRoute from './route/PrivateRoute';
 import AuthenticatedRoutes from './route/AuthenticatedRoutes';
 import LoginRoute from './route/LoginRoute';
+import firebase from 'firebase';
 
 const App = () => {
+  firebase.auth().onAuthStateChanged(function(user) {
+    console.log('user: ', user);
+  });
   return (
     <MainProvider>
       <Router>

@@ -15,11 +15,17 @@ const LoginWithPhoneNumber = () => {
                     size: 'normal',
                     badge: 'bottomleft'
                   },
-                  defaultCountry: 'GB',
-                  defaultNationalNumber: '1234567890',
-                  loginHint: '+11234567890'
+                  defaultCountry: 'VI',
                 }
-            ]
+            ],
+            // signInSuccessUrl: 'https://google.com.vn',
+            callbacks: {
+                signInSuccessWithAuthResult: function(auth, redirect) {
+                    console.log('redirect: ', redirect);
+                    console.log('auth: ', auth);
+                    return true;
+                }
+            }
         });
     }, [])
 

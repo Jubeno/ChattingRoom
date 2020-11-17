@@ -142,6 +142,17 @@ const CreateUserProfile = props => {
                                 <option value="female">Female</option>
                             </Input>
                         </FormGroup>
+                        
+                        <FormGroup>
+                            <Label for="phoneNumber">Phone Number</Label>
+                            <Input 
+                                type="text" 
+                                name="phoneNumber" 
+                                id="phoneNumber" 
+                                innerRef={register}
+                                className="input"
+                            />
+                        </FormGroup>
                         <FormGroup>
                             <Label for="birthday">Birthday <Badge className="font-italic" color="dark" pill>Optional</Badge></Label>
                             <Input 
@@ -152,16 +163,6 @@ const CreateUserProfile = props => {
                                 innerRef={register}
                                 className="input"
                                 placeholder="31/01/2000"
-                            />
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="phoneNumber">Phone Number <Badge className="font-italic" color="dark" pill>Optional</Badge></Label>
-                            <Input 
-                                type="text" 
-                                name="phoneNumber" 
-                                id="phoneNumber" 
-                                innerRef={register}
-                                className="input"
                             />
                         </FormGroup>
                         <div className="btn_submit">
