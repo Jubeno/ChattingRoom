@@ -12,7 +12,7 @@ import Loading from '../Common/Loading/Loading';
 function Login() {
     const { register, handleSubmit } = useForm();
     const history = useHistory();
-    const { workspace } = history.location.state;
+    const workspace = history.location.state?.workspace || localStorage.getItem('workspace');
     const [loading, setLoading] = useState(false);
     const [errorName, setErrorName] = useState({isErrorName: false, errorName: ''})
     const [errorPassword, setErrorPassword] = useState({isErrorPassword: false, errorPassword: ''})
@@ -152,6 +152,7 @@ function Login() {
                         <Button variant="primary" color="danger" type="submit" size="lg" className="mb-5" block>Login</Button>
                     </Form>
                     <h5 className="text-right font-weight-light font-italic display-5 text-muted">(*) Please use the account and password provided by your manager to log in. </h5>
+                    <Link to="/login/phone" className="text-right font-weight-light font-italic display-5 text-muted">Login with your phone number</Link>
                 </Jumbotron>
             </div>
         </>

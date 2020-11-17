@@ -10,6 +10,7 @@ import WorkSpaceRoute from './route/WorkSpaceRoute';
 import { MainProvider } from './MainProvider';
 import PrivateRoute from './route/PrivateRoute';
 import AuthenticatedRoutes from './route/AuthenticatedRoutes';
+import LoginRoute from './route/LoginRoute';
 
 const App = () => {
   return (
@@ -17,7 +18,7 @@ const App = () => {
       <Router>
           <Switch>
             <Route path="/workspace" component={WorkSpaceRoute} />
-            <Route path="/login" component={Login} />
+            <Route path="/login" component={LoginRoute} />
             <PrivateRoute >
                 <AuthenticatedRoutes />
             </PrivateRoute>
