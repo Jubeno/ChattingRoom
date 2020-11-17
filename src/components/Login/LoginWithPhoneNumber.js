@@ -1,22 +1,31 @@
-import React from 'react';
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import React, { useEffect } from 'react';
 import firebase from 'firebase';
+import * as firebaseui from 'firebaseui';
 
 const LoginWithPhoneNumber = () => {
-        // Configure FirebaseUI.
-        const uiConfig = {
-            // Popup signin flow rather than redirect flow.
-            signInFlow: 'popup',
-            // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
-            signInSuccessUrl: 'https://firebase.google.com/docs/auth/web/phone-auth?authuser=1',
+    useEffect(() => {
+        var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+        ui.start('#firebaseui-auth-container', {
             signInOptions: [
-                firebase.auth.PhoneAuthProvider.PROVIDER_ID
+                {
+                  provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+                  recaptchaParameters: {
+                    type: 'image',
+                    size: 'normal',
+                    badge: 'bottomleft'
+                  },
+                  defaultCountry: 'GB',
+                  defaultNationalNumber: '1234567890',
+                  loginHint: '+11234567890'
+                }
             ]
-        };
+        });
+    }, [])
 
     return (
         <>
-            <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()}/>
+            <div id="firebaseui-auth-container"></div>
         </>
     );
 }
