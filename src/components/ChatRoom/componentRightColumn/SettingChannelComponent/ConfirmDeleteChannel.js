@@ -22,7 +22,7 @@ const ConfirmDeleteChannel = props => {
                 className="confirm_delete_channel_popup"
             >
                 <div className="top">
-                    <div className="title">Do you really want to delete this channel?</div>
+                    <div className="title">Do you really want to <span>delete</span> this channel?</div>
                 </div>
                 <div className="bottom">
                     <button className="button accept" onClick={acceptDelete}>OK</button>

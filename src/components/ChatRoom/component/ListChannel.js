@@ -13,6 +13,7 @@ const ListChannel = props => {
     const { listChannel } = useContext(ChannelContext).state;
     const [ channels, setChannels ] = useState(listChannel);
     
+    // update when edit channel's profile
     DATABASE
     .ref('/listChannel')
     .orderByChild('workspaceId')
@@ -32,6 +33,29 @@ const ListChannel = props => {
             setChannels([channelNeedUpdate, ...channelRemain])
         }
     })
+
+    // update when user leave room or admin delete user to channel
+    DATABASE
+    .ref(`/userInChannel`)
+    .orderByChild('workspaceId')
+    .equalTo(workspaceId)
+    .on('child_changed', response => {
+        if(listChannel.length === 0) {
+            return
+        } else {
+            const value = response.val();
+            if(value) {
+                const channelNeedUpdateId = value.channelId;
+                const channelNeedUpdate = listChannel?.find(item => item.channelId === channelNeedUpdateId) ;
+                const channelRemain = listChannel.filter(item => item.channelId !== channelNeedUpdateId);
+                if(channelNeedUpdate) {
+                    channelNeedUpdate.members = value.members;
+                }
+                setChannels([channelNeedUpdate, ...channelRemain])
+            }
+        }
+    })
+    
 
     useEffect(() => {
         setChannels(listChannel);

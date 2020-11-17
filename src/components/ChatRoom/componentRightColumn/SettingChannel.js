@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ConfirmDeleteChannel from './SettingChannelComponent/ConfirmDeleteChannel';
+import ConfirmLeaveChannel from './SettingChannelComponent/ConfirmLeaveChannel';
 import EditChannel from './SettingChannelComponent/EditChannel';
 import EditMember from './SettingChannelComponent/EditMember';
 import './SettingChannelComponent/SettingChannel.scss'
@@ -10,6 +11,8 @@ const SettingChannel = props => {
     const [showEditChannel, setShowEditChannel] = useState(false);
     const [showEditMember, setShowEditMember] = useState(false);
     const [showConfirmDeleteChannel, setShowConfirmDeleteChannel] = useState(false);
+    const [showConfirmLeavehannel, setShowConfirmLeaveChannel] = useState(false);
+
     const isOwnerOfChannel = () => inforChannel.createBy === userId;
 
     const editChannel = () => {
@@ -21,12 +24,11 @@ const SettingChannel = props => {
     }
 
     const deleteChannel = async () => {
-        console.log('%c deleteChannel: ', 'color: red' );
         setShowConfirmDeleteChannel(show => !show);
     }
 
     const leaveChannel = async () => {
-        console.log('%c leaveChannel: ', 'color: red' );
+        setShowConfirmLeaveChannel(show => !show);
     }
 
     const LIST_CONTEXT_ADMIN = [
@@ -74,6 +76,14 @@ const SettingChannel = props => {
                 {showConfirmDeleteChannel &&
                     <ConfirmDeleteChannel 
                         close={() => setShowConfirmDeleteChannel(false)}
+                    />
+                }
+                {showConfirmLeavehannel &&
+                    <ConfirmLeaveChannel 
+                        user={user}
+                        close={() => setShowConfirmLeaveChannel(false)}
+                        userId={userId}
+                        inforChannel={inforChannel}
                     />
                 }
             </div>

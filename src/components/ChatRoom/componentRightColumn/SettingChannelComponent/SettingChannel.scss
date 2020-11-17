@@ -17,6 +17,7 @@
         transition: all 0.5s;
         padding: 10px 20px;
         border-radius: 10px;
+        cursor: pointer;
     }
     .setting_item:last-child {
         margin-bottom: 5px;
@@ -318,7 +319,7 @@
         
     }
 
-    .confirm_delete_channel_popup-content {
+    .confirm_delete_channel_popup-content, .confirm_leave_channel_popup-content{
         width: 400px !important;
         border-radius: 20px;
         padding: 30px 25px!important;
@@ -329,6 +330,11 @@
                 font-size: 16px;
                 font-weight: 600;
                 font-style: italic;
+
+                span {
+                    color: #eb4034;
+                    font-weight: 800;
+                }
             }
         }
 
@@ -347,7 +353,7 @@
 
             .accept {
                 font-weight: 600;
-                background-color: #64b6e6;
+                background-color: #47b6d7;
                 margin-right: 50px;
             }
 

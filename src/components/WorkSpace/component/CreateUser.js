@@ -102,7 +102,7 @@ const CreateUser = props => {
 
     const existThisNickNameOnDB = async (nickname) => {
         let isExist = false;
-        await usersOnDB.orderByChild('nickname').equalTo(nickname).once('value', response => {
+        await usersOnDB.orderByChild('nickname_workspace').equalTo(`${nickname}_${workspace}`).once('value', response => {
             if ( response.exists() ) {
                 isExist = true;
                 setErrorName({ isError: true, errorMessage: ERROR_MESSAGE_NAME.USED })

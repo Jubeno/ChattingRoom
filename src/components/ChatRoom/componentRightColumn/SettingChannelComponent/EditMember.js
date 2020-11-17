@@ -7,7 +7,6 @@ import firebase from 'firebase';
 import { Context as ChannelContext, actions as ChannelActions } from '../../../../contexts/Channel/ChannelContext';
 import moment from 'moment';
 import MemberItem from './MemberItem';
-import AddMember from './AddMember';
 import { DATABASE } from '../../../../utils/database';
 import { Mention, MentionsInput } from 'react-mentions';
 import { MESSAGE_TYPE } from '../../../../utils/constant';

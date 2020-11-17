@@ -7,6 +7,8 @@ import firebase from "firebase";
 import Loading from '../Common/Loading/Loading';
 import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../contexts/DirectMessage/DirectMessageContext';
 import { userOnDB, workspaceOnDB } from '../../utils/database';
+import UserProfile from './UserProfile';
+import { User } from 'react-feather';
 
 const ChatRoom = props => {
     const userId = props.match.params.id;
@@ -14,6 +16,7 @@ const ChatRoom = props => {
     const { workspace } = history.location.state;
     const [ dataFromDB, setDataFromDB ] = useState({ user: null, workspace: null });
     const [ loading, setLoading ] = useState(false);
+    const [ showEditUserProfile, setShowEditUserProfile ] = useState(false);
 
     // get data user
     useEffect(() => {
@@ -61,8 +64,15 @@ const ChatRoom = props => {
     }, [])
 
     // update workspace profile when edit is completed
-    workspaceOnDB.on('child_changed', response => {
-        setDataFromDB({ ...dataFromDB, workspace: response.val()});
+    if(dataFromDB.workspace) {
+        workspaceOnDB.orderByChild('workspaceID').equalTo(dataFromDB?.workspace?.workspaceID).on('child_changed', response => {
+            setDataFromDB({ ...dataFromDB, workspace: response.val()});
+        })
+    }
+
+    // update user profile when edit is completed
+    userOnDB.orderByChild('userID').equalTo(userId).on('child_changed', response => {
+        setDataFromDB({ ...dataFromDB, user: response.val()});
     })
 
     return (
@@ -78,6 +88,17 @@ const ChatRoom = props => {
                             <div className="right">
                                 <RightColumn userId={userId} user={dataFromDB?.user} workspace={dataFromDB?.workspace} />
                             </div>
+                            <div className="button_user_profile" onClick={() => setShowEditUserProfile(show => !show)}>
+                                <User size={30}/>
+                            </div>
+                            {showEditUserProfile &&
+                                <UserProfile 
+                                    userId={userId} 
+                                    user={dataFromDB?.user} 
+                                    workspace={dataFromDB?.workspace}
+                                    close={() => setShowEditUserProfile(false)}
+                                />
+                            }
                         </div>
                     </div>
             }
