@@ -9,14 +9,14 @@ import { Context as UserProfileContext, actions as UserProfileActions } from '..
 import CustomUploadButton from 'react-firebase-file-uploader/lib/CustomUploadButton';
 import MissingProfile from './componentUserProfile/MissingProfile';
 import UpdateProfileDone from './componentUserProfile/UpdateProflieDone';
+import { DATABASE } from '../../utils/database';
 
 const UserProfile = props => {
     const { userId, user, close } = props;
-    console.log('%c user: ', 'color: red' , user);
     const { register, handleSubmit } = useForm();
     // const { avatar } = useContext(UserProfileContext).state;
-    const [ userAvatar, setUserAvatar ] = useState('');
-    const [ missingProfile, setMissingProfile ] = useState({isMissing: false, subject: ''});
+    const [ userAvatar, setUserAvatar ] = useState(null);
+    const [ missingProfile, setMissingProfile ] = useState({isMissing: false, name: ''});
     const [ updateProfileDone, setUpdateProfileDone ] = useState(false);
     const imageStorage = firebase.storage().ref('users/avatar');
     const usersOnDB = firebase.database().ref('user/list/');
@@ -33,15 +33,54 @@ const UserProfile = props => {
         const downloadURL = await imageStorage.child(filename).getDownloadURL();
         setUserAvatar(downloadURL);
     }
+    const isExistOnDatabase = async phoneNumber => {
+        let isExist = false;
+        await DATABASE
+        .ref('/user/list')
+        .orderByChild('phoneNumber')
+        .equalTo(phoneNumber)
+        .once('value', response => {
+            if(response.exists()) {
+                isExist = true;
+            }
+        })
+        return isExist;
+    }
+    
+    const isValidPhoneNumber = async phoneNumber => {
+        let isValid = true;
+        const regexPhoneNumber = /^\d{10}$/
+        const comparePhone = phoneNumber.match(regexPhoneNumber); 
+        const isExist = await isExistOnDatabase(phoneNumber);
+
+        if(!comparePhone) {
+            isValid = false;
+            setMissingProfile({isMissing: true, name: 'phone number'});
+        } else if(isExist) {
+            isValid = false;
+            setMissingProfile({isMissing: true, name: 'phone number exist on database'});
+        } else {
+            isValid = true;
+        }
+        return isValid;
+    }
+
+    const isValidAvatar = () => {
+        let isValid = true;
+        if(!userAvatar) {
+            isValid = false;
+            setMissingProfile({ isMissing: true, name: 'avatar' })
+        }
+        return isValid;
+    };
 
     const createProfileUser = async data => {
-        if(userAvatar === '') {
-            setMissingProfile({isMissing: true, subject: 'avatar'});
-            return
-        } else if( data.username === '' ) {
-            setMissingProfile({isMissing: true, subject: 'display name'})
-            return
-        } else {
+        const validAvatar = isValidAvatar();
+        if(!validAvatar) { return }
+        const validPhone = await isValidPhoneNumber(data.phoneNumber);
+        if(!validPhone) { return }
+        
+        if(validAvatar && validPhone) {
             await usersOnDB.once('value', response => {
                 const key = getKeyByProperty(response.val(), 'nickname', user.nickname);
                 const userProfile = usersOnDB.child(key);
@@ -153,7 +192,7 @@ const UserProfile = props => {
                     </form>
                     { missingProfile.isMissing && 
                     <MissingProfile
-                        subject={missingProfile.subject} 
+                        subject={missingProfile.name} 
                         close={() => setMissingProfile({...missingProfile, isMissing: false})}
                     />
                     }

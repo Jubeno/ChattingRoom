@@ -8,7 +8,7 @@ import Loading from '../Common/Loading/Loading';
 import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../contexts/DirectMessage/DirectMessageContext';
 import { userOnDB, workspaceOnDB } from '../../utils/database';
 import UserProfile from './UserProfile';
-import { User } from 'react-feather';
+import { LogOut, User } from 'react-feather';
 
 const ChatRoom = props => {
     const userId = props.match.params.id;
@@ -75,6 +75,9 @@ const ChatRoom = props => {
         setDataFromDB({ ...dataFromDB, user: response.val()});
     })
 
+    const logout = () => {
+        // localStorage.clear();
+    }
     return (
         <>
             { loading && <Loading /> }
@@ -99,6 +102,9 @@ const ChatRoom = props => {
                                     close={() => setShowEditUserProfile(false)}
                                 />
                             }
+                        </div>
+                        <div className="logout" onClick={logout}>
+                            <LogOut size={50}/>
                         </div>
                     </div>
             }

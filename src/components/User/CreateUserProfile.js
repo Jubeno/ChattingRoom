@@ -14,6 +14,8 @@ import withAutoplay from 'react-awesome-slider/dist/autoplay';
 import 'react-awesome-slider/dist/styles.css';
 import MissingProfile from '../ChatRoom/componentUserProfile/MissingProfile';
 import UpdateProfileDone from '../ChatRoom/componentUserProfile/UpdateProflieDone';
+import { DATABASE } from '../../utils/database';
+
 
 const CreateUserProfile = props => {
     const userId = props.match.params.id;
@@ -22,7 +24,7 @@ const CreateUserProfile = props => {
     const { workspace, nickname } = history.location.state;
     const { register, handleSubmit } = useForm();
     const { avatar } = useContext(UserProfileContext).state;
-    const [ missingAvatar, setMissingAvatar ] = useState(false);
+    const [ missingProfile, setMissingProfile ] = useState({isMissing: false, name: ''});
     const [ uploadDone, setUploadDone ] = useState(false);
     const imageStorage = firebase.storage().ref('users/avatar');
     const usersOnDB = firebase.database().ref('user/list/');
@@ -33,24 +35,69 @@ const CreateUserProfile = props => {
         isUploaded: false
     })
 
-    const createProfileUser = async data => {
-        if(!avatar) {
-            setMissingAvatar(true);
+    const isExistOnDatabase = async phoneNumber => {
+        let isExist = false;
+        await DATABASE
+        .ref('/user/list')
+        .orderByChild('phoneNumber')
+        .equalTo(phoneNumber)
+        .once('value', response => {
+            if(response.exists()) {
+                isExist = true;
+            }
+        })
+        return isExist;
+    }
+    
+    const isValidPhoneNumber = async phoneNumber => {
+        let isValid = true;
+        const regexPhoneNumber = /^\d{10}$/
+        const comparePhone = phoneNumber.match(regexPhoneNumber); 
+        const isExist = await isExistOnDatabase(phoneNumber);
+
+        if(!comparePhone) {
+            isValid = false;
+            setMissingProfile({isMissing: true, name: 'phone number'});
+        } else if(isExist) {
+            isValid = false;
+            setMissingProfile({isMissing: true, name: 'phone number exist on database'});
         } else {
+            isValid = true;
+        }
+        return isValid;
+    }
+
+    const isValidAvatar = () => {
+        let isValid = true;
+        if(!avatar) {
+            isValid = false;
+            setMissingProfile({ isMissing: true, name: 'avatar' })
+        }
+        return isValid;
+    };
+    
+    const createProfileUser = async data => {
+        const validAvatar = isValidAvatar();
+        if(!validAvatar) { return }
+        const validPhone = await isValidPhoneNumber(data.phoneNumber);
+        if(!validPhone) { return }
+
+        if(validAvatar && validPhone) {
             await usersOnDB.once('value', response => {
-                const key = getKeyByProperty(response.val(), 'nickname', nickname);
-                const userProfile = usersOnDB.child(key);
-                userProfile.update({ 
-                    "displayName": data.username,
-                    "gender": data.gender,
-                    "phoneNumber": data.phoneNumber,
-                    "birthday": data.birthday,
-                    "displayAvatar": avatar,
-                    "isMissingProfile": false
-                }, () => history.push(`/chatroom/${userId}`, {workspace}));
+            const key = getKeyByProperty(response.val(), 'nickname', nickname);
+            const userProfile = usersOnDB.child(key);
+            userProfile.update({ 
+                "displayName": data.username,
+                "gender": data.gender,
+                "phoneNumber": data.phoneNumber,
+                "birthday": data.birthday,
+                "displayAvatar": avatar,
+                "isMissingProfile": false
+            }
+            , () => history.push(`/chatroom/${userId}`, {workspace})
+            );
             })
         }
-        
     }
 
     const reuploadAvatar = () => {
@@ -182,10 +229,10 @@ const CreateUserProfile = props => {
                     </AutoplaySlider>
                 </div>
                 {
-                    missingAvatar &&
+                    missingProfile.isMissing &&
                         <MissingProfile
-                            close={() => setMissingAvatar(false)}
-                            subject='avatar'
+                            close={() => setMissingProfile({...missingProfile, isMissing: false})}
+                            subject={missingProfile.name}
                         />
                 }
                 {

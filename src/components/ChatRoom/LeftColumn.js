@@ -55,7 +55,6 @@ const LeftColumn = props => {
                     }
                 </div>
                 <p className="purpose">#{purposeWorkspace}</p>
-                <p className="userName">Username: {user.displayName}</p>
                 <div className="list_channel">
                     <p className="title">Channel</p>
                     <div className="list">

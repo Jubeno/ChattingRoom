@@ -15,7 +15,7 @@ import firebase from 'firebase';
 
 const App = () => {
   firebase.auth().onAuthStateChanged(function(user) {
-    console.log('user: ', user);
+    // console.log('user: ', user);
   });
   return (
     <MainProvider>
