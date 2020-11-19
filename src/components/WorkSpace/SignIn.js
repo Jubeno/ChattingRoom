@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import './Workspace.scss'
 import { ERROR_MESSAGE_NAME_WORKSPACE, EXPIRED_TIME } from '../../utils/constant';
-import { setExpiredTimeWorkSpace, validateWorkspace } from '../../utils/function';
+import { validateWorkspace } from '../../utils/function';
 import firebase from '../../Firebase';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -51,7 +51,6 @@ const SignIn = () => {
         
         if(isValid) {
             localStorage.setItem('workspace', data.workspace);
-            await setExpiredTimeWorkSpace(listWorkSpaceDb, data.workspace, 'workspace');
 
             setLoading(false);
             history.push('/login', { workspace: data.workspace });

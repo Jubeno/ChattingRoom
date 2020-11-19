@@ -3,7 +3,7 @@ import { Link, useHistory } from "react-router-dom";
 import { Jumbotron, Spinner, Form,  Button, FormGroup,  Label, Input, FormFeedback, Alert } from 'reactstrap';
 import firebase from '../../Firebase';
 import { useForm } from "react-hook-form";
-import { getKeyByProperty, setExpiredTimeUserSession } from '../../utils/function';
+import { getKeyByProperty, setToken } from '../../utils/function';
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import { ERROR_MESSAGE_NAME, ERROR_MESSAGE_PASSWORD } from '../../utils/constant';
 import './Login.scss';
@@ -102,10 +102,11 @@ function Login() {
         if(!isValidName || !isValidPassword) return
         usersOnDB.orderByChild('nickname').equalTo(data.nickname).once('value', async response => {
             if ( response.exists() ) {
+                const value = response.val();
                 localStorage.setItem('nickname', data.nickname);
                 const isMatchPassword = await checkPassword(data.password);
                 if ( isMatchPassword ) {
-                    await setExpiredTimeUserSession(usersOnDB, data.nickname, 'nickname');
+                    await setToken(usersOnDB, data.nickname, 'nickname', Object.values(value));
                     const isMissingProfile = await checkIsMissingProfile(userId);
                     if(isMissingProfile) {
                         setLoading(false);

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import ErrorMessage from '../Common/ErrorMessage/ErrorMessage';
 import './Workspace.scss'
 import { ERROR_MESSAGE_NAME_WORKSPACE, ERROR_MESSAGE_PASSWORD, ERROR_MESSAGE_CONFIRM_PASSWORD, EXPIRED_TIME } from '../../utils/constant';
-import { generateKey, setExpiredTimeWorkSpace, validateWorkspace } from '../../utils/function';
+import { generateKey, validateWorkspace } from '../../utils/function';
 import firebase from '../../Firebase';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -81,13 +81,10 @@ const CreateSpace = () => {
         const newWorkspace = listWorkSpaceDB.child(keyWorkspace);
 
         if (isValidName && isValidPassword && isValidConfirm) {
-            const expiredTimeWorkSpace = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
             const createTime = moment().format('DDMMYYYYHHmm');
-            await localStorage.setItem('expiredTimeWorkSpace', expiredTimeWorkSpace);
             (await newWorkspace).set({    
                 "workspace": data.workspace,
                 "password": data.password,
-                "expiredTimeWorkSpace": expiredTimeWorkSpace,
                 "createTime": createTime,
                 "workspaceID": btoa(`${data.workspace}-${createTime}`)
             }, () => {

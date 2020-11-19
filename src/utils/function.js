@@ -14,29 +14,25 @@ export const validateWorkspace = (workspace) => {
 
 export const generateKey = () => `_${Math.random().toString(36).substr(2, 9)}`;
 
-export const setExpiredTimeWorkSpace = async (dataOnDB, propertyValue, propertyKey) => {
-    await dataOnDB.once('value', response => {
-        const value = response.val();
-        const key = Object.keys(value).find(key => value[key][propertyKey] === propertyValue); // get key of workspace
-        const setExpiredDateOnDB = dataOnDB.child(key);
-        const expiredTime = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
-        setExpiredDateOnDB.update({ "expiredTimeWorkSpace": expiredTime }) // update expired time 
-        localStorage.setItem("expiredTimeWorkSpace", expiredTime);
-    })
-}
-export const setExpiredTimeUserSession = async (dataOnDB, propertyValue, propertyKey) => {
+export const setToken = async (dataOnDB, propertyValue, propertyKey, dataUser) => {
     await dataOnDB.once('value', response => {
         const value = response.val();
         const key = Object.keys(value).find(key => value[key][propertyKey] === propertyValue);
         const setExpiredDateOnDB = dataOnDB.child(key);
         const expiredTime = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
-        setExpiredDateOnDB.update({ "expiredTimeUserSession": expiredTime }) // update expired time 
-        localStorage.setItem("expiredTimeUserSession", expiredTime);
+        const data = {
+            userId: dataUser[0].userID,
+            expiredTime
+        }
+        setExpiredDateOnDB.update({ "token": btoa(JSON.stringify(data)) }) // update expired time 
+        localStorage.setItem("token", btoa(JSON.stringify(data)) );
     })
 }
 
 export const checkExpire = (target) => {
-    const expiredTime = localStorage.getItem(target);
+    const token = localStorage.getItem(target);
+    const decode = JSON.parse(atob(token));
+    const expiredTime = decode.expiredTime;
     let result = true;
     if( expiredTime === null ) {
         result = false;

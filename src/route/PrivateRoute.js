@@ -6,7 +6,7 @@ import {
 import { checkExpire } from '../utils/function';
 
 const PrivateRoute = ({ children, ...rest }) => {
-    const isNotExpiredWorkSpace = checkExpire('expiredTimeWorkSpace');
+    const isNotExpiredWorkSpace = checkExpire('token');
 
     return (
         <Route

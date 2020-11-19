@@ -6,9 +6,11 @@ import RightColumn from './RightColumn';
 import firebase from "firebase";
 import Loading from '../Common/Loading/Loading';
 import { Context as DirectMessageContext, actions as DirectMessageActions } from '../../contexts/DirectMessage/DirectMessageContext';
-import { userOnDB, workspaceOnDB } from '../../utils/database';
+import { DATABASE, userOnDB, workspaceOnDB } from '../../utils/database';
 import UserProfile from './UserProfile';
 import { LogOut, User } from 'react-feather';
+import { getKeyByProperty } from '../../utils/function';
+import ConfirmLogout from './ConfirmLogout';
 
 const ChatRoom = props => {
     const userId = props.match.params.id;
@@ -17,6 +19,7 @@ const ChatRoom = props => {
     const [ dataFromDB, setDataFromDB ] = useState({ user: null, workspace: null });
     const [ loading, setLoading ] = useState(false);
     const [ showEditUserProfile, setShowEditUserProfile ] = useState(false);
+    const [ showConfirmLogout, setShowConfirmLogout ] = useState(false);
 
     // get data user
     useEffect(() => {
@@ -75,9 +78,6 @@ const ChatRoom = props => {
         setDataFromDB({ ...dataFromDB, user: response.val()});
     })
 
-    const logout = () => {
-        // localStorage.clear();
-    }
     return (
         <>
             { loading && <Loading /> }
@@ -103,9 +103,15 @@ const ChatRoom = props => {
                                 />
                             }
                         </div>
-                        <div className="logout" onClick={logout}>
+                        <div className="logout" onClick={() => setShowConfirmLogout(true)}>
                             <LogOut size={50}/>
                         </div>
+                        { showConfirmLogout && 
+                            <ConfirmLogout 
+                                userId={userId}
+                                close={() => setShowConfirmLogout(false)}
+                            /> 
+                        }
                     </div>
             }
         </>
