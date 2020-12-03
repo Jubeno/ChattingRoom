@@ -153,7 +153,7 @@ function Login() {
                         <Button variant="primary" color="danger" type="submit" size="lg" className="mb-5" block>Login</Button>
                     </Form>
                     <h5 className="text-right font-weight-light font-italic display-5 text-muted">(*) Please use the account and password provided by your manager to log in. </h5>
-                    <Link to="/login/phone" className="text-right font-weight-light font-italic display-5 text-muted">Login with your phone number</Link>
+                    {/* <Link to="/login/phone" className="text-right font-weight-light font-italic display-5 text-muted">Login with your phone number</Link> */}
                 </Jumbotron>
             </div>
         </>
