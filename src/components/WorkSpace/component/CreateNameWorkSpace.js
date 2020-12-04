@@ -82,10 +82,10 @@ const CreateNameWorkSpace = props => {
                         {
                             !avatar ? 
                             <div className="choose_sample">
-                                <div className="text">
+                                {/* <div className="text">
                                     <p className="text-dark text-center font-weight-bold mb-0">Choose a sample avatar</p>
                                 </div>
-                                <p className="text-white font-weight-bold h3">or</p>
+                                <p className="text-white font-weight-bold h3">or</p> */}
                                 <div className="box">
                                     <CustomUploadButton
                                         accept="image/*"

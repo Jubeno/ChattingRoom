@@ -8,6 +8,7 @@ import { ChevronLeft } from 'react-feather';
 import { Context as WorkSpaceContext, actions as WorkSpaceActions } from '../../../contexts/WorkSpace/WorkSpaceContext';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
+import { setToken } from '../../../utils/function';
 
 const CreateUser = props => {
     const history = useHistory();
@@ -112,6 +113,15 @@ const CreateUser = props => {
         return isExist;
     }
 
+    const createToken = async (nickname) => {
+        await usersOnDB.orderByChild('nickname').equalTo(nickname).once('value', response => {
+            if( response.exists() ) {
+                const value = response.val();
+                setToken(usersOnDB, nickname, 'nickname', Object.values(value));
+            }
+        })
+    }
+
     const createUser = async data => {
         const nickname = data.nickname;
         const password = data.password;
@@ -122,7 +132,10 @@ const CreateUser = props => {
         const userId = btoa(`${nickname}-${createTime}`);
         if ( isValidName && isValidPassword && isValidConfirmation ) {
             createNewUser(nickname, password);
-            history.push(`/user/create_profile/${userId}`, { workspace, nickname });
+            await createToken(nickname);
+            setTimeout(() => {
+                history.push(`/user/create_profile/${userId}`, { workspace, nickname });
+            }, 1000); 
         }
     };
 
@@ -144,7 +157,7 @@ const CreateUser = props => {
             {activeCreateUser && <div className="btn_comeback" onClick={goToPrevStep}><ChevronLeft size="30"/></div>}
             <div className="wrapper">
                 <h1 className="display-3 text-center font-weight-bold text-white mb-5">STEP 3</h1>
-                <p className="lead text-white font-weight-bold">Create an account for yourself!</p>
+                <p className="lead text-white font-weight-bold">Create an Administrator account:</p>
                     <Label className="text-white font-weight-bold">Nickname</Label>
                     <Input 
                         type="text" 

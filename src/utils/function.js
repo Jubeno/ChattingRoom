@@ -25,13 +25,14 @@ export const setToken = async (dataOnDB, propertyValue, propertyKey, dataUser) =
             expiredTime
         }
         setExpiredDateOnDB.update({ "token": btoa(JSON.stringify(data)) }) // update expired time 
-        localStorage.setItem("token", btoa(JSON.stringify(data)) );
+        localStorage.setItem("token", window.btoa(JSON.stringify(data)) );
     })
 }
 
 export const checkExpire = (target) => {
-    const token = localStorage.getItem(target);
-    const decode = JSON.parse(atob(token));
+    const token = localStorage.getItem(target) || '';
+    console.log('%c token: ', 'color: red' , token, typeof token);
+    const decode = JSON.parse(atob(`${token}`));
     const expiredTime = decode.expiredTime;
     let result = true;
     if( expiredTime === null ) {
