@@ -1,27 +1,78 @@
 import React, { useState } from 'react';
 import { Check, File, Image, X } from 'react-feather';
+import { Progress } from 'reactstrap';
 import CustomUploadButton from 'react-firebase-file-uploader/lib/CustomUploadButton';
 import firebase from 'firebase';
 import { DATABASE, messageOnDB } from '../../../utils/database';
 import { generateId, getCurrentTimeStamp } from '../../../utils/function';
 import { MESSAGE_TYPE } from '../../../utils/constant';
+import DelayImage from '../../Common/DelayImage/DelayImage';
 
 const UploadFile = props => {
     const { channelId, open, conversationId, userId, displayName, avatar, friendId, isChannel } = props;
     const currentTime = getCurrentTimeStamp();
     const documentsStorage = firebase.storage().ref('file/documents/');
     const imagesStorage = firebase.storage().ref('file/images/');
-    const [document, setDocument] = useState({ isDone: false, name: '', url: '' });
-    const [image, setImage] = useState({ isDone: false, name: '', url: '' });
+    const [document, setDocument] = useState({ isDone: false, name: '', url: '', isUploading: false,
+    progress: 0 });
+    const [media, setMedia] = useState({ isDone: false, name: '', url: '', type: '', isUploading: false,
+    progress: 0, });
+    const listVideoType = [
+        'webm', 
+        'mkv', 
+        'flv', 
+        'vob', 
+        'ogv', 
+        'ogg', 
+        'avi', 
+        'mov', 
+        'qt', 
+        'mp4', 
+        'm4p', 
+        'm4v', 
+        'mpg', 
+        'mp2', 
+        'mpeg', 
+        'mpe', 
+        'mpv', 
+        '3gp'
+    ];
 
     const handleFileSuccess = async filename => {
         const fileURL = await documentsStorage.child(filename).getDownloadURL();
-        setDocument({ isDone: true, name: filename, url: fileURL });
+        setDocument({ ...document, isDone: true, name: filename, url: fileURL });
     }
 
-    const handleImageSuccess = async image => {
-        const imageURL = await imagesStorage.child(image).getDownloadURL();
-        setImage({ isDone: true, name: image, url: imageURL });
+    const handleFileStart = () => {
+        setDocument({ ...document, isUploading: true, progress: 0 });
+    }
+
+    const handleFileProgress = progress => {
+        setDocument({ ...document, isUploading: true, progress: progress });
+    }
+
+    const handleFileError = error => {
+        setDocument({ ...document, isUploading: false });
+    }
+    const handleMediaStart = () => {
+        setMedia({ ...media, isUploading: true, progress: 0 });
+    }
+
+    const handleMediaProgress = progress => {
+        setMedia({ ...media, isUploading: true, progress: progress });
+    }
+
+    const handleMediaError = error => {
+        setMedia({ ...media, isUploading: false });
+    }
+
+    const handleMediaSuccess = async mediaSource => {
+        const imageURL = await imagesStorage.child(mediaSource).getDownloadURL();
+        if(listVideoType.includes(mediaSource.split('.')[1])) {
+            setMedia({ ...media, type: 'video', isDone: true, name: mediaSource, url: imageURL })
+        } else {
+            setMedia({ ...media, type: 'image', isDone: true, name: mediaSource, url: imageURL })
+        }
     }
     
     const cancelSendFile = () => {
@@ -62,41 +113,41 @@ const UploadFile = props => {
         setDocument({ isDone: false, name: '', url: '' })
     }
     const cancelSendImage = () => {
-        setImage({ isDone: false, name: '', url: '' })
+        setMedia({ isDone: false, name: '', url: '', type: '' })
     }
 
     const sendImage = async () => {
         const messageId = generateId(userId, isChannel ? channelId : friendId, document.name)
         const newMessage = messageOnDB.child(`${conversationId}/listChat`).push();
         const newChannelMessage = DATABASE.ref(`/chatInChannel`).child(`${channelId}/listChat`).push();
-
+        const type = media.type === 'video' ? MESSAGE_TYPE.VIDEO : MESSAGE_TYPE.IMAGE;
         if(isChannel) {
             newChannelMessage.update({
-                value: image.name,
-                url: image.url,
+                value: media.name,
+                url: media.url,
                 sendTime: currentTime,
                 senderId: userId,
                 receiverId: channelId,
                 messageId,
-                messageType: MESSAGE_TYPE.IMAGE,
+                messageType: type,
                 displayName,
                 avatar
             })
         } else {
             newMessage.update({
-                value: image.name,
-                url: image.url,
+                value: media.name,
+                url: media.url,
                 sendTime: currentTime,
                 senderId: userId,
                 receiverId: friendId,
                 messageId,
-                messageType: MESSAGE_TYPE.IMAGE,
+                messageType: type,
                 displayName,
                 avatar
             })
         }
        
-        setImage({ isDone: false, name: '', url: '' })
+        setMedia({ isDone: false, name: '', url: '', type: '' })
     }
     return (
         <>
@@ -105,18 +156,27 @@ const UploadFile = props => {
                     <div className="upload_file">
                         <div className="image_message">
                             <CustomUploadButton
-                                accept="image/*"
+                                accept="image/*, video/*"
                                 storageRef={imagesStorage}
-                                onUploadSuccess={handleImageSuccess}
+                                onUploadSuccess={handleMediaSuccess}
+                                onUploadStart={handleMediaStart}
+                                onUploadError={handleMediaError}
+                                onProgress={handleMediaProgress}
                             >
                                 <Image color="#000"/>
                             </CustomUploadButton>
                             {
-                                image.isDone &&
+                                media.isDone &&
                                 <>
                                     <div className="preview_image">
                                         <div className="image">
-                                            <img src={image.url}/>
+                                            {
+                                                media.type === 'video'
+                                                ? <video autoPlay>
+                                                    <source src={media.url}/>
+                                                </video>
+                                                : <DelayImage src={media.url}/>
+                                            }
                                         </div>
                                         <div className="confirm_send">
                                             <Check onClick={sendImage}/>
@@ -133,6 +193,9 @@ const UploadFile = props => {
                                 accept=".xlsx,.xls,.doc, .docx,.ppt, .pptx,.txt,.pdf,.apk,.json,.rtf"
                                 storageRef={documentsStorage}
                                 onUploadSuccess={handleFileSuccess}
+                                onUploadStart={handleFileStart}
+                                onUploadError={handleFileError}
+                                onProgress={handleFileProgress}
                             >
                                 <File color="#000"/>
                             </CustomUploadButton>
@@ -150,10 +213,11 @@ const UploadFile = props => {
                                 </>
                             }
                         </div>
+                        {media.isUploading && <Progress className="progress_media" color="danger" value={media.progress} />}
+                        {document.isUploading && <Progress className="progress_media" color="danger" value={document.progress} />}
                     </div>
                     : <div></div>
             }
-
         </>
         
     );

@@ -32,7 +32,8 @@ export const MESSAGE_TYPE = {
     TEXT: 'TEXT',
     SYSTEM: 'SYSTEM',
     FILE: 'FILE',
-    IMAGE: 'IMAGE'
+    IMAGE: 'IMAGE',
+    VIDEO: 'VIDEO'
 }
 
 export const INITIAL_MESSAGE_CHAT = 20;

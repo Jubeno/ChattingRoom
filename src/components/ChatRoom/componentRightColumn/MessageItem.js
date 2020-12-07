@@ -4,6 +4,7 @@ import FILE from '../../Common/Message/FILE';
 import IMAGE from '../../Common/Message/IMAGE';
 import SYSTEM from '../../Common/Message/SYSTEM';
 import TEXT from '../../Common/Message/TEXT';
+import VIDEO from '../../Common/Message/VIDEO';
 
 
 const MessageItem = props => {
@@ -23,6 +24,9 @@ const MessageItem = props => {
                 break;
             case MESSAGE_TYPE.IMAGE:
                 messageItem = <IMAGE data={data} userId={userId}/>
+                break;
+            case MESSAGE_TYPE.VIDEO:
+                messageItem = <VIDEO data={data} userId={userId}/>
                 break;
             
             default:
