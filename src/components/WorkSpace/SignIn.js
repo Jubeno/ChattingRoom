@@ -62,7 +62,7 @@ const SignIn = () => {
     }
 
     const goToCreateWorkSpace = () => {
-        history.push('/workspace/create');
+        // history.push('/workspace/create'); // for testing
     }
 
     return (
