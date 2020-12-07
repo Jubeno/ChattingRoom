@@ -82,7 +82,7 @@ const CreateUser = props => {
         const newUser = usersOnDB.push();
         const expiredTime = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
 
-        const userId = btoa(`${nickname}-${createTime}`);
+        const userId = window.btoa(`${nickname}-${createTime}`);
 
         localStorage.setItem("expiredTimeUserSession", expiredTime);
         newUser.set({
@@ -130,7 +130,7 @@ const CreateUser = props => {
         const isValidName = await validateNickname(nickname);
         const isValidPassword = validatePassword(password);
         const isValidConfirmation = validateConfirmPassword(password, confirmPassword);
-        const userId = btoa(`${nickname}-${createTime}`);
+        const userId = window.btoa(`${nickname}-${createTime}`);
         if ( isValidName && isValidPassword && isValidConfirmation ) {
             createNewUser(nickname, password);
             await createToken(nickname);

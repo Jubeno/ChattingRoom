@@ -26,7 +26,7 @@ const InputBox = props => {
     const clearInput = () => reset();
 
     const sendInChannel = async (value) => {
-        const messageId = generateId(userId, isChannel ? channelId : friendId, value.messageContent)
+        const messageId = generateId(userId, isChannel ? channelId : friendId, currentTime)
         await chatInChannelOnDB.once('value', response => {
             const key = getKeyByProperty( response.val(), 'channelId', channelId)
             const newMessage = chatInChannelOnDB.child(`${key}/listChat`).push();
@@ -45,7 +45,7 @@ const InputBox = props => {
     }
 
     const sendInDirect = async (value) => {
-        const messageId = generateId(userId, isChannel ? channelId : friendId, value.messageContent)
+        const messageId = generateId(userId, isChannel ? channelId : friendId, currentTime)
         await messageOnDB.once('value', response => {
             const key = getKeyByProperty( response.val(), 'conversationID', conversationId )
             const newMessage = messageOnDB.child(`${key}/listChat`).push();

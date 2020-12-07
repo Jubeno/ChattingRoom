@@ -110,7 +110,7 @@ const CreateNewUser = props => {
         const newUser = usersOnDB.push();
         const expiredTime = moment().add(EXPIRED_TIME, 'minutes').format('DDMMYYYYHHmm');
 
-        const userId = btoa(`${nickname}-${createTime}`);
+        const userId = window.btoa(`${nickname}-${createTime}`);
 
         // localStorage.setItem("expiredTimeUserSession", expiredTime);
         await newUser.set({

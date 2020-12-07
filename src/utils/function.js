@@ -54,4 +54,4 @@ export const getKeyByProperty = (value, propertyKey, propertyValue) => {
 
 export const getCurrentTimeStamp = () => moment().valueOf();
 
-export const generateId = (a = '', b = '', c = '') => btoa(`${a}-${b}-${c}`);
+export const generateId = (a = '', b = '', c = '') => window.btoa(`${a}-${b}-${c}`);

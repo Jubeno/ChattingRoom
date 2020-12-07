@@ -30,7 +30,7 @@ const CreateNewChannel = props => {
 
     const createNewChannel = async data => {
         setLoading(true);
-        const channelId = btoa(`${data.channelName}-${createTime}`);
+        const channelId = window.btoa(`${data.channelName}-${createTime}`);
         const newChannel = channelOnDB.child(channelId);
         const newUserInChannel = userInChannelOnDB.child(channelId);
         const newListChat = chatInChannelOnDB.child(channelId);

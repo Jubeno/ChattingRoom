@@ -86,7 +86,7 @@ const CreateSpace = () => {
                 "workspace": data.workspace,
                 "password": data.password,
                 "createTime": createTime,
-                "workspaceID": btoa(`${data.workspace}-${createTime}`)
+                "workspaceID": window.btoa(`${data.workspace}-${createTime}`)
             }, () => {
                 history.push('/workspace/profile', { workspace: data.workspace });
             })
