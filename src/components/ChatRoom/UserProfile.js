@@ -41,7 +41,11 @@ const UserProfile = props => {
         .equalTo(phoneNumber)
         .once('value', response => {
             if(response.exists()) {
-                isExist = true;
+                if (response.val()) {
+                    if (Object.values(response.val())[0].userID !== userId) {
+                        isExist = true;
+                    }
+                }
             }
         })
         return isExist;

@@ -150,7 +150,7 @@ const ListChannel = props => {
                                                     size={18}
                                                 />
                                         }
-                                        {
+                                        {/* {
                                             isNotGeneralChannel(item) &&
                                                 <X 
                                                     onClick={() => deleteChannel(item)}
@@ -158,7 +158,7 @@ const ListChannel = props => {
                                                     color="#fff" 
                                                     size={18}
                                                 />
-                                        }
+                                        } */}
                                     </div>
                                 </div>
                                 : null
