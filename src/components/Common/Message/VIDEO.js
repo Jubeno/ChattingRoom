@@ -3,11 +3,9 @@ import DelayImage from '../../Common/DelayImage/DelayImage';
 import moment from 'moment';
 
 const VIDEO = props => {
-    const { data, userId } = props;
-    console.log('%c data: ', 'color: red' , data);
+    const { data, userId, avatar } = props;
     const name = data.displayName;
     const content = data.value;
-    const avatar = data.avatar !== '' ? data.avatar : '/img/avatar-placeholder.png';
     const getSendTime = format => {
         return moment(data.sendTime).format(format);
     }
