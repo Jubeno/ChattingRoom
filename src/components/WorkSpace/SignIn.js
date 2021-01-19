@@ -70,7 +70,7 @@ const SignIn = () => {
             { loading && <Loading /> }
             <div className="signin" id="workspace">
                 <div className="top">
-                    {/* <p className="go_to_create" onClick={goToCreateWorkSpace}>Create your own workspace</p> */}
+                    <p className="go_to_create" onClick={goToCreateWorkSpace}>Create your own workspace</p>
                 </div>
                 <div className="logo">
                     <img src="/img/logo.png" alt="logo"/>
