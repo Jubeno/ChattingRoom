@@ -18,7 +18,7 @@ const FILE = props => {
             <div className={`${isMyMessage() ? 'my_message_item' : 'other_message_item'}`}>
                 <div className={`${isMyMessage() ? 'my_message' : 'other_message'}`}>
                     <div className="avatar">
-                        <DelayImage src={avatar}  />
+                        <DelayImage src={isMyMessage() ? avatar : data.avatar}  />
                     </div>
                     <div className="content">
                         <div>

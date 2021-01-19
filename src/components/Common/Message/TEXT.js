@@ -13,13 +13,12 @@ const TEXT = props => {
     const isToday = moment().diff(data.sendTime, 'days') === 0;
     const sendTime = isToday ? getSendTime('HH:mm') : getSendTime('HH:mm DD/MM/YYYY');
 
-
     return (
         <>
             <div className={`${isMyMessage() ? 'my_message_item' : 'other_message_item'}`}>
                 <div className={`${isMyMessage() ? 'my_message' : 'other_message'}`}>
                     <div className="avatar">
-                        <DelayImage src={avatar}  />
+                        <DelayImage src={isMyMessage() ? avatar : data.avatar}  />
                     </div>
                     <div className="content">
                         <div>

@@ -53,6 +53,7 @@ const ListDirectMessage = props => {
 
     const openDirectMessage = async item => {
         localStorage.setItem('friendId', item.friendId);
+        localStorage.setItem('directName', getUserNameById(getId(item.members)));
         let data = {};
         const dataConversation = await getData(messageOnDB, 'conversationID', item.conversationID);
         const dataFriend = await getData(userOnDB, 'userID', item.friendId);
@@ -70,6 +71,10 @@ const ListDirectMessage = props => {
     const isUserInConversation = (conversation) => {
         return conversation?.members?.includes(userId);
     }
+
+    const getId = (listIDMember) => {
+        return listIDMember.find(id => id !== userId)
+    } 
 
     DATABASE
     .ref(`/directMessage`)
@@ -105,7 +110,7 @@ const ListDirectMessage = props => {
                     return isUserInConversation(item) 
                     ?
                         <div className="direct_message_item" key={key}>
-                            <p onClick={() => openDirectMessage(item)}>{getUserNameById(item?.friendId)}</p>
+                            <p onClick={() => openDirectMessage(item)}>{getUserNameById(getId(item?.members))}</p>
                             <X 
                                 onClick={() => deleteConversation(item)}
                                 className="delete_conversation" 

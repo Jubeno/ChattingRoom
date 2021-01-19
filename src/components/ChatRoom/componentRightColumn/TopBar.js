@@ -5,9 +5,10 @@ import SettingChannel from './SettingChannel';
 
 
 const TopBar = props => {
+    const directName = localStorage.getItem('directName');
     const { data, userId, user, channelId } = props;
     const isChannel = data?.type === "CHANNEL";
-    const name = isChannel ? data?.infor?.name : data?.infor?.displayName;
+    const name = isChannel ? data?.infor?.name : directName;
     const [showSetting, setShowSetting] = useState(false);
     const [member, setMember] = useState([]);
 
